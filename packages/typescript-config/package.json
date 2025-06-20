@@ -1,9 +1,12 @@
 {
-  "name": "@connected-repo/typescript-config",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "@connected-repo/typescript-config",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"clean": "rm -rf node_modules && rm -rf dist"
+	}
 }
