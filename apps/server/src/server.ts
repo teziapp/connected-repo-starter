@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 // Only import in production environment
 if (process.env.NODE_ENV === "production") {
 	require("./opentelemetry");
