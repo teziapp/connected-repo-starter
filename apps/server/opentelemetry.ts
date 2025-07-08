@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import FastifyOtelInstrumentation from "@fastify/otel";
 import type { AttributeValue } from "@opentelemetry/api";
 import { metrics, SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";

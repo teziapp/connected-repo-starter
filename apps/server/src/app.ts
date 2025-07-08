@@ -29,6 +29,7 @@ app.get(
 		},
 	},
 	async () => {
+		app.log.info("Hello API endpoint hit app.log.info");
 		return { message: "Hello API" };
 	},
 );
