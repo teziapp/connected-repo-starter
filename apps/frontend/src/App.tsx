@@ -2,11 +2,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCReact, httpBatchStreamLink } from "@trpc/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { RouterProvider } from "react-router";
 import type { AppTrpcRouter } from "../../server/src/router.trpc";
 import { ErrorFallback } from "./components/error_fallback";
 import { Spinner } from "./components/spinner";
 import { env } from "./configs/env.config";
-import { HelloWorld } from "./pages/hello_world";
+import { router } from "./router";
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -43,7 +44,7 @@ function App() {
 			<QueryClientProvider client={queryClient}>
 				<Suspense fallback={<Spinner />}>
 					<ErrorBoundary fallback={<ErrorFallback />}>
-						<HelloWorld />
+						<RouterProvider router={router} />
 					</ErrorBoundary>
 				</Suspense>
 			</QueryClientProvider>
