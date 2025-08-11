@@ -6,6 +6,64 @@ import { registerErrorHandler } from "./middlewares/errorHandler";
 import { appTrpcRouter } from "./router.trpc";
 import { createTRPCContext, type TrpcContext } from "./trpc";
 
+import { orchidORM, createBaseTable } from "orchid-orm";
+
+// Base table setup
+const BaseTable = createBaseTable();
+
+console.log("Process PID", process.pid)
+
+// User table definition
+class UserTable extends BaseTable {
+  table = "users";
+
+  columns = this.setColumns((t) => ({
+	id: t.identity().primaryKey(),
+	name: t.string(),
+	email: t.string().unique(),
+	...t.timestamps(),
+  }));
+
+  relations = {
+	posts: this.hasMany(() => PostTable, {
+	  columns: ["id"],
+	  references: ["userId"],
+	}),
+  };
+}
+
+// Post table definition
+class PostTable extends BaseTable {
+  table = "posts";
+
+  columns = this.setColumns((t) => ({
+	id: t.identity().primaryKey(),
+	title: t.string(),
+	body: t.text(),
+	userId: t.integer().foreignKey(() => UserTable, "id"),
+	...t.timestamps(),
+  }));
+
+  relations = {
+	author: this.belongsTo(() => UserTable, {
+	  columns: ["userId"],
+	  references: ["id"],
+	}),
+  };
+}
+
+// Database configuration
+export const db = orchidORM(
+  {
+	databaseURL: "postgresql://user:password@localhost:5432/mydb",
+	log: true,
+  },
+  {
+	user: UserTable,
+	post: PostTable,
+  }
+);
+
 export const app = fastify({
 	logger: loggerConfig[env.NODE_ENV],
 	maxParamLength: 5000,
@@ -30,9 +88,32 @@ app.get(
 	},
 	async () => {
 		app.log.info("Hello API endpoint hit app.log.info");
+		const users = await db.user.select("id", "name", "email");
+		console.log("🚀 ~ users:", users)
 		return { message: "Hello API" };
 	},
 );
+
+app.get(
+	"/error",
+	{
+		schema: {
+			response: {
+				500: {
+					type: "object",
+					properties: {
+						message: { type: "string" },
+					},
+					required: ["message"]
+				}
+			}
+		}
+	}, () => {
+		const err = new Error("this is constructed error message")
+		throw new Error(err.message)
+		return { message: err.message }
+	}
+)
 
 app.register(fastifyTRPCPlugin, {
 	prefix: "/trpc",
