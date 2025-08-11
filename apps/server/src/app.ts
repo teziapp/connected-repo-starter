@@ -5,6 +5,8 @@ import { loggerConfig } from "./configs/logger.config";
 import { registerErrorHandler } from "./middlewares/errorHandler";
 import { appTrpcRouter } from "./router.trpc";
 import { createTRPCContext, type TrpcContext } from "./trpc";
+import * as tracker from '@middleware.io/node-apm';
+
 
 import { orchidORM, createBaseTable } from "orchid-orm";
 
@@ -151,5 +153,14 @@ app.register(fastifyTRPCPlugin, {
 	},
 });
 
+app.setErrorHandler((error, request) => {
+  tracker.error(error.message, {
+    method: request.method,
+    url: request.url,
+    headers: request.headers,
+    body: request.body
+  });
+})
+
 // Register central error handler
-registerErrorHandler(app);
+// registerErrorHandler(app);
