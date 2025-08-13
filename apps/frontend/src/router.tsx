@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
 import { AuthVerifier } from "./modules/auth/AuthVerifier.auth";
+import { DatabaseDemo } from "./pages/DatabaseDemo";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -26,6 +27,10 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 					const { authRouter } = await import("./modules/auth/auth.router");
 					return { children: authRouter };
 				},
+			},
+			{
+				path: "demo",
+				element: <DatabaseDemo />,
 			},
 		],
 	},
