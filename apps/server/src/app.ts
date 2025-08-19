@@ -92,32 +92,7 @@ app.register(fastifyTRPCPlugin, {
 
       // End the error span
       errorSpan.end();
-      //   const span = trace.getActiveSpan();
-      // //   console.log("span got", span);
-      //   // Enhance span with error information
-      //   if (span) {
-      //     span.recordException(error);
-      //     span.setStatus({
-      //       code: SpanStatusCode.ERROR,
-      //       message: error.message,
-      //     });
-
-      //     // Add relevant attributes
-      //     span.setAttributes({
-      //       "trpc.error.code": "INTERNAL_ERROR",
-      //       "trpc.error.name": error.name,
-      //       "trpc.procedure.path": path || "unknown",
-      //       "trpc.procedure.type": type || "unknown",
-      //       "user.id": ctx?.userId || "anonymous",
-      //     });
-
-      // 	console.log("span set attributes", span.);
-      //   }
-
-      //   // Track error with your existing tracker
-      //   tracker.errorRecord(error);
-
-      //   tracker.errorRecord(error);
+     
       app.log.error(
         {
           error: error.message,
