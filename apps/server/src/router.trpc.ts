@@ -1,159 +1,135 @@
 import { publicProcedure, protectedProcedure, trpcRouter } from "./trpc";
 import { db } from "./db/db";
+//import { tracing } from "./tracing-middleware";
+
 import {
-	createUserSchema,
-	getUserByIdSchema,
-	type CreateUserInput,
-	type GetUserByIdInput,
+  createUserSchema,
+  getUserByIdSchema,
+  type CreateUserInput,
+  type GetUserByIdInput,
 } from "./db/tables/user.table";
 import {
-	createPostSchema,
-	getPostByIdSchema,
-	getPostsByAuthorSchema,
-	type CreatePostInput,
-	type GetPostByIdInput,
-	type GetPostsByAuthorInput,
+  createPostSchema,
+  getPostByIdSchema,
+  getPostsByAuthorSchema,
+  type CreatePostInput,
+  type GetPostByIdInput,
+  type GetPostsByAuthorInput,
 } from "./db/tables/post.table";
 
 export const appTrpcRouter = trpcRouter({
-	hello: publicProcedure.query(async () => {
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		return "Hello from tRPC";
-	}),
+  hello: publicProcedure.query(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return "Hello from tRPC";
+  }),
 
-	// User routes
-	user: trpcRouter({
-		// Get all users
-		getAll: protectedProcedure.query(async () => {
-			const users = await db.user.select({
-				id: true,
-				email: true,
-				name: true,
-				createdAt: true,
-				updatedAt: true,
-			});
-			return users;
-		}),
+  // User routes
+  user: trpcRouter({
+    // Get all users
 
-		// Get user by ID
-		getById: protectedProcedure
-			.input(getUserByIdSchema)
-			.query(async ({ input }: { input: GetUserByIdInput }) => {
-				const user = await db.user
-					.select({
-						id: true,
-						email: true,
-						name: true,
-						createdAt: true,
-						updatedAt: true,
-					})
-					.where({ id: input.id })
-					.take();
+    getAll: protectedProcedure
+      .query(async () => {
+        // Added code to simulate a error for testing
+        // throw new Error("User not found");
+        const users = await db.user.select(
+          "id",
+          "email",
+          "name",
+          "createdAt",
+          "updatedAt"
+        );
+        return users;
+      }),
 
-				if (!user) {
-					throw new Error("User not found");
-				}
+    // Get user by ID
+    getById: protectedProcedure
+      .input(getUserByIdSchema)
+      .query(async ({ input }: { input: GetUserByIdInput }) => {
+        const user = await db.user
+          .select("id", "email", "name", "createdAt", "updatedAt")
+          .where({ id: input.id })
+          .take();
 
-				return user;
-			}),
+        if (!user) {
+          throw new Error("User not found");
+        }
 
-		// Create user
-		create: protectedProcedure
-			.input(createUserSchema)
-			.mutation(async ({ input }: { input: CreateUserInput }) => {
-				const newUser = await db.user.create({
-					email: input.email,
-					name: input.name,
-				});
-				return newUser;
-			}),
-	}),
+        return user;
+      }),
 
-	// Post routes
-	post: trpcRouter({
-		// Get all posts with author information
-		getAll: protectedProcedure.query(async () => {
-			const posts = await db.post.select({
-				id: true,
-				title: true,
-				content: true,
-				authorId: true,
-				createdAt: true,
-				updatedAt: true,
-				author: {
-					id: true,
-					name: true,
-					email: true,
-				},
-			});
-			return posts;
-		}),
+    // Create user
+    create: protectedProcedure
+      .input(createUserSchema)
+      .mutation(async ({ input }: { input: CreateUserInput }) => {
+        const newUser = await db.user.create({
+          email: input.email,
+          name: input.name,
+        });
+        return newUser;
+      }),
+  }),
 
-		// Get post by ID with author
-		getById: protectedProcedure
-			.input(getPostByIdSchema)
-			.query(async ({ input }: { input: GetPostByIdInput }) => {
-				const post = await db.post
-					.select({
-						id: true,
-						title: true,
-						content: true,
-						authorId: true,
-						createdAt: true,
-						updatedAt: true,
-						author: {
-							id: true,
-							name: true,
-							email: true,
-						},
-					})
-					.where({ id: input.id })
-					.take();
+  // Post routes
+  post: trpcRouter({
+    // Get all posts with author information
+    getAll: protectedProcedure.query(async () => {
+      // Added code to simulate a error for testing
+      //throw new Error("post not found");
 
-				if (!post) {
-					throw new Error("Post not found");
-				}
+      const posts = await db.post.select("*");
+      return posts;
+    }),
 
-				return post;
-			}),
+    // Get post by ID with author
+    getById: protectedProcedure
+      .input(getPostByIdSchema)
+      .query(async ({ input }: { input: GetPostByIdInput }) => {
+        const post = await db.post.select("*").where({ id: input.id }).take();
 
-		// Create post
-		create: protectedProcedure
-			.input(createPostSchema)
-			.mutation(async ({ input }: { input: CreatePostInput }) => {
-				// First verify the author exists
-				const author = await db.user.where({ id: input.authorId }).take();
-				if (!author) {
-					throw new Error("Author not found");
-				}
+        if (!post) {
+          throw new Error("Post not found");
+        }
 
-				const newPost = await db.post.create({
-					title: input.title,
-					content: input.content,
-					authorId: input.authorId,
-				});
-				return newPost;
-			}),
+        return post;
+      }),
 
-		// Get posts by author
-		getByAuthor: protectedProcedure
-			.input(getPostsByAuthorSchema)
-			.query(async ({ input }: { input: GetPostsByAuthorInput }) => {
-				const posts = await db.post
-					.select({
-						id: true,
-						title: true,
-						content: true,
-						authorId: true,
-						createdAt: true,
-						updatedAt: true,
-					})
-					.where({ authorId: input.authorId })
-					.order({ createdAt: "DESC" });
+    // Create post
+    create: protectedProcedure
+      .input(createPostSchema)
+      .mutation(async ({ input }: { input: CreatePostInput }) => {
+        // First verify the author exists
+        const author = await db.user.where({ id: input.authorId }).take();
+        if (!author) {
+          throw new Error("Author not found");
+        }
 
-				return posts;
-			}),
-	}),
+        const newPost = await db.post.create({
+          title: input.title,
+          content: input.content,
+          authorId: input.authorId,
+        });
+        return newPost;
+      }),
+
+    // Get posts by author
+    getByAuthor: protectedProcedure
+      .input(getPostsByAuthorSchema)
+      .query(async ({ input }: { input: GetPostsByAuthorInput }) => {
+        const posts = await db.post
+          .select(
+            "id",
+            "title",
+            "content",
+            "authorId",
+            "createdAt",
+            "updatedAt"
+          )
+          .where({ authorId: input.authorId })
+          .order({ createdAt: "DESC" });
+
+        return posts;
+      }),
+  }),
 });
 
 export type AppTrpcRouter = typeof appTrpcRouter;
