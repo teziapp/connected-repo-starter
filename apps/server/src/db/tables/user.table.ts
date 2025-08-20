@@ -1,13 +1,17 @@
 import { z } from "zod";
 import { BaseTable } from "../baseTable";
 
-export const UserTable = BaseTable.table("user", (t) => ({
-	id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-	email: t.string().unique(),
-	name: t.string(),
-	createdAt: t.timestamptz().default(t.sql`now()`),
-	updatedAt: t.timestamptz().default(t.sql`now()`),
-}));
+export class UserTable extends BaseTable {
+	readonly table = "user";
+	
+	columns = this.setColumns((t) => ({
+		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+		email: t.string().unique(),
+		name: t.string(),
+		createdAt: t.timestamp().default(t.sql`now()`),
+		updatedAt: t.timestamp().default(t.sql`now()`),
+	}));
+}
 
 // Zod schemas for validation
 export const createUserSchema = z.object({

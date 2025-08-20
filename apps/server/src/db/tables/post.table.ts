@@ -1,31 +1,28 @@
 import { z } from "zod";
 import { BaseTable } from "../baseTable";
 
-export const PostTable = BaseTable.table("post", (t) => ({
-	id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-	title: t.string(),
-	content: t.text(),
-	authorId: t.uuid().foreignKey("user", "id"),
-	createdAt: t.timestamptz().default(t.sql`now()`),
-	updatedAt: t.timestamptz().default(t.sql`now()`),
-	...t.relations({
-		author: t.belongsTo(() => UserTable, {
+export class PostTable extends BaseTable {
+	readonly table = "post";
+	
+	columns = this.setColumns((t) => ({
+		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+		title: t.string(),
+		content: t.text(),
+		authorId: t.uuid().foreignKey("user", "id"),
+		createdAt: t.timestamp().default(t.sql`now()`),
+		updatedAt: t.timestamp().default(t.sql`now()`),
+	}));
+	
+	relations = {
+		author: this.belongsTo(() => UserTable, {
 			columns: ["authorId"],
 			references: ["id"],
 		}),
-	}),
-}));
+	};
+}
 
 // Import UserTable after the PostTable definition to avoid circular imports
 import { UserTable } from "./user.table";
-
-// Add the inverse relation to the user table
-UserTable.relations({
-	posts: UserTable.hasMany(() => PostTable, {
-		columns: ["id"], 
-		references: ["authorId"],
-	}),
-});
 
 // Zod schemas for validation
 export const createPostSchema = z.object({
