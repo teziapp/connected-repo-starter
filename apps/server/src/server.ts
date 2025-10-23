@@ -1,4 +1,4 @@
-import "./opentelemetry.ts"
+import "./opentelemetry.ts";
 import "dotenv/config";
 
 // Only import in production environment
@@ -31,7 +31,7 @@ const allowedOrigins = [
 	"http://localhost",
 ];
 
-logger.info({ isProd, isStaging, isTest }, "Environment:");
+logger.info({ isDev, isProd, isStaging, isTest }, "Environment:");
 logger.info(allowedOrigins, "Allowed Origins:");
 logger.info(env.ALLOWED_ORIGINS, "ALLOWED_ORIGINS env:");
 
@@ -72,6 +72,7 @@ export const build = async () => {
 		contentSecurityPolicy: {
 			directives: {
 				defaultSrc: ["'self'"],
+				connectSrc: ["'self'"], // Allow tRPC/API requests
 				scriptSrc: ["'self'"],
 				imgSrc: ["'self'"],
 			},
@@ -90,7 +91,7 @@ const start = async () => {
 		if (process.send) {
 			process.send("ready"); // ✅ Let PM2 know the app is ready
 		}
-		logger.info("Server running", { url: "http://localhost:3000" });
+		logger.info({ url: "http://localhost:3000" }, "Server running");
 	} catch (err) {
 		logger.error("Server failed to start");
 		logger.error(err);

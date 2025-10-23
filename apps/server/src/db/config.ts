@@ -6,5 +6,5 @@ export const dbConfig = {
 	user: env.DB_USER || "postgres", 
 	password: env.DB_PASSWORD || "password",
 	database: env.DB_NAME || "connected_repo_db",
-	ssl: env.NODE_ENV === "production",
+	ssl: env.VITE_NODE_ENV === "production",
 };

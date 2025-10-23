@@ -1,4 +1,5 @@
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
+import { ErrorFallback } from "./components/error_fallback";
 import { AuthVerifier } from "./modules/auth/AuthVerifier.auth";
 import { DatabaseDemo } from "./pages/DatabaseDemo";
 
@@ -14,7 +15,7 @@ export type ReactRouterWithNavbar = BaseRouterWithNavbar & {
 export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 	{
 		path: "/",
-		errorElement: <div>Error</div>,
+		errorElement: <ErrorFallback />,
 		element: <Outlet />,
 		children: [
 			{

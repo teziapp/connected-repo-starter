@@ -1,3 +1,4 @@
+import { SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
 import { env } from "./configs/env.config";
@@ -5,11 +6,9 @@ import { loggerConfig } from "./configs/logger.config";
 import { registerErrorHandler } from "./middlewares/errorHandler";
 import { appTrpcRouter } from "./router.trpc";
 import { createTRPCContext, type TrpcContext } from "./trpc";
-import * as tracker from "@middleware.io/node-apm";
-import { trace, SpanStatusCode, SpanKind } from "@opentelemetry/api";
 
 export const app = fastify({
-  logger: loggerConfig[env.NODE_ENV],
+  logger: loggerConfig[env.VITE_NODE_ENV],
   maxParamLength: 5000,
 });
 export const logger = app.log;
