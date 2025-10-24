@@ -5,26 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script
-      src="https://cdnjs.middleware.io/browser/libs/0.0.2/middleware-rum.min.js"
-      type="text/javascript"
-    ></script>
-
-    <script>
-      if (window.Middleware) {
-        Middleware.track({
-          serviceName: "test",
-          projectName: "test",
-          accountKey: "your-account-key",
-          target: "your-target",
-          tracePropagationTargets: [/.*/],
-          defaultAttributes: {
-            "app.version": "1.0.0",
-          },
-        });
-      }
-    </script>
-
     <title>Vite + React + TS</title>
   </head>
   <body>
