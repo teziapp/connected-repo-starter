@@ -1,27 +1,17 @@
-import { Navigate } from "react-router";
-import type { ReactRouterWithNavbar } from "../../router";
+import { Navigate, Route, Routes } from "react-router";
+import { LoginPage } from "./pages/Login.page";
+import { RegisterPage } from "./pages/Register.page";
 
-export const authRouter: ReactRouterWithNavbar[] = [
-	{
-		index: true,
-		element: <Navigate to="login" />,
-	},
-	{
-		path: "login",
-		lazy: async () => {
-			const { LoginPage } = await import("./pages/Login.page");
-			return {
-				element: <LoginPage />,
-			};
-		},
-	},
-	{
-		path: "register",
-		lazy: async () => {
-			const { RegisterPage } = await import("./pages/Register.page");
-			return {
-				element: <RegisterPage />,
-			};
-		},
-	},
-];
+const AuthRouter = () => {
+	return (
+		<Routes>
+			<Route path = "/">
+				<Route index element={<Navigate to="/auth/login" />} />
+				<Route path="login" element={<LoginPage /> } />
+				<Route path="register" element={<RegisterPage />} />
+			</Route>
+		</Routes>
+	)
+};
+
+export default AuthRouter;
