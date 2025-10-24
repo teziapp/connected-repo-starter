@@ -1,4 +1,3 @@
-import "./opentelemetry.ts";
 import "dotenv/config";
 
 // Only import in production environment
