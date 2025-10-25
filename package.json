@@ -9,6 +9,7 @@
 		"env:sync": "node scripts/sync-env.js",
 		"build": "yarn env:sync && turbo run build",
 		"clean": "turbo run clean && rm -rf node_modules && rm -rf .yarn/cache && yarn cache clean",
+		"db": "turbo db --",
 		"dev": "yarn env:sync && turbo run dev",
 		"lint": "turbo run lint",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",

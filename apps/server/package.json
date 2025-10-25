@@ -9,6 +9,7 @@
 	"private": false,
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",
+		"db": "ts-node src/db/db_script.ts",
 		"dev": "npx ts-node-dev --respawn --transpile-only --loader ts-node/esm src/server.ts",
 		"build": "rimraf dist && swc src -d dist --copy-files --config-file=swc.config.json",
 		"start": "node dist/src/server.js"

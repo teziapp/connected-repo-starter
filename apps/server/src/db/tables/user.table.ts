@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BaseTable } from "../baseTable";
+import { BaseTable } from "../base_table";
 
 export class UserTable extends BaseTable {
 	readonly table = "user";

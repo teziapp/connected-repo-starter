@@ -86,9 +86,11 @@ cp apps/frontend/.env.example apps/frontend/.env
 
 4. Configure your database connection in `apps/server/.env`
 
-5. Create a PostgreSQL database:
-```sql
-CREATE DATABASE connected_repo_db;
+5. Create a PostgreSQL database, run migrations & seed data:
+```bash
+yarn run db create;
+yarn run db up;
+yarn run db seed;
 ```
 
 ### Development
@@ -187,13 +189,13 @@ Multi-layer error handling system:
 1. Create table class in `apps/server/src/db/tables/`
 2. Add Zod validation schemas
 3. Register in `apps/server/src/db/db.ts`
-4. Run SQL to create table
-5. Add tRPC procedures in `router.trpc.ts`
+4. `yarn run db new <migration_name>` (A new migration file will be created in  `apps/server/src/db/migrations/`)
+5. `yarn run db up` (Run migrations)
 
 ### New API Endpoint
 
 1. Add procedure to `router.trpc.ts` with Zod input schema
-2. Use `protectedProcedure` for database operations
+2. Use `protectedProcedure` for database operations which require auth
 3. Frontend automatically gets updated types
 
 ### New Frontend Page
