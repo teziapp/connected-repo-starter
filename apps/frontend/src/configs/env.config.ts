@@ -1,9 +1,6 @@
 import { z } from "zod";
+import { envSchemaZod } from "../utils/env_validator.zod.utils";
 
-const envSchema = z.object({
-	VITE_API_URL: z.string(),
-});
+export type Env = z.infer<typeof envSchemaZod>;
 
-export type Env = z.infer<typeof envSchema>;
-
-export const env = envSchema.parse(import.meta.env);
+export const env = envSchemaZod.parse(import.meta.env);

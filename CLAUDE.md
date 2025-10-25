@@ -9,7 +9,7 @@ This is a Turborepo monorepo starter for building full-stack TypeScript applicat
 - **Frontend**: React + Vite + TanStack Query + tRPC Client
 - **Database**: PostgreSQL with Orchid ORM
 - **Package Manager**: Yarn (v1.22.22)
-- **Node Version**: 18+
+- **Node Version**: 22+
 
 ## Common Commands
 
@@ -93,7 +93,6 @@ packages/
 - `app.ts` - Fastify instance setup and tRPC plugin registration
 - `trpc.ts` - tRPC initialization with context, error formatting, and middleware
 - `router.trpc.ts` - All tRPC routes (user, post endpoints)
-- `opentelemetry.ts` - Middleware.io APM integration (requires credentials in .env)
 
 **Database Pattern:**
 1. Define table schema in `db/tables/*.table.ts` extending `BaseTable`
@@ -135,7 +134,6 @@ Error types handled:
 
 **OpenTelemetry Integration:**
 - Initialized in `opentelemetry.ts` (imported by `server.ts`)
-- Uses Middleware.io APM for tracing, metrics, and error tracking
 - tRPC errors are automatically traced with custom spans (see `app.ts` onError handler)
 - Requires `MIDDLEWARE_API_KEY` and `MIDDLEWARE_TARGET` in environment
 

@@ -60,6 +60,7 @@ function syncEnvFile(workspacePath, rootEnv) {
   const lines = content.split('\n');
   const updatedLines = [];
   let updatedCount = 0;
+  const isServerWorkspace = workspacePath.includes('apps/server');
 
   lines.forEach(line => {
     const trimmed = line.trim();
@@ -76,8 +77,19 @@ function syncEnvFile(workspacePath, rootEnv) {
       const key = match[1].trim();
       const currentValue = match[2].trim();
 
+      // Special case: sync VITE_NODE_ENV to NODE_ENV for server workspace
+      if (isServerWorkspace && key === 'NODE_ENV' && 'VITE_NODE_ENV' in rootEnv) {
+        const rootValue = rootEnv['VITE_NODE_ENV'];
+        if (currentValue !== rootValue) {
+          updatedLines.push(`${key}=${rootValue}`);
+          updatedCount++;
+          console.log(`  ✓ Updated ${key} (from VITE_NODE_ENV)`);
+        } else {
+          updatedLines.push(line);
+        }
+      }
       // If this key exists in root .env, sync it
-      if (key in rootEnv) {
+      else if (key in rootEnv) {
         const rootValue = rootEnv[key];
         if (currentValue !== rootValue) {
           updatedLines.push(`${key}=${rootValue}`);

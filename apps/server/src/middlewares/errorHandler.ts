@@ -7,7 +7,6 @@ import type {
 } from "fastify";
 import { ZodError } from "zod";
 import { isDev } from "../configs/env.config";
-import * as tracker from '@middleware.io/node-apm';
 
 // Custom API error class
 export class AppError extends Error {
@@ -124,7 +123,6 @@ export const registerErrorHandler = (server: FastifyInstance) => {
   // Set default error handler
   server.setErrorHandler((error, request, reply) => {
 	console.log('ERROR HANDLER ACTIVATED', error);
-    tracker.errorRecord(error)
     handleError(error, request, reply);
   });
 

@@ -9,17 +9,17 @@
 	"scripts": {
 		"env:sync": "node scripts/sync-env.js",
 		"build": "yarn env:sync && turbo run build",
-		"clean": "turbo run clean && rm -rf node_modules",
+		"clean": "turbo run clean && rm -rf node_modules && rm -rf .yarn/cache && yarn cache clean",
 		"dev": "yarn env:sync && turbo run dev",
 		"lint": "turbo run lint",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"check-types": "turbo run check-types"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.0.0",
+		"@biomejs/biome": "^2.3.0",
 		"prettier": "^3.5.3",
-		"turbo": "^2.5.4",
-		"typescript": "5.8.2"
+		"turbo": "^2.5.8",
+		"typescript": "5.9.3"
 	},
 	"engines": {
 		"node": ">=18"
@@ -30,6 +30,7 @@
 		"packages/*"
 	],
 	"dependencies": {
-		"zod": "^3.25.76"
+		"zod": "^4.1.12",
+		"@trpc/server": "^11.6.0"
 	}
 }
