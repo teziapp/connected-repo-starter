@@ -1,13 +1,7 @@
-import { publicProcedure, protectedProcedure, trpcRouter } from "./trpc";
 import { db } from "./db/db";
+import { protectedProcedure, publicProcedure, trpcRouter } from "./trpc";
 //import { tracing } from "./tracing-middleware";
 
-import {
-  createUserSchema,
-  getUserByIdSchema,
-  type CreateUserInput,
-  type GetUserByIdInput,
-} from "./db/tables/user.table";
 import {
   createPostSchema,
   getPostByIdSchema,
@@ -16,6 +10,12 @@ import {
   type GetPostByIdInput,
   type GetPostsByAuthorInput,
 } from "./db/tables/post.table";
+import {
+  createUserSchema,
+  getUserByIdSchema,
+  type CreateUserInput,
+  type GetUserByIdInput,
+} from "./db/tables/user.table";
 
 export const appTrpcRouter = trpcRouter({
   hello: publicProcedure.query(async () => {
@@ -76,7 +76,9 @@ export const appTrpcRouter = trpcRouter({
       // Added code to simulate a error for testing
       //throw new Error("post not found");
 
-      const posts = await db.post.select("*");
+      const posts = await db.post.select("*", {
+        author: (q) => q.author.select("*"),
+      });
       return posts;
     }),
 

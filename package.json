@@ -2,23 +2,23 @@
 	"name": "connected-repo",
 	"version": "1.0.0",
 	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + tRPC + Reactjs with opentelemetry setup",
-	"repository": "git@github.com:teziapp/orchidORM-fastify-tRPC-Reactjs-starter.git",
+	"repository": "git@github.com:teziapp/connected-repo-starter.git",
 	"author": "Balkrishna Agarwal <krishna@teziapp.com>",
-	"license": "MIT",
-	"private": true,
+	"license": "AGPL-3.0",
 	"scripts": {
-		"build": "turbo run build",
-		"clean": "turbo run clean && rm -rf node_modules",
-		"dev": "turbo run dev",
+		"env:sync": "node scripts/sync-env.js",
+		"build": "yarn env:sync && turbo run build",
+		"clean": "turbo run clean && rm -rf node_modules && rm -rf .yarn/cache && yarn cache clean",
+		"dev": "yarn env:sync && turbo run dev",
 		"lint": "turbo run lint",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"check-types": "turbo run check-types"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.0.0",
+		"@biomejs/biome": "^2.3.0",
 		"prettier": "^3.5.3",
-		"turbo": "^2.5.4",
-		"typescript": "5.8.2"
+		"turbo": "^2.5.8",
+		"typescript": "5.9.3"
 	},
 	"engines": {
 		"node": ">=18"
@@ -29,6 +29,7 @@
 		"packages/*"
 	],
 	"dependencies": {
-		"zod": "^3.25.76"
+		"zod": "^4.1.12",
+		"@trpc/server": "^11.6.0"
 	}
 }

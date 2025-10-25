@@ -1,3 +1,11 @@
+/*
+* Copyright (c) 2025 Tezi Communications LLP, India
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*/
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
 import { env } from "./configs/env.config";
@@ -5,8 +13,6 @@ import { loggerConfig } from "./configs/logger.config";
 import { registerErrorHandler } from "./middlewares/errorHandler";
 import { appTrpcRouter } from "./router.trpc";
 import { createTRPCContext, type TrpcContext } from "./trpc";
-import * as tracker from "@middleware.io/node-apm";
-import { trace, SpanStatusCode, SpanKind } from "@opentelemetry/api";
 
 export const app = fastify({
   logger: loggerConfig[env.NODE_ENV],
@@ -57,41 +63,6 @@ app.register(fastifyTRPCPlugin, {
       ctx?: TrpcContext;
       input?: unknown;
     }) {
-      const tracer = trace.getTracer("trpc-error-handler");
-
-      // Create a new span specifically for the error
-      const errorSpan = tracer.startSpan(`trpc.error.${path || "unknown"}`, {
-        kind: SpanKind.SERVER,
-        attributes: {
-          "trpc.procedure.path": path || "unknown",
-          "trpc.procedure.type": type || "unknown",
-          "user.id": ctx?.userId || "anonymous",
-          "error.type": "trpc_procedure_error",
-        },
-      });
-
-      // Record the error on the new span
-      errorSpan.recordException(error);
-      errorSpan.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: error.message,
-      });
-
-      // Add error-specific attributes
-      errorSpan.setAttributes({
-        "trpc.error.code": "INTERNAL_ERROR",
-        "trpc.error.name": error.name,
-        "trpc.error.message": error.message,
-      });
-
-      // Add an event if needed
-      errorSpan.addEvent("trpc.procedure.failed", {
-        "error.message": error.message,
-        "procedure.path": path || "unknown",
-      });
-
-      // End the error span
-      errorSpan.end();
      
       app.log.error(
         {

@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const NODE_ENV = z.enum(["development", "staging", "production", "test"]);
 export type ENVIORNMENT = z.infer<typeof NODE_ENV>;

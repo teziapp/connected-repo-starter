@@ -1,4 +1,6 @@
+import { lazy } from "react";
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
+import { ErrorFallback } from "./components/error_fallback";
 import { AuthVerifier } from "./modules/auth/AuthVerifier.auth";
 import { DatabaseDemo } from "./pages/DatabaseDemo";
 
@@ -14,7 +16,7 @@ export type ReactRouterWithNavbar = BaseRouterWithNavbar & {
 export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 	{
 		path: "/",
-		errorElement: <div>Error</div>,
+		errorElement: <ErrorFallback />,
 		element: <Outlet />,
 		children: [
 			{
@@ -22,10 +24,10 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 				element: <AuthVerifier />,
 			},
 			{
-				path: "auth",
+				path: "auth/*",
 				lazy: async () => {
-					const { authRouter } = await import("./modules/auth/auth.router");
-					return { children: authRouter };
+					const AuthRouter = lazy(() => import("./modules/auth/auth.router"));
+					return { Component: AuthRouter };
 				},
 			},
 			{

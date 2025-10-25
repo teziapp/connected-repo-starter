@@ -1,7 +1,7 @@
-import { orchidORM } from "orchid-orm";
+import { orchidORM } from "orchid-orm/node-postgres";
 import { dbConfig } from "./config";
-import { UserTable } from "./tables/user.table";
 import { PostTable } from "./tables/post.table";
+import { UserTable } from "./tables/user.table";
 
 const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}?ssl=${dbConfig.ssl ? "require" : "false"}`;
 

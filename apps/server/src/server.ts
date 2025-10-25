@@ -1,10 +1,12 @@
-import "./opentelemetry.ts"
+/*
+* Copyright (c) 2025 Tezi Communnications LLP, India
+* 
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*/
 import "dotenv/config";
-
-// Only import in production environment
-// if (process.env.NODE_ENV === "production") {
-// 	require("./opentelemetry");
-// }
 
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -31,7 +33,7 @@ const allowedOrigins = [
 	"http://localhost",
 ];
 
-logger.info({ isProd, isStaging, isTest }, "Environment:");
+logger.info({ isDev, isProd, isStaging, isTest }, "Environment:");
 logger.info(allowedOrigins, "Allowed Origins:");
 logger.info(env.ALLOWED_ORIGINS, "ALLOWED_ORIGINS env:");
 
@@ -72,6 +74,7 @@ export const build = async () => {
 		contentSecurityPolicy: {
 			directives: {
 				defaultSrc: ["'self'"],
+				connectSrc: ["'self'"], // Allow tRPC/API requests
 				scriptSrc: ["'self'"],
 				imgSrc: ["'self'"],
 			},
@@ -90,7 +93,7 @@ const start = async () => {
 		if (process.send) {
 			process.send("ready"); // ✅ Let PM2 know the app is ready
 		}
-		logger.info("Server running", { url: "http://localhost:3000" });
+		logger.info({ url: "http://localhost:3000" }, "Server running");
 	} catch (err) {
 		logger.error("Server failed to start");
 		logger.error(err);
