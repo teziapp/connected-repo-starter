@@ -179,29 +179,9 @@ The monorepo achieves full type safety by:
 
 ### Environment Configuration
 
-Required environment variables (see `.env.example`):
-
-**Backend** (`apps/server/.env`):
-```
-VITE_NODE_ENV=development
-ALLOWED_ORIGINS=http://localhost:5173
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=password
-DB_NAME=connected_repo_db
-```
-
-**Frontend** (`apps/frontend/.env`):
-```
-VITE_API_URL=http://localhost:3000
-```
-
-**OpenTelemetry** (optional, for APM):
-```
-MIDDLEWARE_API_KEY=your-api-key
-MIDDLEWARE_TARGET=your-target
-```
+1. Common environment variables `.env` (see `.env.example`)
+2. Backend `apps/server/.env` (see `apps/server/.env.example`)
+3. Frontend (`apps/frontend/.env`) (see `apps/frontend/.env.example`)
 
 ### Development Workflow
 
