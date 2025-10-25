@@ -40,7 +40,7 @@ cd apps/frontend && yarn build
 # Run linters across all workspaces
 yarn lint
 
-# Format code with Prettier
+# Format code with Biome
 yarn format
 
 # Type check all workspaces
@@ -222,7 +222,7 @@ Tasks run with `turbo run <task>` or via yarn scripts.
 ## Code Style
 
 - **Linting**: Biome (configured in `biome.json`)
-- **Formatting**: Prettier
+- **Formatting**: Biome
 - **TypeScript**: Strict mode enabled, v5.8.x
 - **Naming**: Database uses snake_case (via Orchid ORM `snakeCase: true`)
 

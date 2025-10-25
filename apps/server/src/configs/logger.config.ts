@@ -1,11 +1,8 @@
+import type { NODE_ENV } from "@connected-repo/zod-schemas/node-env";
 import type { FastifyBaseLogger, FastifyHttpOptions } from "fastify";
 import type { Server } from "node:https";
-import type { ENVIORNMENT } from "./env.config";
 
-export const loggerConfig: Record<
-	ENVIORNMENT,
-	FastifyHttpOptions<Server, FastifyBaseLogger>["logger"]
-> = {
+export const loggerConfig: Record<NODE_ENV, FastifyHttpOptions<Server, FastifyBaseLogger>["logger"]> = {
 	development: {
 		transport: {
 			target: "pino-pretty",

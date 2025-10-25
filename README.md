@@ -22,7 +22,7 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 - **Package Manager**: Yarn (v1.22.22)
 - **Monorepo**: [Turborepo](https://turbo.build/repo)
 - **Linting**: Biome
-- **Formatting**: Prettier
+- **Formatting**: Biome
 - **TypeScript**: v5.8.x with strict mode
 
 ## Project Structure
@@ -115,7 +115,7 @@ cd apps/frontend && yarn dev
 - `yarn dev` - Start all apps in watch mode
 - `yarn build` - Build all apps and packages
 - `yarn lint` - Run Biome linter across all workspaces
-- `yarn format` - Format code with Prettier
+- `yarn format` - Format code with Biome
 - `yarn check-types` - Type check all workspaces
 - `yarn clean` - Remove node_modules and build artifacts
 

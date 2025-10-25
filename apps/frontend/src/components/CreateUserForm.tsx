@@ -20,7 +20,7 @@ export function CreateUserForm() {
 			// Use the user-friendly message from our centralized error handling
 			const errorMessage = error.data?.userFriendlyMessage || error.message;
 			const actionRequired = error.data?.actionRequired;
-			
+
 			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
 			setSuccess("");
 		},
@@ -32,7 +32,7 @@ export function CreateUserForm() {
 			setError("Name and email are required");
 			return;
 		}
-		
+
 		createUserMutation.mutate({ name: name.trim(), email: email.trim() });
 	};
 

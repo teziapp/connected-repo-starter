@@ -65,7 +65,7 @@ export const dbErrorMiddleware = t.middleware(async ({ next }) => {
 		if (cause instanceof TRPCError) {
 			throw cause;
 		}
-		
+
 		// Convert other errors to TRPCError with the original cause preserved
 		throw new TRPCError({
 			code: "INTERNAL_SERVER_ERROR",

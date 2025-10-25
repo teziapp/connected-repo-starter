@@ -3,7 +3,7 @@ import { BaseTable } from "../base_table";
 
 export class UserTable extends BaseTable {
 	readonly table = "user";
-	
+
 	columns = this.setColumns((t) => ({
 		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 		email: t.string().unique(),

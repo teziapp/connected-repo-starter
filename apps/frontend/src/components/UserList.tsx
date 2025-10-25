@@ -6,9 +6,19 @@ export function UserList() {
 	if (isLoading) return <div>Loading users...</div>;
 	if (error) {
 		const errorMessage = error.data?.userFriendlyMessage || error.message;
-		return <div style={{ color: "red", padding: "10px", border: "1px solid #ffcdd2", borderRadius: "5px", backgroundColor: "#ffebee" }}>
-			Error loading users: {errorMessage}
-		</div>;
+		return (
+			<div
+				style={{
+					color: "red",
+					padding: "10px",
+					border: "1px solid #ffcdd2",
+					borderRadius: "5px",
+					backgroundColor: "#ffebee",
+				}}
+			>
+				Error loading users: {errorMessage}
+			</div>
+		);
 	}
 
 	return (

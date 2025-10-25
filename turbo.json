@@ -13,10 +13,10 @@
 		"clean": {
 			"cache": false
 		},
-    "db": {
-      "cache": false,
-      "persistent": true
-    },
+		"db": {
+			"cache": false,
+			"persistent": true
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true

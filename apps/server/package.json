@@ -9,9 +9,9 @@
 	"private": true,
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",
+		"build": "tsup",
 		"db": "ts-node src/db/db_script.ts",
 		"dev": "npx ts-node-dev --respawn --transpile-only --loader ts-node/esm src/server.ts",
-		"build": "tsup",
 		"start": "node dist/server.js"
 	},
 	"dependencies": {
