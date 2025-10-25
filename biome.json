@@ -23,8 +23,7 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double",
-			"lineWidth": 120
+			"quoteStyle": "double"
 		}
 	},
 	"assist": {

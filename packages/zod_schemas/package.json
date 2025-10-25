@@ -32,17 +32,17 @@
 		"./node-env": {
 			"types": "./dist/node_env.d.ts",
 			"import": "./dist/node_env.js",
-			"require": "./dist/node_env.js"
+			"default": "./dist/node_env.js"
 		},
 		"./enums": {
 			"types": "./dist/enums.d.ts",
 			"import": "./dist/enums.js",
-			"require": "./dist/enums.js"
+			"default": "./dist/enums.js"
 		},
 		"./zod-utils": {
 			"types": "./dist/zod_utils.d.ts",
 			"import": "./dist/zod_utils.js",
-			"require": "./dist/zod_utils.js"
+			"default": "./dist/zod_utils.js"
 		}
 	}
 }
