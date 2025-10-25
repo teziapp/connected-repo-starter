@@ -23,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@connected-repo/typescript-config": "*",
+		"@connected-repo/zod-schemas": "*",
 		"@types/node": "^22.18.12",
 		"@types/pg": "^8.15.5",
 		"dotenv": "^17.2.3",

@@ -1,0 +1,31 @@
+{
+  "name": "@connected-repo/zod-schemas",
+  "version": "1.0.0",
+  "description": "Common Zod Schemas to be used everywhere",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "repository": "git@github.com:teziapp/connected-repo-starter.git",
+  "author": "Balkrishna Agarwal",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf node_modules && rm -rf dist",
+    "format": "biome format . --write",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@connected-repo/typescript-config": "*",
+    "tsup": "^8.3.5"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  }
+}

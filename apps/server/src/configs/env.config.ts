@@ -1,12 +1,10 @@
+import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas";
 import "dotenv/config";
 import { z } from "zod";
 
-const NODE_ENV = z.enum(["development", "staging", "production", "test"]);
-export type ENVIORNMENT = z.infer<typeof NODE_ENV>;
-
 const envSchema = z.object({
 	ALLOWED_ORIGINS: z.string().optional(),
-	NODE_ENV: NODE_ENV,
+	NODE_ENV: NODE_ENV_ZOD,
 	DB_HOST: z.string().optional(),
 	DB_PORT: z.string().optional(),
 	DB_USER: z.string().optional(),
