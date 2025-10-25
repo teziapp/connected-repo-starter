@@ -9,4 +9,21 @@ export default defineConfig({
     envValidationVitePlugin(),
     react()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // react: ['react', 'react-dom'],
+          // Add other big libs as needed
+          // zod: ['zod', '@connected-repo/zod-schemas'],
+        },
+        // manualChunks(id) {
+        //   if (id.includes('zod')) {
+        //     console.log('Creating separate chunk for zod_schemas:', id);
+        //     return 'zod_schemas';
+        //   }
+        // }
+      }
+    }
+  }
 })

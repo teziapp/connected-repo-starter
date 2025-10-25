@@ -1,14 +1,14 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["cjs", "esm"],
+  entry: ["src/**/*.ts"],
+  format: ["esm"], // Dont use cjs for proper tree shaking of zod dependency
   dts: true,
   sourcemap: true,
   clean: true,
   splitting: true,
   treeshake: true,
-  minify: false,
+  minify: true,
   target: "es2022",
   outDir: "dist",
 });

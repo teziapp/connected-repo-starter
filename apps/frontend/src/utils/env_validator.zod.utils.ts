@@ -1,4 +1,4 @@
-import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas";
+import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node-env";
 import { z } from "zod";
 
 export const envSchemaZod = z.object({

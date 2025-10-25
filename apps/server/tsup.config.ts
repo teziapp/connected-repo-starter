@@ -7,5 +7,6 @@ export default defineConfig({
 	clean: true,
 	target: "es2020",
 	outDir: "dist",
-	noExternal: [/.*/], // Bundle all dependencies for deployment
+	// noExternal: [/.*/], // Bundle all dependencies for deployment
+	// minify: true,
 });

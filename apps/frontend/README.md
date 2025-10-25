@@ -1,8 +1,8 @@
-# React + TypeScript + Vite
+# Bundle Visualiser
+To visualise the bundle size of the frontend app, run the following command:
 
-This template provides a minimal setup to get React working in Vite with HMR.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npx vite-bundle-analyzer -o ./.dev/stats.html
+```
+[More here](https://stackoverflow.com/questions/75746767/is-there-any-bundle-analyzer-for-vite)
+Option: [Sonda](https://sonda.dev/)

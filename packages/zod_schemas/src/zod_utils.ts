@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /* Integer Types */
 export const zSmallint = (min = -32768, max = 32767) => z.int().min(min).max(max);
