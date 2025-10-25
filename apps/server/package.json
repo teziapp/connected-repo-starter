@@ -3,9 +3,9 @@
 	"version": "1.0.0",
 	"main": "server.ts",
 	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + tRPC + Reactjs with opentelemetry setup",
-	"repository": "git@github.com:teziapp/orchidORM-fastify-tRPC-Reactjs-starter.git",
+	"repository": "git@github.com:teziapp/connected-repo-starter.git",
 	"author": "Balkrishna Agarwal <krishna@teziapp.com>",
-	"license": "MIT",
+	"license": "AGPL-3.0",
 	"private": false,
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",

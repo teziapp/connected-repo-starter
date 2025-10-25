@@ -2,7 +2,10 @@
 	"name": "@connected-repo/frontend",
 	"private": true,
 	"version": "0.0.0",
+	"license": "AGPL-3.0",
 	"type": "module",
+	"repository": "git@github.com:teziapp/connected-repo-starter.git",
+	"author": "Balkrishna Agarwal <krishna@teziapp.com>",
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",
 		"dev": "vite",
