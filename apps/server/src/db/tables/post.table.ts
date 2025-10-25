@@ -3,7 +3,7 @@ import { BaseTable } from "../base_table";
 
 export class PostTable extends BaseTable {
 	readonly table = "post";
-	
+
 	columns = this.setColumns((t) => ({
 		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 		title: t.string(),
@@ -12,7 +12,7 @@ export class PostTable extends BaseTable {
 		createdAt: t.timestamp().default(t.sql`now()`),
 		updatedAt: t.timestamp().default(t.sql`now()`),
 	}));
-	
+
 	relations = {
 		author: this.belongsTo(() => UserTable, {
 			columns: ["authorId"],

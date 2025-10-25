@@ -13,7 +13,7 @@ export function DatabaseDemo() {
 			<div style={{ backgroundColor: "#f8f9fa", padding: "10px", borderRadius: "5px", marginBottom: "20px" }}>
 				<strong>Connection Status:</strong> {hello || "Loading..."}
 			</div>
-			
+
 			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
 				<div>
 					<CreateUserForm />
@@ -24,7 +24,7 @@ export function DatabaseDemo() {
 					<PostList />
 				</div>
 			</div>
-			
+
 			<div style={{ marginTop: "40px", padding: "20px", backgroundColor: "#e7f3ff", borderRadius: "5px" }}>
 				<h3>Features Demonstrated:</h3>
 				<ul>

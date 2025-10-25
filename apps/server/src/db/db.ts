@@ -5,10 +5,13 @@ import { UserTable } from "./tables/user.table";
 
 const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}?ssl=${dbConfig.ssl ? "require" : "false"}`;
 
-export const db = orchidORM({
-	databaseURL,
-	log: true,
-}, {
-	user: UserTable,
-	post: PostTable,
-});
+export const db = orchidORM(
+	{
+		databaseURL,
+		log: true,
+	},
+	{
+		user: UserTable,
+		post: PostTable,
+	},
+);

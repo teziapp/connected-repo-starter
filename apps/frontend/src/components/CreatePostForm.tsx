@@ -9,7 +9,7 @@ export function CreatePostForm() {
 	const [success, setSuccess] = useState("");
 
 	const { data: users } = trpc.user.getAll.useQuery();
-	
+
 	const createPostMutation = trpc.post.create.useMutation({
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [["post", "getAll"]] });
@@ -24,7 +24,7 @@ export function CreatePostForm() {
 			// Use the user-friendly message from our centralized error handling
 			const errorMessage = error.data?.userFriendlyMessage || error.message;
 			const actionRequired = error.data?.actionRequired;
-			
+
 			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
 			setSuccess("");
 		},
@@ -36,11 +36,11 @@ export function CreatePostForm() {
 			setError("Title, content, and author are required");
 			return;
 		}
-		
-		createPostMutation.mutate({ 
-			title: title.trim(), 
-			content: content.trim(), 
-			authorId 
+
+		createPostMutation.mutate({
+			title: title.trim(),
+			content: content.trim(),
+			authorId,
 		});
 	};
 

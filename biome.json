@@ -6,11 +6,14 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"maxSize": 1048576
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 100,
+		"includes": ["*.tsx", "*.ts", "*.md", "*.json", "*.js", "*.jsx", "*.css", "*.html"]
 	},
 	"linter": {
 		"enabled": true,

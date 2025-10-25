@@ -1,11 +1,11 @@
 /*
-* Copyright (c) 2025 Tezi Communnications LLP, India
-* 
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*/
+ * Copyright (c) 2025 Tezi Communnications LLP, India
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCReact, httpBatchStreamLink } from "@trpc/react-query";
 import { Suspense } from "react";
