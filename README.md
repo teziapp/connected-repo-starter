@@ -1,82 +1,226 @@
-# Turborepo starter
+# Full-Stack TypeScript Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A production-ready Turborepo monorepo for building full-stack TypeScript applications with end-to-end type safety.
 
-## Using this example
+## Tech Stack
 
-Run the following command:
+### Backend
+- **Runtime**: Node.js 22+
+- **Framework**: [Fastify](https://fastify.dev/) - Fast and low overhead web framework
+- **API Layer**: [tRPC](https://trpc.io/) - End-to-end typesafe APIs
+- **Database**: PostgreSQL with [Orchid ORM](https://orchid-orm.netlify.app/)
+- **Observability**: OpenTelemetry integration
+- **Security**: Helmet, CORS, Rate Limiting
 
-```sh
-npx create-turbo@latest
-```
+### Frontend
+- **Framework**: [React](https://react.dev/) with [Vite](https://vitejs.dev/)
+- **Routing**: React Router
+- **Data Fetching**: [TanStack Query](https://tanstack.com/query) + tRPC Client
+- **Type Safety**: Direct TypeScript imports from backend
 
-## What's inside?
+### Tooling
+- **Package Manager**: Yarn (v1.22.22)
+- **Monorepo**: [Turborepo](https://turbo.build/repo)
+- **Linting**: Biome
+- **Formatting**: Prettier
+- **TypeScript**: v5.8.x with strict mode
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Project Structure
 
 ```
-cd my-turborepo
-pnpm build
+.
+├── apps/
+│   ├── server/          # Fastify + tRPC API server
+│   │   ├── src/
+│   │   │   ├── db/      # Database tables and ORM config
+│   │   │   ├── configs/ # App configuration
+│   │   │   ├── middlewares/
+│   │   │   ├── utils/
+│   │   │   ├── server.ts       # Entry point
+│   │   │   ├── app.ts          # Fastify setup
+│   │   │   ├── trpc.ts         # tRPC initialization
+│   │   │   └── router.trpc.ts  # API routes
+│   │   └── package.json
+│   └── frontend/        # React + Vite frontend
+│       ├── src/
+│       │   ├── components/
+│       │   ├── pages/
+│       │   ├── modules/
+│       │   ├── App.tsx
+│       │   └── router.tsx
+│       └── package.json
+├── packages/
+│   └── typescript-config/  # Shared TypeScript configs
+├── turbo.json
+└── package.json
 ```
 
-### Develop
+## Getting Started
 
-To develop all apps and packages, run the following command:
+### Prerequisites
 
-```
-cd my-turborepo
-pnpm dev
-```
+- Node.js 22+
+- Yarn 1.22.22
+- PostgreSQL database
 
-### Remote Caching
+### Installation
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+1. Clone the repository:
+```bash
+git clone git@github.com:teziapp/connected-repo-starter.git
+cd connected-repo-starter
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+2. Install dependencies:
+```bash
+yarn install
 ```
 
-## Useful Links
+3. Set up environment variables:
+```bash
+# Copy environment examples
+cp .env.example .env
+cp apps/server/.env.example apps/server/.env
+cp apps/frontend/.env.example apps/frontend/.env
+```
 
-Learn more about the power of Turborepo:
+4. Configure your database connection in `apps/server/.env`
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+5. Create a PostgreSQL database:
+```sql
+CREATE DATABASE connected_repo_db;
+```
+
+### Development
+
+Start both frontend and backend in development mode:
+```bash
+yarn dev
+```
+
+Or run them individually:
+```bash
+# Backend only (http://localhost:3000)
+cd apps/server && yarn dev
+
+# Frontend only (http://localhost:5173)
+cd apps/frontend && yarn dev
+```
+
+## Available Scripts
+
+### Development
+- `yarn dev` - Start all apps in watch mode
+- `yarn build` - Build all apps and packages
+- `yarn lint` - Run Biome linter across all workspaces
+- `yarn format` - Format code with Prettier
+- `yarn check-types` - Type check all workspaces
+- `yarn clean` - Remove node_modules and build artifacts
+
+### Production
+```bash
+# Build and start the backend
+cd apps/server
+yarn build
+yarn start
+```
+
+## Key Features
+
+### End-to-End Type Safety
+
+The monorepo achieves full type safety without code generation:
+
+1. Backend exports router type from `router.trpc.ts`
+2. Frontend imports this type directly via TypeScript workspace references
+3. All API calls have autocomplete and compile-time type checking
+
+```typescript
+// Frontend automatically knows about all backend procedures
+const { data } = trpc.user.getAll.useQuery();
+const createUser = trpc.user.create.useMutation();
+```
+
+### Database Layer
+
+- **ORM**: Orchid ORM with automatic snake_case conversion
+- **Type Safety**: Zod schemas for input validation
+- **Pattern**: Table definitions co-located with validation schemas
+
+Example table structure:
+```typescript
+export class UserTable extends BaseTable {
+  readonly table = "user";
+  columns = this.setColumns((t) => ({
+    id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    name: t.string(),
+    // ...
+  }));
+}
+
+export const createUserSchema = z.object({ name: z.string() });
+```
+
+### Error Handling
+
+Multi-layer error handling system:
+- **tRPC Layer**: Transforms errors into structured responses
+- **Error Parser**: Converts database/validation errors to user-friendly messages
+- **Fastify Handler**: Catches unhandled errors
+
+### Security
+
+- Rate limiting (production/staging only)
+- CORS with configurable origins
+- Helmet security headers
+- Environment-based configuration
+
+### Observability
+
+- OpenTelemetry integration for tracing
+- Custom spans for tRPC errors
+
+## Adding New Features
+
+### New Database Table
+
+1. Create table class in `apps/server/src/db/tables/`
+2. Add Zod validation schemas
+3. Register in `apps/server/src/db/db.ts`
+4. Run SQL to create table
+5. Add tRPC procedures in `router.trpc.ts`
+
+### New API Endpoint
+
+1. Add procedure to `router.trpc.ts` with Zod input schema
+2. Use `protectedProcedure` for database operations
+3. Frontend automatically gets updated types
+
+### New Frontend Page
+
+1. Create component in `apps/frontend/src/pages/`
+2. Add route in `apps/frontend/src/router.tsx`
+3. Use tRPC hooks for data fetching
+
+## Turborepo
+
+This monorepo uses Turborepo for task orchestration. Key tasks:
+
+- `build` - Builds with dependency graph awareness
+- `dev` - Runs development servers (persistent, no cache)
+- `check-types` - Type checking across workspaces
+- `clean` - Cleanup task
+
+Learn more:
+- [Tasks](https://turbo.build/repo/docs/crafting-your-repository/running-tasks)
+- [Caching](https://turbo.build/repo/docs/crafting-your-repository/caching)
+- [Configuration](https://turbo.build/repo/docs/reference/configuration)
+
+## Documentation
+
+- See [CLAUDE.md](./CLAUDE.md) for detailed architecture and development guidance
+
+## License
+
+[AGPL-3.0] (./LICENSE) 
+Copyright (c) 2025 Tezi Communications LLP, India

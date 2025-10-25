@@ -48,7 +48,7 @@ yarn check-types
 ```
 
 ### Database
-The project uses Orchid ORM with PostgreSQL. Manual table creation is currently required (see SETUP.md for SQL).
+The project uses Orchid ORM with PostgreSQL.
 
 ### Testing
 Currently, the project does not have a test suite configured. When adding tests, consider:
@@ -135,7 +135,6 @@ Error types handled:
 **OpenTelemetry Integration:**
 - Initialized in `opentelemetry.ts` (imported by `server.ts`)
 - tRPC errors are automatically traced with custom spans (see `app.ts` onError handler)
-- Requires `MIDDLEWARE_API_KEY` and `MIDDLEWARE_TARGET` in environment
 
 **Security Features:**
 - Rate limiting (2 req/sec, burst 5 req/10sec in production)
@@ -185,7 +184,7 @@ The monorepo achieves full type safety by:
 
 ### Development Workflow
 
-1. **Database Setup**: Create PostgreSQL database and run SQL from SETUP.md
+1. **Database Setup**: Create PostgreSQL database and run Orchid-ORM migrations
 2. **Environment**: Copy `.env.example` to `.env` and configure
 3. **Install**: `yarn install` from root
 4. **Development**: `yarn dev` starts both apps (backend on :3000, frontend on :5173)
