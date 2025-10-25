@@ -13,6 +13,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@connected-repo/zod-schemas": "*",
 		"@tanstack/react-query": "^5.90.5",
 		"@trpc/client": "^11.6.0",
 		"@trpc/react-query": "^11.6.0",
@@ -22,7 +23,6 @@
 		"react-router": "^7.9.4"
 	},
 	"devDependencies": {
-		"@connected-repo/zod-schemas": "*",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.1",
 		"@vitejs/plugin-react-swc": "^3.9.0",

@@ -18,8 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@connected-repo/typescript-config": "*",
-    "tsup": "^8.3.5"
+    "@connected-repo/typescript-config": "*"
   },
   "exports": {
     ".": {

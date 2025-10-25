@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 
 /* Integer Types */
 export const zSmallint = (min = -32768, max = 32767) => z.int().min(min).max(max);
-export const zInteger = (min = -2147483648, max = 2147483647) => z.int32().int().min(min).max(max);
+export const zInteger = (min = -2147483648, max = 2147483647) => z.int32().min(min).max(max);
 // export const zBigint = (min = -9223372036854775808n, max = 9223372036854775807n) =>
 //   z.int64().min(min).max(max);
 
@@ -12,7 +12,8 @@ export const zDecimal = (precision: number, scale: number, min?: number, max?: n
       const numStr = Math.abs(val).toString();
       const [integerPart = "", decimalPart = ""] = numStr.split(".");
 
-      // Check precision (total digits before decimal point)
+      // NOTE:  Precision validation incorrect: counting digits from toString() fails for scientific notation (e.g., 1e10) and doesn't handle leading zeros properly
+      // Check precision (total significant digits including both integer and decimal parts)
       if (integerPart.length + decimalPart.length > precision) {
         return false;
       }
@@ -31,14 +32,14 @@ export const zDecimal = (precision: number, scale: number, min?: number, max?: n
 
   // Add min value check if specified
   if (min !== undefined) {
-    schema = schema.refine((val) => Number(val) >= min, {
+    schema = schema.refine((val) => val >= min, {
       message: `Value must be greater than or equal to ${min}`,
     });
   }
 
   // Add max value check if specified
   if (max !== undefined) {
-    schema = schema.refine((val) => Number(val) <= max, {
+    schema = schema.refine((val) => val <= max, {
       message: `Value must be less than or equal to ${max}`,
     });
   }
@@ -48,7 +49,7 @@ export const zDecimal = (precision: number, scale: number, min?: number, max?: n
 
 /* Common Types */
 
-export const zString = z.string().trim().nonempty();
+export const zString = z.string().trim();
 
 export const zVarchar = (minLength = 0, maxLength = 255) => zString.min(minLength).max(maxLength);
 
@@ -65,8 +66,8 @@ export const zAmount = (min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_IN
   zDecimal(15, 2, min, max);
 
 /* Compliance Doc Types */
-export const zGSTIN = zString.length(15)
-  .toUpperCase()
+export const zGSTIN = zString.toUpperCase()
+  .length(15)
   .regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, "Invalid GSTIN format")
   .refine((gstin: string) => {
     const GSTIN_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -84,16 +85,16 @@ export const zGSTIN = zString.length(15)
     return gstin[14] === GSTIN_CHARS[checksumCodePoint];
   }, "Invalid GSTIN checksum");
 
-export const zPAN = zString.length(10)
-  .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)
-  .toUpperCase();
+export const zPAN = zString.toUpperCase()
+  .length(10)
+  .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/);
 
-export const zUdyogAadhaar = zString.length(12)
-  .toUpperCase()
+export const zUdyogAadhaar = zString.toUpperCase()
+  .length(12)
   .regex(/^[2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$/);
 
-export const zUdyamRegistrationNumber = zString.length(19)
-  .toUpperCase()
+export const zUdyamRegistrationNumber = zString.toUpperCase()
+  .length(19)
   .regex(/^UDYAM-[A-Z]{2}-[0]{2}-\d{7}$/);
 
 /* Contact Types */
