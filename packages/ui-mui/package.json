@@ -12,8 +12,8 @@
 	"license": "AGPL-3.0-only",
 	"private": true,
 	"scripts": {
-		"build": "tsup",
-		"dev": "tsup --watch",
+		"build": "tsc",
+		"dev": "tsc --watch",
 		"clean": "rm -rf node_modules && rm -rf dist",
 		"lint": "biome check .",
 		"typecheck": "tsc --noEmit"
@@ -32,32 +32,32 @@
 	},
 	"exports": {
 		"./components/*": {
-			"types": "./dist/components/*.d.ts",
+			"types": "./src/components/*.tsx",
 			"import": "./dist/components/*.js",
 			"default": "./dist/components/*.js"
 		},
 		"./theme/*": {
-			"types": "./dist/theme/*.d.ts",
+			"types": "./src/theme/*.tsx",
 			"import": "./dist/theme/*.js",
 			"default": "./dist/theme/*.js"
 		},
 		"./form/*": {
-			"types": "./dist/form/*.d.ts",
+			"types": "./src/form/*.tsx",
 			"import": "./dist/form/*.js",
 			"default": "./dist/form/*.js"
 		},
 		"./layout/*": {
-			"types": "./dist/layout/*.d.ts",
+			"types": "./src/layout/*.tsx",
 			"import": "./dist/layout/*.js",
 			"default": "./dist/layout/*.js"
 		},
 		"./feedback/*": {
-			"types": "./dist/feedback/*.d.ts",
+			"types": "./src/feedback/*.tsx",
 			"import": "./dist/feedback/*.js",
 			"default": "./dist/feedback/*.js"
 		},
 		"./data-display/*": {
-			"types": "./dist/data-display/*.d.ts",
+			"types": "./src/data-display/*.tsx",
 			"import": "./dist/data-display/*.js",
 			"default": "./dist/data-display/*.js"
 		}

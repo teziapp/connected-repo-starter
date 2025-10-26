@@ -2,13 +2,15 @@
 	"extends": "@connected-repo/typescript-config/react-library.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"rootDir": ".",
-		"declarationDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
 		"emitDeclarationOnly": false,
 		"jsx": "react-jsx",
 		"moduleResolution": "Bundler",
 		"module": "ESNext"
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"exclude": ["node_modules", "dist"]
 }

@@ -6,7 +6,7 @@ export interface LoadingSpinnerProps extends CircularProgressProps {
 	text?: string;
 }
 
-const LoadingSpinner = ({ text, ...props }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ text, ...props }: LoadingSpinnerProps) => {
 	return (
 		<Box sx={{ display: "flex", alignItems: "center", gap: 2, my: 2 }}>
 			<CircularProgress size={24} {...props} />
@@ -14,4 +14,3 @@ const LoadingSpinner = ({ text, ...props }: LoadingSpinnerProps) => {
 		</Box>
 	);
 }
-export default LoadingSpinner;

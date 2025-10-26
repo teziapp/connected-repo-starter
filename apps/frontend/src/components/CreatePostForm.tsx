@@ -1,16 +1,15 @@
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import { ContentCard } from "@connected-repo/ui-mui/components/ContentCard";
+import { ErrorAlert } from "@connected-repo/ui-mui/components/ErrorAlert";
+import { PrimaryButton } from "@connected-repo/ui-mui/components/PrimaryButton";
+import { SuccessAlert } from "@connected-repo/ui-mui/components/SuccessAlert";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { FormControl, InputLabel } from "@connected-repo/ui-mui/form/FormControl";
+import { MenuItem } from "@connected-repo/ui-mui/form/MenuItem";
+import { Select } from "@connected-repo/ui-mui/form/Select";
+import { TextField } from "@connected-repo/ui-mui/form/TextField";
+import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import ContentCard from "../../../../packages/ui-mui/dist/components/ContentCard";
-import ErrorAlert from "../../../../packages/ui-mui/dist/components/ErrorAlert";
-import SuccessAlert from "../../../../packages/ui-mui/dist/components/SuccessAlert";
 import { queryClient } from "../utils/queryClient";
 import { trpc } from "../utils/trpc.client";
 
@@ -102,14 +101,14 @@ export function CreatePostForm() {
 							))}
 						</Select>
 					</FormControl>
-					<Button
+					<PrimaryButton
 						type="submit"
 						variant="contained"
 						color="success"
 						disabled={createPostMutation.isPending}
 					>
 						{createPostMutation.isPending ? "Creating..." : "Create Post"}
-					</Button>
+					</PrimaryButton>
 				</Stack>
 			</form>
 			<ErrorAlert message={error} />

@@ -5,7 +5,7 @@ export interface PrimaryButtonProps extends ButtonProps {
 	loading?: boolean;
 }
 
-const PrimaryButton = ({
+export const PrimaryButton = ({
 	loading = false,
 	disabled,
 	children,
@@ -21,5 +21,4 @@ const PrimaryButton = ({
 			{loading ? "Loading..." : children}
 		</Button>
 	);
-}
-export default PrimaryButton;
+};

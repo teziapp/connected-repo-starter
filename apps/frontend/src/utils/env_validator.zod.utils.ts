@@ -1,5 +1,5 @@
+import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node_env";
 import { z } from "zod";
-import { NODE_ENV_ZOD } from "../../../../packages/zod-schemas/dist/node_env";
 
 export const envSchemaZod = z.object({
 	VITE_NODE_ENV: NODE_ENV_ZOD,

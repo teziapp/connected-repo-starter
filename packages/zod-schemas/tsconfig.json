@@ -2,10 +2,14 @@
 	"extends": "@connected-repo/typescript-config/base.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"rootDir": ".",
-		"declarationDir": "./dist",
-		"emitDeclarationOnly": false
+		"rootDir": "./src",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"emitDeclarationOnly": false,
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
 	},
-	"include": ["src/**/*", "src/index.ts"],
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

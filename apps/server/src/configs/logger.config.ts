@@ -1,4 +1,4 @@
-import type { NODE_ENV } from "@connected-repo/zod-schemas/node-env";
+import type { NODE_ENV } from "@connected-repo/zod-schemas/node_env";
 import type { FastifyBaseLogger, FastifyHttpOptions } from "fastify";
 import type { Server } from "node:https";
 

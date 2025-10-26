@@ -1,6 +1,6 @@
+import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node_env";
 import "dotenv/config";
 import { z } from "zod";
-import { NODE_ENV_ZOD } from "../../../../packages/zod-schemas/dist/node_env";
 
 const envSchema = z.object({
 	ALLOWED_ORIGINS: z.string().optional(),

@@ -1,12 +1,12 @@
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import { ContentCard } from "@connected-repo/ui-mui/components/ContentCard";
+import { ErrorAlert } from "@connected-repo/ui-mui/components/ErrorAlert";
+import { PrimaryButton } from "@connected-repo/ui-mui/components/PrimaryButton";
+import { SuccessAlert } from "@connected-repo/ui-mui/components/SuccessAlert";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { TextField } from "@connected-repo/ui-mui/form/TextField";
+import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import ContentCard from "../../../../packages/ui-mui/dist/components/ContentCard";
-import ErrorAlert from "../../../../packages/ui-mui/dist/components/ErrorAlert";
-import PrimaryButton from "../../../../packages/ui-mui/dist/components/PrimaryButton";
-import SuccessAlert from "../../../../packages/ui-mui/dist/components/SuccessAlert";
 import { queryClient } from "../utils/queryClient";
 import { trpc } from "../utils/trpc.client";
 

@@ -1,12 +1,10 @@
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Typography from "@mui/material/Typography";
+import { ErrorAlert } from "@connected-repo/ui-mui/components/ErrorAlert";
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
+import { List, ListItem } from "@connected-repo/ui-mui/data-display/List";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { Box } from "@connected-repo/ui-mui/layout/Box";
+import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
 import { useQuery } from "@tanstack/react-query";
-import ErrorAlert from "../../../../packages/ui-mui/dist/components/ErrorAlert";
-import LoadingSpinner from "../../../../packages/ui-mui/dist/components/LoadingSpinner";
 import { trpc } from "../utils/trpc.client";
 
 export function PostList() {

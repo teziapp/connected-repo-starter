@@ -1,8 +1,8 @@
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { Box } from "@connected-repo/ui-mui/layout/Box";
+import { Container } from "@connected-repo/ui-mui/layout/Container";
+import { Grid } from "@connected-repo/ui-mui/layout/Grid";
+import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { useQuery } from "@tanstack/react-query";
 import { CreatePostForm } from "../components/CreatePostForm";
 import { CreateUserForm } from "../components/CreateUserForm";

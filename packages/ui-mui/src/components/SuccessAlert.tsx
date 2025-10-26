@@ -5,7 +5,7 @@ export interface SuccessAlertProps extends Omit<AlertProps, "severity"> {
 	message: string;
 }
 
-const SuccessAlert = ({ message, ...props }: SuccessAlertProps) => {
+export const SuccessAlert = ({ message, ...props }: SuccessAlertProps) => {
 	if (!message) return null;
 
 	return (
@@ -14,4 +14,3 @@ const SuccessAlert = ({ message, ...props }: SuccessAlertProps) => {
 		</Alert>
 	);
 }
-export default SuccessAlert;

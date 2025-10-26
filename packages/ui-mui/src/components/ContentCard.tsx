@@ -7,7 +7,7 @@ export interface ContentCardProps extends CardProps {
 	children: ReactNode;
 }
 
-const ContentCard = ({ children, sx, ...props }: ContentCardProps) => {
+export const ContentCard = ({ children, sx, ...props }: ContentCardProps) => {
 	return (
 		<Card
 			sx={{
@@ -25,4 +25,3 @@ const ContentCard = ({ children, sx, ...props }: ContentCardProps) => {
 		</Card>
 	);
 }
-export default ContentCard;

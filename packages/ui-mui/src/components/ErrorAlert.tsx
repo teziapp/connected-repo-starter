@@ -5,7 +5,7 @@ export interface ErrorAlertProps extends Omit<AlertProps, "severity"> {
 	message: string;
 }
 
-const ErrorAlert = ({ message, ...props }: ErrorAlertProps) => {
+export const ErrorAlert = ({ message, ...props }: ErrorAlertProps) => {
 	if (!message) return null;
 
 	return (
@@ -14,4 +14,3 @@ const ErrorAlert = ({ message, ...props }: ErrorAlertProps) => {
 		</Alert>
 	);
 }
-export default ErrorAlert;
