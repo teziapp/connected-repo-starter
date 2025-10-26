@@ -1,0 +1,62 @@
+{
+	"name": "@connected-repo/ui-mui",
+	"version": "1.0.0",
+	"description": "Common Material-UI components for the monorepo",
+	"type": "module",
+	"sideEffects": false,
+	"repository": "git@github.com:teziapp/connected-repo-starter.git",
+	"author": "Balkrishna Agarwal",
+	"license": "AGPL-3.0-only",
+	"private": true,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"clean": "rm -rf node_modules && rm -rf dist",
+		"lint": "biome check .",
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1",
+		"@mui/material": "^7.3.4",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@connected-repo/typescript-config": "*",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2"
+	},
+	"exports": {
+		"./components/*": {
+			"types": "./src/components/*.tsx",
+			"import": "./dist/components/*.js",
+			"default": "./dist/components/*.js"
+		},
+		"./theme/*": {
+			"types": "./src/theme/*.tsx",
+			"import": "./dist/theme/*.js",
+			"default": "./dist/theme/*.js"
+		},
+		"./form/*": {
+			"types": "./src/form/*.tsx",
+			"import": "./dist/form/*.js",
+			"default": "./dist/form/*.js"
+		},
+		"./layout/*": {
+			"types": "./src/layout/*.tsx",
+			"import": "./dist/layout/*.js",
+			"default": "./dist/layout/*.js"
+		},
+		"./feedback/*": {
+			"types": "./src/feedback/*.tsx",
+			"import": "./dist/feedback/*.js",
+			"default": "./dist/feedback/*.js"
+		},
+		"./data-display/*": {
+			"types": "./src/data-display/*.tsx",
+			"import": "./dist/data-display/*.js",
+			"default": "./dist/data-display/*.js"
+		}
+	}
+}

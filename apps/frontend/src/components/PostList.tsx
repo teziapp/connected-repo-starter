@@ -1,50 +1,57 @@
-import { trpc } from "../App";
+import { ErrorAlert } from "@connected-repo/ui-mui/components/ErrorAlert";
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
+import { List, ListItem } from "@connected-repo/ui-mui/data-display/List";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { Box } from "@connected-repo/ui-mui/layout/Box";
+import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
+import { useQuery } from "@tanstack/react-query";
+import { trpc } from "../utils/trpc.client";
 
 export function PostList() {
-	const { data: posts, isLoading, error } = trpc.post.getAll.useQuery();
+	const { data: posts, isLoading, error } = useQuery(trpc.post.getAll.queryOptions());
 
-	if (isLoading) return <div>Loading posts...</div>;
+	if (isLoading) return <LoadingSpinner text="Loading posts..." />;
+
 	if (error) {
 		const errorMessage = error.data?.userFriendlyMessage || error.message;
-		return (
-			<div
-				style={{
-					color: "red",
-					padding: "10px",
-					border: "1px solid #ffcdd2",
-					borderRadius: "5px",
-					backgroundColor: "#ffebee",
-				}}
-			>
-				Error loading posts: {errorMessage}
-			</div>
-		);
+		return <ErrorAlert message={`Error loading posts: ${errorMessage}`} />;
 	}
 
 	return (
-		<div>
-			<h2>Posts</h2>
+		<Box sx={{ mt: 3 }}>
+			<Typography variant="h5" component="h2" gutterBottom>
+				Posts
+			</Typography>
 			{posts && posts.length > 0 ? (
-				<div>
+				<List sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 					{posts.map((post) => (
-						<div
-							key={post.id}
-							style={{ padding: "15px", border: "1px solid #ddd", margin: "15px 0", borderRadius: "5px" }}
-						>
-							<h3>{post.title}</h3>
-							<p>{post.content}</p>
-							<div style={{ fontSize: "0.9em", color: "#666", marginTop: "10px" }}>
-								<p>
-									By: {post.author?.name} ({post.author?.email})
-								</p>
-								<p>Created: {new Date(post.createdAt).toLocaleDateString()}</p>
-							</div>
-						</div>
+						<ListItem key={post.id} sx={{ p: 0 }}>
+							<Card sx={{ width: "100%", border: "1px solid", borderColor: "divider" }}>
+								<CardContent>
+									<Typography variant="h6" component="h3" gutterBottom>
+										{post.title}
+									</Typography>
+									<Typography variant="body1" paragraph>
+										{post.content}
+									</Typography>
+									<Box sx={{ mt: 1.5 }}>
+										<Typography variant="body2" color="text.secondary">
+											By: {post.author?.name} ({post.author?.email})
+										</Typography>
+										<Typography variant="body2" color="text.secondary">
+											Created: {new Date(post.createdAt).toLocaleDateString()}
+										</Typography>
+									</Box>
+								</CardContent>
+							</Card>
+						</ListItem>
 					))}
-				</div>
+				</List>
 			) : (
-				<p>No posts found</p>
+				<Typography variant="body1" color="text.secondary">
+					No posts found
+				</Typography>
 			)}
-		</div>
+		</Box>
 	);
 }

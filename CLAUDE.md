@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Turborepo monorepo starter for building full-stack TypeScript applications with:
 - **Backend**: Node.js + Fastify + Orchid ORM + tRPC + OpenTelemetry
-- **Frontend**: React + Vite + TanStack Query + tRPC Client
+- **Frontend**: React 19 + Vite + TanStack Query + tRPC Client
 - **Database**: PostgreSQL with Orchid ORM
 - **Package Manager**: Yarn (v1.22.22)
 - **Node Version**: 22+
@@ -73,8 +73,47 @@ apps/
 ├── server/          # Fastify + tRPC API server
 └── frontend/        # React + Vite frontend
 packages/
-└── typescript-config/  # Shared TypeScript configurations
+├── typescript-config/  # Shared TypeScript configurations
+├── ui-mui/            # Shared Material-UI component library
+└── zod-schemas/        # Shared Zod schemas and enums for validation and type safety
 ```
+
+### Packages Architecture (@packages/)
+
+All packages follow strict architectural principles for optimal build performance:
+
+**Core Principles:**
+1. **No Barrel Exports**: Each package exports components/utilities directly, avoiding index files that re-export everything
+2. **Tree-Shaking Optimized**: All code is structured for maximum tree-shaking and code splitting efficiency
+3. **Direct Imports**: Consumers import specific files rather than package-level exports
+
+**Available Packages:**
+
+- **`@repo/typescript-config`**: Shared TypeScript configurations (base, react, node)
+- **`@repo/zod-schemas`**: Shared Zod validation schemas and enums used across backend and frontend
+- **`@repo/ui-mui`**: Material-UI component library with direct exports
+  - Import pattern: `import { Button } from '@repo/ui-mui/Button'`
+  - NO barrel exports - each component is imported directly from its file
+  - Ensures optimal bundle splitting and tree-shaking
+
+**Import Guidelines:**
+```typescript
+// ✅ Correct - Direct imports from specific files
+import { Button } from '@repo/ui-mui/Button'
+import { TextField } from '@repo/ui-mui/TextField'
+import { createUserSchema } from '@repo/zod-schemas/user'
+
+// ❌ Wrong - Avoid package-level imports (these won't work)
+import { Button, TextField } from '@repo/ui-mui'
+import * as schemas from '@repo/zod-schemas'
+```
+
+**Adding New Packages:**
+1. Create package directory in `packages/`
+2. Configure `package.json` with proper exports (avoid index files)
+3. Use direct file exports for optimal tree-shaking
+4. Add to root `package.json` workspaces
+5. Update TypeScript references if needed
 
 ### Backend Architecture (`apps/server`)
 
@@ -166,13 +205,14 @@ const createUser = trpc.user.create.useMutation();
 - AuthVerifier component for route protection
 - Login/Register pages in `modules/auth/`
 
-### Type Safety
+### Type Safety & Shared Zod Schemas
 
-The monorepo achieves full type safety by:
+The monorepo achieves full type safety and validation consistency by:
 1. Backend exports `AppTrpcRouter` type from `router.trpc.ts`
 2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../server/src/router.trpc"`
-3. tRPC client is created with this type: `createTRPCReact<AppTrpcRouter>()`
+3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
 4. All API calls have autocomplete and type checking
+5. VERY IMPORTANT - Don't use `any` or `as unknown` for type safety
 
 **Important:** When adding new tRPC procedures, the frontend automatically gets updated types without manual schema generation.
 
@@ -194,14 +234,14 @@ The monorepo achieves full type safety by:
 
 **New Database Table:**
 1. Create table class in `apps/server/src/db/tables/`
-2. Add Zod schemas in the same file
+2. Add Zod schemas in `packages/zod-schemas/` to be shared across apps
 3. Register in `apps/server/src/db/db.ts`
 4. Run SQL to create table in PostgreSQL
 5. Add tRPC procedures in `router.trpc.ts`
 
 **New tRPC Endpoint:**
-1. Add procedure to `router.trpc.ts` with Zod input schema
-2. Use `protectedProcedure` for database operations
+1. Add procedure to `router.trpc.ts` with Zod input schema imported from `zod-schemas`
+2. Use `protectedProcedure` for operations that require auth
 3. Frontend automatically gets types - no codegen needed
 
 **New Frontend Page:**

@@ -1,5 +1,17 @@
+import { ContentCard } from "@connected-repo/ui-mui/components/ContentCard";
+import { ErrorAlert } from "@connected-repo/ui-mui/components/ErrorAlert";
+import { PrimaryButton } from "@connected-repo/ui-mui/components/PrimaryButton";
+import { SuccessAlert } from "@connected-repo/ui-mui/components/SuccessAlert";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { FormControl, InputLabel } from "@connected-repo/ui-mui/form/FormControl";
+import { MenuItem } from "@connected-repo/ui-mui/form/MenuItem";
+import { Select } from "@connected-repo/ui-mui/form/Select";
+import { TextField } from "@connected-repo/ui-mui/form/TextField";
+import { Stack } from "@connected-repo/ui-mui/layout/Stack";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { trpc, queryClient } from "../App";
+import { queryClient } from "../utils/queryClient";
+import { trpc } from "../utils/trpc.client";
 
 export function CreatePostForm() {
 	const [title, setTitle] = useState("");
@@ -8,11 +20,11 @@ export function CreatePostForm() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	const { data: users } = trpc.user.getAll.useQuery();
+	const { data: users } = useQuery(trpc.user.getAll.queryOptions())
 
-	const createPostMutation = trpc.post.create.useMutation({
+	const createPostMutation = useMutation(trpc.post.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [["post", "getAll"]] });
+			queryClient.invalidateQueries({ queryKey: trpc.post.getAll.queryKey() });
 			setTitle("");
 			setContent("");
 			setAuthorId("");
@@ -28,7 +40,7 @@ export function CreatePostForm() {
 			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
 			setSuccess("");
 		},
-	});
+	}));
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -45,64 +57,62 @@ export function CreatePostForm() {
 	};
 
 	return (
-		<div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "5px", margin: "20px 0" }}>
-			<h3>Create New Post</h3>
+		<ContentCard>
+			<Typography variant="h5" component="h3" gutterBottom>
+				Create New Post
+			</Typography>
 			<form onSubmit={handleSubmit}>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="title">Title:</label>
-					<input
-						id="title"
+				<Stack spacing={2}>
+					<TextField
+						label="Title"
 						type="text"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
 						disabled={createPostMutation.isPending}
+						fullWidth
+						required
 					/>
-				</div>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="content">Content:</label>
-					<textarea
-						id="content"
+					<TextField
+						label="Content"
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "300px", height: "100px" }}
 						disabled={createPostMutation.isPending}
+						fullWidth
+						required
+						multiline
+						rows={4}
 					/>
-				</div>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="author">Author:</label>
-					<select
-						id="author"
-						value={authorId}
-						onChange={(e) => setAuthorId(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "200px" }}
+					<FormControl fullWidth required>
+						<InputLabel id="author-label">Author</InputLabel>
+						<Select
+							labelId="author-label"
+							value={authorId}
+							onChange={(e) => setAuthorId(e.target.value)}
+							disabled={createPostMutation.isPending}
+							label="Author"
+						>
+							<MenuItem value="">
+								<em>Select an author</em>
+							</MenuItem>
+							{users?.map((user) => (
+								<MenuItem key={user.id} value={user.id}>
+									{user.name} ({user.email})
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<PrimaryButton
+						type="submit"
+						variant="contained"
+						color="success"
 						disabled={createPostMutation.isPending}
 					>
-						<option value="">Select an author</option>
-						{users?.map((user) => (
-							<option key={user.id} value={user.id}>
-								{user.name} ({user.email})
-							</option>
-						))}
-					</select>
-				</div>
-				<button
-					type="submit"
-					disabled={createPostMutation.isPending}
-					style={{
-						padding: "8px 16px",
-						backgroundColor: "#28a745",
-						color: "white",
-						border: "none",
-						borderRadius: "3px",
-						cursor: createPostMutation.isPending ? "not-allowed" : "pointer",
-					}}
-				>
-					{createPostMutation.isPending ? "Creating..." : "Create Post"}
-				</button>
+						{createPostMutation.isPending ? "Creating..." : "Create Post"}
+					</PrimaryButton>
+				</Stack>
 			</form>
-			{error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-			{success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
-		</div>
+			<ErrorAlert message={error} />
+			<SuccessAlert message={success} />
+		</ContentCard>
 	);
 }

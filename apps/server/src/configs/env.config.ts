@@ -1,4 +1,4 @@
-import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node-env";
+import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node_env";
 import "dotenv/config";
 import { z } from "zod";
 

@@ -1,41 +1,56 @@
-import { UserList } from "../components/UserList";
-import { PostList } from "../components/PostList";
-import { CreateUserForm } from "../components/CreateUserForm";
+import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { Box } from "@connected-repo/ui-mui/layout/Box";
+import { Container } from "@connected-repo/ui-mui/layout/Container";
+import { Grid } from "@connected-repo/ui-mui/layout/Grid";
+import { Paper } from "@connected-repo/ui-mui/layout/Paper";
+import { useQuery } from "@tanstack/react-query";
 import { CreatePostForm } from "../components/CreatePostForm";
-import { trpc } from "../App";
+import { CreateUserForm } from "../components/CreateUserForm";
+import { PostList } from "../components/PostList";
+import { UserList } from "../components/UserList";
+import { trpc } from "../utils/trpc.client";
 
-export function DatabaseDemo() {
-	const { data: hello } = trpc.hello.useQuery();
+const DatabaseDemo = () => {
+	const { data: hello } = useQuery(trpc.hello.queryOptions());
 
 	return (
-		<div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-			<h1>tRPC + Orchid ORM Database Demo</h1>
-			<div style={{ backgroundColor: "#f8f9fa", padding: "10px", borderRadius: "5px", marginBottom: "20px" }}>
-				<strong>Connection Status:</strong> {hello || "Loading..."}
-			</div>
+		<Container maxWidth="lg" sx={{ py: 3 }}>
+			<Typography variant="h3" component="h1" gutterBottom>
+				tRPC + Orchid ORM Database Demo
+			</Typography>
 
-			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
-				<div>
+			<Paper sx={{ p: 1.5, mb: 3, bgcolor: "background.paper" }}>
+				<Typography variant="body1">
+					<strong>Connection Status:</strong> {hello || "Loading..."}
+				</Typography>
+			</Paper>
+
+			<Grid container spacing={4}>
+				<Grid size={{ xs: 12, md: 6 }}>
 					<CreateUserForm />
 					<UserList />
-				</div>
-				<div>
+				</Grid>
+				<Grid size={{ xs: 12, md: 6 }}>
 					<CreatePostForm />
 					<PostList />
-				</div>
-			</div>
+				</Grid>
+			</Grid>
 
-			<div style={{ marginTop: "40px", padding: "20px", backgroundColor: "#e7f3ff", borderRadius: "5px" }}>
-				<h3>Features Demonstrated:</h3>
-				<ul>
+			<Paper sx={{ mt: 5, p: 2.5, bgcolor: "#e7f3ff" }}>
+				<Typography variant="h5" component="h3" gutterBottom>
+					Features Demonstrated:
+				</Typography>
+				<Box component="ul" sx={{ m: 0 }}>
 					<li>tRPC client-server communication with full TypeScript type safety</li>
 					<li>Orchid ORM database queries with PostgreSQL</li>
 					<li>Centralized error handling and formatting</li>
 					<li>Real-time UI updates using React Query invalidation</li>
 					<li>Form validation and error display</li>
 					<li>Database relations (User ↔ Posts)</li>
-				</ul>
-			</div>
-		</div>
+				</Box>
+			</Paper>
+		</Container>
 	);
 }
+
+export default DatabaseDemo;
