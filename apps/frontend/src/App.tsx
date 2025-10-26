@@ -6,10 +6,10 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
-import ThemeProvider from "@connected-repo/ui-mui/theme/ThemeProvider";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
+import ThemeProvider from "../../../packages/ui-mui/dist/theme/ThemeProvider";
 import { ErrorFallback } from "./components/error_fallback";
 import { Spinner } from "./components/spinner";
 import { router } from "./router";

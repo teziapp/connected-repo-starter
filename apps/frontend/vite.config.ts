@@ -31,8 +31,8 @@ export default defineConfig({
 				},
 				// manualChunks(id) {
 				//   if (id.includes('zod')) {
-				//     console.log('Creating separate chunk for zod_schemas:', id);
-				//     return 'zod_schemas';
+				//     console.log('Creating separate chunk for zod-schemas:', id);
+				//     return 'zod-schemas';
 				//   }
 				// }
 			},

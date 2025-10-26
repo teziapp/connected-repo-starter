@@ -1,6 +1,3 @@
-import ContentCard from "@connected-repo/ui-mui/components/ContentCard";
-import ErrorAlert from "@connected-repo/ui-mui/components/ErrorAlert";
-import SuccessAlert from "@connected-repo/ui-mui/components/SuccessAlert";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -11,6 +8,9 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import ContentCard from "../../../../packages/ui-mui/dist/components/ContentCard";
+import ErrorAlert from "../../../../packages/ui-mui/dist/components/ErrorAlert";
+import SuccessAlert from "../../../../packages/ui-mui/dist/components/SuccessAlert";
 import { queryClient } from "../utils/queryClient";
 import { trpc } from "../utils/trpc.client";
 
