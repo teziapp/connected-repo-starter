@@ -74,8 +74,46 @@ apps/
 └── frontend/        # React + Vite frontend
 packages/
 ├── typescript-config/  # Shared TypeScript configurations
+├── ui-mui/            # Shared Material-UI component library
 └── zod-schemas/        # Shared Zod schemas and enums for validation and type safety
 ```
+
+### Packages Architecture (@packages/)
+
+All packages follow strict architectural principles for optimal build performance:
+
+**Core Principles:**
+1. **No Barrel Exports**: Each package exports components/utilities directly, avoiding index files that re-export everything
+2. **Tree-Shaking Optimized**: All code is structured for maximum tree-shaking and code splitting efficiency
+3. **Direct Imports**: Consumers import specific files rather than package-level exports
+
+**Available Packages:**
+
+- **`@repo/typescript-config`**: Shared TypeScript configurations (base, react, node)
+- **`@repo/zod-schemas`**: Shared Zod validation schemas and enums used across backend and frontend
+- **`@repo/ui-mui`**: Material-UI component library with direct exports
+  - Import pattern: `import { Button } from '@repo/ui-mui/Button'`
+  - NO barrel exports - each component is imported directly from its file
+  - Ensures optimal bundle splitting and tree-shaking
+
+**Import Guidelines:**
+```typescript
+// ✅ Correct - Direct imports from specific files
+import { Button } from '@repo/ui-mui/Button'
+import { TextField } from '@repo/ui-mui/TextField'
+import { createUserSchema } from '@repo/zod-schemas/user'
+
+// ❌ Wrong - Avoid package-level imports (these won't work)
+import { Button, TextField } from '@repo/ui-mui'
+import * as schemas from '@repo/zod-schemas'
+```
+
+**Adding New Packages:**
+1. Create package directory in `packages/`
+2. Configure `package.json` with proper exports (avoid index files)
+3. Use direct file exports for optimal tree-shaking
+4. Add to root `package.json` workspaces
+5. Update TypeScript references if needed
 
 ### Backend Architecture (`apps/server`)
 
