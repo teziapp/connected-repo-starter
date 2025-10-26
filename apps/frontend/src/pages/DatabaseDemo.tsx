@@ -1,11 +1,12 @@
-import { UserList } from "../components/UserList";
-import { PostList } from "../components/PostList";
-import { CreateUserForm } from "../components/CreateUserForm";
+import { useQuery } from "@tanstack/react-query";
 import { CreatePostForm } from "../components/CreatePostForm";
-import { trpc } from "../App";
+import { CreateUserForm } from "../components/CreateUserForm";
+import { PostList } from "../components/PostList";
+import { UserList } from "../components/UserList";
+import { trpc } from "../utils/trpc.client";
 
 export function DatabaseDemo() {
-	const { data: hello } = trpc.hello.useQuery();
+	const { data: hello } = useQuery(trpc.hello.queryOptions());
 
 	return (
 		<div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>

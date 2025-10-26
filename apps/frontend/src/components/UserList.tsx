@@ -1,7 +1,9 @@
-import { trpc } from "../App";
+import { useQuery } from "@tanstack/react-query";
+import { trpc } from "../utils/trpc.client";
+
 
 export function UserList() {
-	const { data: users, isLoading, error } = trpc.user.getAll.useQuery();
+	const { data: users, isLoading, error } = useQuery(trpc.user.getAll.queryOptions());
 
 	if (isLoading) return <div>Loading users...</div>;
 	if (error) {

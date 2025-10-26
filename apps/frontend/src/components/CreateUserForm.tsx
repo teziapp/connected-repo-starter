@@ -1,5 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { trpc, queryClient } from "../App";
+import { queryClient } from "../utils/queryClient";
+import { trpc } from "../utils/trpc.client";
 
 export function CreateUserForm() {
 	const [name, setName] = useState("");
@@ -7,9 +9,9 @@ export function CreateUserForm() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	const createUserMutation = trpc.user.create.useMutation({
+	const createUserMutation = useMutation(trpc.user.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [["user", "getAll"]] });
+			queryClient.invalidateQueries({ queryKey: trpc.user.getAll.queryKey() });
 			setName("");
 			setEmail("");
 			setSuccess("User created successfully!");
@@ -24,7 +26,7 @@ export function CreateUserForm() {
 			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
 			setSuccess("");
 		},
-	});
+	}));
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

@@ -9,8 +9,7 @@ export class PostTable extends BaseTable {
 		title: t.string(),
 		content: t.text(),
 		authorId: t.uuid().foreignKey("user", "id"),
-		createdAt: t.timestamp().default(t.sql`now()`),
-		updatedAt: t.timestamp().default(t.sql`now()`),
+		...t.timestamps(),
 	}));
 
 	relations = {

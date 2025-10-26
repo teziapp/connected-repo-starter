@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Turborepo monorepo starter for building full-stack TypeScript applications with:
 - **Backend**: Node.js + Fastify + Orchid ORM + tRPC + OpenTelemetry
-- **Frontend**: React + Vite + TanStack Query + tRPC Client
+- **Frontend**: React 19 + Vite + TanStack Query + tRPC Client
 - **Database**: PostgreSQL with Orchid ORM
 - **Package Manager**: Yarn (v1.22.22)
 - **Node Version**: 22+
@@ -73,7 +73,8 @@ apps/
 ├── server/          # Fastify + tRPC API server
 └── frontend/        # React + Vite frontend
 packages/
-└── typescript-config/  # Shared TypeScript configurations
+├── typescript-config/  # Shared TypeScript configurations
+└── zod-schemas/        # Shared Zod schemas and enums for validation and type safety
 ```
 
 ### Backend Architecture (`apps/server`)
@@ -166,13 +167,14 @@ const createUser = trpc.user.create.useMutation();
 - AuthVerifier component for route protection
 - Login/Register pages in `modules/auth/`
 
-### Type Safety
+### Type Safety & Shared Zod Schemas
 
-The monorepo achieves full type safety by:
+The monorepo achieves full type safety and validation consistency by:
 1. Backend exports `AppTrpcRouter` type from `router.trpc.ts`
 2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../server/src/router.trpc"`
-3. tRPC client is created with this type: `createTRPCReact<AppTrpcRouter>()`
+3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
 4. All API calls have autocomplete and type checking
+5. VERY IMPORTANT - Dont use `any` or `as unknown` for type safety
 
 **Important:** When adding new tRPC procedures, the frontend automatically gets updated types without manual schema generation.
 
@@ -194,14 +196,14 @@ The monorepo achieves full type safety by:
 
 **New Database Table:**
 1. Create table class in `apps/server/src/db/tables/`
-2. Add Zod schemas in the same file
+2. Add Zod schemas in `packages/zod-schemas/` to be shared across apps
 3. Register in `apps/server/src/db/db.ts`
 4. Run SQL to create table in PostgreSQL
 5. Add tRPC procedures in `router.trpc.ts`
 
 **New tRPC Endpoint:**
-1. Add procedure to `router.trpc.ts` with Zod input schema
-2. Use `protectedProcedure` for database operations
+1. Add procedure to `router.trpc.ts` with Zod input schema imported from `zod-schemas`
+2. Use `protectedProcedure` for operations that require auth
 3. Frontend automatically gets types - no codegen needed
 
 **New Frontend Page:**

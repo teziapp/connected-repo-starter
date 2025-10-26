@@ -1,5 +1,7 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { trpc, queryClient } from "../App";
+import { queryClient } from "../utils/queryClient";
+import { trpc } from "../utils/trpc.client";
 
 export function CreatePostForm() {
 	const [title, setTitle] = useState("");
@@ -8,11 +10,11 @@ export function CreatePostForm() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	const { data: users } = trpc.user.getAll.useQuery();
+	const { data: users } = useQuery(trpc.user.getAll.queryOptions())
 
-	const createPostMutation = trpc.post.create.useMutation({
+	const createPostMutation = useMutation(trpc.post.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [["post", "getAll"]] });
+			queryClient.invalidateQueries({ queryKey: trpc.post.getAll.queryKey() });
 			setTitle("");
 			setContent("");
 			setAuthorId("");
@@ -28,7 +30,7 @@ export function CreatePostForm() {
 			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
 			setSuccess("");
 		},
-	});
+	}));
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

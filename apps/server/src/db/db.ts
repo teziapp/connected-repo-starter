@@ -8,7 +8,7 @@ const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig
 export const db = orchidORM(
 	{
 		databaseURL,
-		log: true,
+		// log: true,
 	},
 	{
 		user: UserTable,

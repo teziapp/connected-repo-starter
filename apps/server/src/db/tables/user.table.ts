@@ -8,8 +8,7 @@ export class UserTable extends BaseTable {
 		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 		email: t.string().unique(),
 		name: t.string(),
-		createdAt: t.timestamp().default(t.sql`now()`),
-		updatedAt: t.timestamp().default(t.sql`now()`),
+		...t.timestamps(),
 	}));
 }
 

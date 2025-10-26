@@ -13,7 +13,7 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 - **Security**: Helmet, CORS, Rate Limiting
 
 ### Frontend
-- **Framework**: [React](https://react.dev/) with [Vite](https://vitejs.dev/)
+- **Framework**: [React 19](https://react.dev/) with [Vite](https://vitejs.dev/)
 - **Routing**: React Router
 - **Data Fetching**: [TanStack Query](https://tanstack.com/query) + tRPC Client
 - **Type Safety**: Direct TypeScript imports from backend
@@ -50,7 +50,8 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 │       │   └── router.tsx
 │       └── package.json
 ├── packages/
-│   └── typescript-config/  # Shared TypeScript configs
+│   ├── typescript-config/  # Shared TypeScript configs
+│   └── zod-schemas/        # Shared Zod schemas and enums for validation and type safety
 ├── turbo.json
 └── package.json
 ```
@@ -129,25 +130,29 @@ yarn start
 
 ## Key Features
 
-### End-to-End Type Safety
+### End-to-End Type Safety & Shared Schemas
 
-The monorepo achieves full type safety without code generation:
+The monorepo achieves full type safety without code generation and uses a shared package for Zod schemas:
 
 1. Backend exports router type from `router.trpc.ts`
 2. Frontend imports this type directly via TypeScript workspace references
-3. All API calls have autocomplete and compile-time type checking
+3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
+4. All API calls have autocomplete and compile-time type checking
 
 ```typescript
+// Example: Importing shared Zod schema
+import { userSchema } from "@connected-repo/zod-schemas";
+
 // Frontend automatically knows about all backend procedures
 const { data } = trpc.user.getAll.useQuery();
 const createUser = trpc.user.create.useMutation();
 ```
 
-### Database Layer
+### Database Layer & Shared Validation
 
 - **ORM**: Orchid ORM with automatic snake_case conversion
 - **Type Safety**: Zod schemas for input validation
-- **Pattern**: Table definitions co-located with validation schemas
+- **Pattern**: Table definitions with validation schemas imported from `packages/zod-schemas/` for shared use
 
 Example table structure:
 ```typescript
@@ -160,7 +165,8 @@ export class UserTable extends BaseTable {
   }));
 }
 
-export const createUserSchema = z.object({ name: z.string() });
+// Use shared schema for validation
+import { createUserSchema } from "@connected-repo/zod-schemas";
 ```
 
 ### Error Handling
@@ -189,7 +195,7 @@ Multi-layer error handling system:
 1. Create table class in `apps/server/src/db/tables/`
 2. Add Zod validation schemas
 3. Register in `apps/server/src/db/db.ts`
-4. `yarn run db new <migration_name>` (A new migration file will be created in  `apps/server/src/db/migrations/`)
+4. `yarn run db g <migration_name>` (A new migration file will be created in  `apps/server/src/db/migrations/`)
 5. `yarn run db up` (Run migrations)
 
 ### New API Endpoint

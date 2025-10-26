@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
 import { ErrorFallback } from "./components/error_fallback";
-import { AuthVerifier } from "./modules/auth/AuthVerifier.auth";
 import { DatabaseDemo } from "./pages/DatabaseDemo";
 
 type NavbarFields = {
@@ -21,7 +20,7 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 		children: [
 			{
 				index: true,
-				element: <AuthVerifier />,
+				// element: <AuthVerifier />,
 			},
 			{
 				path: "auth/*",
