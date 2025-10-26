@@ -14,12 +14,12 @@ export class UserTable extends BaseTable {
 
 // Zod schemas for validation
 export const createUserSchema = z.object({
-	email: z.string().email(),
+	email: z.email(),
 	name: z.string().min(1, "Name is required"),
 });
 
 export const getUserByIdSchema = z.object({
-	id: z.string().uuid(),
+	id: z.uuid(),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

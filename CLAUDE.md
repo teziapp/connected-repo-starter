@@ -212,7 +212,7 @@ The monorepo achieves full type safety and validation consistency by:
 2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../server/src/router.trpc"`
 3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
 4. All API calls have autocomplete and type checking
-5. VERY IMPORTANT - Dont use `any` or `as unknown` for type safety
+5. VERY IMPORTANT - Don't use `any` or `as unknown` for type safety
 
 **Important:** When adding new tRPC procedures, the frontend automatically gets updated types without manual schema generation.
 

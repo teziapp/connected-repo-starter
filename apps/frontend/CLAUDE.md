@@ -169,10 +169,10 @@ Each feature module should export its own router:
 
 1. **Always use Zod resolver** for consistent validation across frontend and backend
 2. **Leverage `formState`** for loading, error, and dirty states
-4. **Reset forms** after successful submission with `reset()`
-5. **Handle server errors** using `setError()` to map backend errors to form fields
-6. **Use `watch()` sparingly** - it can cause re-renders. Prefer `getValues()` when you don't need reactivity
-7. **Type forms properly** using Zod inferred types from `@connected-repo/zod-schemas`
+3. **Reset forms** after successful submission with `reset()`
+4. **Handle server errors** using `setError()` to map backend errors to form fields
+5. **Use `watch()` sparingly** - it can cause re-renders. Prefer `getValues()` when you don't need reactivity
+6. **Type forms properly** using Zod inferred types from `@connected-repo/zod-schemas`
 
 ## State Management with Zustand
  

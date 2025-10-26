@@ -8,7 +8,10 @@ export class PostTable extends BaseTable {
 		id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 		title: t.string(),
 		content: t.text(),
-		authorId: t.uuid().foreignKey("user", "id"),
+		authorId: t.uuid().foreignKey("user", "id", {
+			onDelete: "CASCADE",
+			onUpdate: "RESTRICT"
+		}),
 		...t.timestamps(),
 	}));
 
@@ -31,11 +34,11 @@ export const createPostSchema = z.object({
 });
 
 export const getPostByIdSchema = z.object({
-	id: z.string().uuid(),
+	id: z.uuid(),
 });
 
 export const getPostsByAuthorSchema = z.object({
-	authorId: z.string().uuid(),
+	authorId: z.uuid(),
 });
 
 export type CreatePostInput = z.infer<typeof createPostSchema>;

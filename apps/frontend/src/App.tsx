@@ -6,12 +6,12 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
 import { ThemeProvider } from "@connected-repo/ui-mui/theme/ThemeProvider";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
 import { ErrorFallback } from "./components/error_fallback";
-import { Spinner } from "./components/spinner";
 import { router } from "./router";
 
 // App focuses on rendering the router tree and error boundaries. Providers
@@ -20,7 +20,7 @@ import { router } from "./router";
 function App() {
 	return (
 		<ThemeProvider>
-			<Suspense fallback={<Spinner />}>
+			<Suspense fallback={<LoadingSpinner text="Loading..." />}>
 				<ErrorBoundary fallback={<ErrorFallback />}>
 					<RouterProvider router={router} />
 				</ErrorBoundary>

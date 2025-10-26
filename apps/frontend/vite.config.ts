@@ -15,6 +15,7 @@ export default defineConfig({
 		analyzer({
 			analyzerMode: "json",
 			fileName: statsPath,
+			// Use the below when output needed is html
 			// enabled: false,
 			// analyzerMode: "static",
 			// fileName: ".dev/stats.html",
