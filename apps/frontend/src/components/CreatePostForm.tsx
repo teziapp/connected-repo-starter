@@ -1,3 +1,14 @@
+import ContentCard from "@connected-repo/ui-mui/components/ContentCard";
+import ErrorAlert from "@connected-repo/ui-mui/components/ErrorAlert";
+import SuccessAlert from "@connected-repo/ui-mui/components/SuccessAlert";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { queryClient } from "../utils/queryClient";
@@ -47,64 +58,62 @@ export function CreatePostForm() {
 	};
 
 	return (
-		<div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "5px", margin: "20px 0" }}>
-			<h3>Create New Post</h3>
+		<ContentCard>
+			<Typography variant="h5" component="h3" gutterBottom>
+				Create New Post
+			</Typography>
 			<form onSubmit={handleSubmit}>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="title">Title:</label>
-					<input
-						id="title"
+				<Stack spacing={2}>
+					<TextField
+						label="Title"
 						type="text"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
 						disabled={createPostMutation.isPending}
+						fullWidth
+						required
 					/>
-				</div>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="content">Content:</label>
-					<textarea
-						id="content"
+					<TextField
+						label="Content"
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "300px", height: "100px" }}
 						disabled={createPostMutation.isPending}
+						fullWidth
+						required
+						multiline
+						rows={4}
 					/>
-				</div>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="author">Author:</label>
-					<select
-						id="author"
-						value={authorId}
-						onChange={(e) => setAuthorId(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "200px" }}
+					<FormControl fullWidth required>
+						<InputLabel id="author-label">Author</InputLabel>
+						<Select
+							labelId="author-label"
+							value={authorId}
+							onChange={(e) => setAuthorId(e.target.value)}
+							disabled={createPostMutation.isPending}
+							label="Author"
+						>
+							<MenuItem value="">
+								<em>Select an author</em>
+							</MenuItem>
+							{users?.map((user) => (
+								<MenuItem key={user.id} value={user.id}>
+									{user.name} ({user.email})
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<Button
+						type="submit"
+						variant="contained"
+						color="success"
 						disabled={createPostMutation.isPending}
 					>
-						<option value="">Select an author</option>
-						{users?.map((user) => (
-							<option key={user.id} value={user.id}>
-								{user.name} ({user.email})
-							</option>
-						))}
-					</select>
-				</div>
-				<button
-					type="submit"
-					disabled={createPostMutation.isPending}
-					style={{
-						padding: "8px 16px",
-						backgroundColor: "#28a745",
-						color: "white",
-						border: "none",
-						borderRadius: "3px",
-						cursor: createPostMutation.isPending ? "not-allowed" : "pointer",
-					}}
-				>
-					{createPostMutation.isPending ? "Creating..." : "Create Post"}
-				</button>
+						{createPostMutation.isPending ? "Creating..." : "Create Post"}
+					</Button>
+				</Stack>
 			</form>
-			{error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-			{success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
-		</div>
+			<ErrorAlert message={error} />
+			<SuccessAlert message={success} />
+		</ContentCard>
 	);
 }

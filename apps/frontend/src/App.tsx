@@ -6,6 +6,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
+import ThemeProvider from "@connected-repo/ui-mui/theme/ThemeProvider";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
@@ -18,11 +19,13 @@ import { router } from "./router";
 // `main.tsx` following the tRPC + TanStack React Query recommended setup.
 function App() {
 	return (
-		<Suspense fallback={<Spinner />}>
-			<ErrorBoundary fallback={<ErrorFallback />}>
-				<RouterProvider router={router} />
-			</ErrorBoundary>
-		</Suspense>
+		<ThemeProvider>
+			<Suspense fallback={<Spinner />}>
+				<ErrorBoundary fallback={<ErrorFallback />}>
+					<RouterProvider router={router} />
+				</ErrorBoundary>
+			</Suspense>
+		</ThemeProvider>
 	);
 }
 

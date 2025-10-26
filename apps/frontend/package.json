@@ -9,11 +9,16 @@
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",
 		"build": "tsc -b && vite build",
+		"build:debug": "tsc -b && vite build --debug",
 		"dev": "vite",
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@connected-repo/ui-mui": "*",
 		"@connected-repo/zod-schemas": "*",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1",
+		"@mui/material": "^7.3.4",
 		"@tanstack/react-query": "^5.90.5",
 		"@trpc/client": "^11.7.0",
 		"@trpc/tanstack-react-query": "^11.7.0",
@@ -26,6 +31,7 @@
 		"@types/react": "^19.2.2",
 		"@types/react-dom": "^19.2.2",
 		"@vitejs/plugin-react-swc": "^4.2.0",
-		"vite": "^7.1.12"
+		"vite": "^7.1.12",
+		"vite-bundle-analyzer": "^1.2.3"
 	}
 }

@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
 import { ErrorFallback } from "./components/error_fallback";
-import { DatabaseDemo } from "./pages/DatabaseDemo";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -31,7 +30,10 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 			},
 			{
 				path: "demo",
-				element: <DatabaseDemo />,
+				lazy: async () => {
+					const DatabaseDemo = lazy(() => import("./pages/DatabaseDemo"));
+					return { Component: DatabaseDemo };
+				},
 			},
 		],
 	},

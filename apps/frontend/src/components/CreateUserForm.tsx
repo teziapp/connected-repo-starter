@@ -1,3 +1,10 @@
+import ContentCard from "@connected-repo/ui-mui/components/ContentCard";
+import ErrorAlert from "@connected-repo/ui-mui/components/ErrorAlert";
+import PrimaryButton from "@connected-repo/ui-mui/components/PrimaryButton";
+import SuccessAlert from "@connected-repo/ui-mui/components/SuccessAlert";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { queryClient } from "../utils/queryClient";
@@ -39,48 +46,40 @@ export function CreateUserForm() {
 	};
 
 	return (
-		<div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "5px", margin: "20px 0" }}>
-			<h3>Create New User</h3>
+		<ContentCard>
+			<Typography variant="h5" component="h3" gutterBottom>
+				Create New User
+			</Typography>
 			<form onSubmit={handleSubmit}>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="name">Name:</label>
-					<input
-						id="name"
+				<Stack spacing={2}>
+					<TextField
+						label="Name"
 						type="text"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "200px" }}
 						disabled={createUserMutation.isPending}
+						fullWidth
+						required
 					/>
-				</div>
-				<div style={{ marginBottom: "10px" }}>
-					<label htmlFor="email">Email:</label>
-					<input
-						id="email"
+					<TextField
+						label="Email"
 						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						style={{ marginLeft: "10px", padding: "5px", width: "200px" }}
 						disabled={createUserMutation.isPending}
+						fullWidth
+						required
 					/>
-				</div>
-				<button
-					type="submit"
-					disabled={createUserMutation.isPending}
-					style={{
-						padding: "8px 16px",
-						backgroundColor: "#007bff",
-						color: "white",
-						border: "none",
-						borderRadius: "3px",
-						cursor: createUserMutation.isPending ? "not-allowed" : "pointer",
-					}}
-				>
-					{createUserMutation.isPending ? "Creating..." : "Create User"}
-				</button>
+					<PrimaryButton
+						type="submit"
+						loading={createUserMutation.isPending}
+					>
+						Create User
+					</PrimaryButton>
+				</Stack>
 			</form>
-			{error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-			{success && <div style={{ color: "green", marginTop: "10px" }}>{success}</div>}
-		</div>
+			<ErrorAlert message={error} />
+			<SuccessAlert message={success} />
+		</ContentCard>
 	);
 }
