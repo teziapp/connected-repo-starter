@@ -9,6 +9,7 @@
     2.  **Notification:** At the scheduled time, the app sends a notification with a **single, thought-provoking prompt** (e.g., "What's one thing I can subtract from my schedule today?" or "What's a small win I had since lunch?").
     3.  **Input:** Tapping the notification opens a **plain text box** for the answer. No formatting, no dates, no categories. Just the answer.
     4.  **Search:** The only other screen is a simple search bar to look up past answers.
+    5. **Gamification:** The app maintains streak scores and rewards the user with badges for hitting milestones. Special badges for monthly streaks, yearly streaks and more.
 * **Web App:** A simple web interface to view the history and manage the prompt schedule.
     * **PWA Support:** The web app will be a Progressive Web App, installable on mobile and desktop devices with offline capabilities.
 * **Why people pay:** They are paying for the **consistency and the mental shortcut**. The app removes the burden of *what* to write and *when* to write it, delivering a moment of structured self-reflection.
