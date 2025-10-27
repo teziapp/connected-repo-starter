@@ -9,8 +9,8 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import { queryClient } from "./utils/queryClient";
+import App from "@frontend/App.tsx";
+import { queryClient } from "@frontend/utils/queryClient";
 
 // Defensive mounting: ensure the root element exists and create the root
 // only once. This pattern is compatible with React 18/19 root API and is

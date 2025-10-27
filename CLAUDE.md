@@ -89,7 +89,11 @@ All packages follow strict architectural principles for optimal build performanc
 
 **Available Packages:**
 
-- **`@repo/typescript-config`**: Shared TypeScript configurations (base, react, node)
+- **`@repo/typescript-config`**: Shared TypeScript configurations
+  - `base.json` - Core TypeScript settings with strict mode
+  - `library.json` - For shared library packages (extends base)
+  - `react-library.json` - For React component libraries (extends library)
+  - `vite.json` - For Vite-based applications (extends base)
 - **`@repo/zod-schemas`**: Shared Zod validation schemas and enums used across backend and frontend
 - **`@repo/ui-mui`**: Material-UI component library with direct exports
   - Import pattern: `import { Button } from '@repo/ui-mui/Button'`

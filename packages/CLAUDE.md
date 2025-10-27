@@ -24,12 +24,37 @@ All packages follow strict architectural guidelines for **optimal build performa
 ## Available Packages
 
 ### 1. @connected-repo/typescript-config
-Shared TypeScript configurations (base, nextjs, react-library).
+Shared TypeScript configurations for consistent compiler settings across the monorepo.
 
-**Usage**:
+**Available Configs**:
+- `base.json` - Core TypeScript settings with strict mode enabled
+- `library.json` - For shared library packages (extends base, adds library-specific settings)
+- `react-library.json` - For React component libraries (extends library, adds JSX support)
+- `vite.json` - For Vite-based applications (extends base, optimized for Vite bundler)
+
+**Config Hierarchy**:
+```
+base.json
+├── library.json
+│   └── react-library.json
+└── vite.json
+```
+
+**Usage Examples**:
 ```json
+// For library packages (ui-mui, zod-schemas)
 {
-  "extends": "@connected-repo/typescript-config/base.json"
+  "extends": "@connected-repo/typescript-config/library.json"
+}
+
+// For React component libraries
+{
+  "extends": "@connected-repo/typescript-config/react-library.json"
+}
+
+// For Vite applications (frontend app)
+{
+  "extends": "@connected-repo/typescript-config/vite.json"
 }
 ```
 

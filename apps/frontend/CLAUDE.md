@@ -409,7 +409,9 @@ import { Typography } from '@connected-repo/ui-mui/data-display/Typography';
 **Every interaction should feel smooth and responsive:**
 ```tsx
 import { Button } from '@connected-repo/ui-mui/form/Button';
-import { Fade, Grow, Slide } from '@mui/material';
+import { Fade } from "@connected-repo/ui-mui/feedback/Fade";
+import { Grow } from "@connected-repo/ui-mui/feedback/Slide";
+import { Slide } from "@connected-repo/ui-mui/feedback/Slide";
 
 // Smooth transitions on state changes
 <Button
@@ -543,7 +545,7 @@ const handleSave = async () => {
 **Forms should be easy, forgiving, and helpful:**
 ```tsx
 import { TextField } from '@connected-repo/ui-mui/form/TextField';
-import { FormHelperText } from '@mui/material';
+import { FormHelperText } from '@connected-repo/ui-mui/form/FormHelperText';
 
 // Helpful, inline validation
 <TextField

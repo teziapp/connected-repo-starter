@@ -1,8 +1,8 @@
 import { createTRPCClient, httpBatchStreamLink } from '@trpc/client';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
-import type { AppTrpcRouter } from "../../../server/src/router.trpc";
-import { env } from "../configs/env.config";
-import { queryClient } from './queryClient';
+import type { AppTrpcRouter } from "@server/router.trpc";
+import { env } from "@frontend/configs/env.config";
+import { queryClient } from '@frontend/utils/queryClient';
 
 
 // Create tRPC client factory. We keep the TRPC React wrapper in a separate

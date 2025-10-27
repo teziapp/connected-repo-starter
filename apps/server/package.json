@@ -9,7 +9,7 @@
 	"private": true,
 	"scripts": {
 		"clean": "rm -rf node_modules && rm -rf dist",
-		"build": "tsup",
+		"build": "tsc && tsc-alias",
 		"db": "tsx src/db/db_script.ts",
 		"dev": "tsx watch src/server.ts",
 		"start": "node dist/server.js"
@@ -27,8 +27,8 @@
 		"@types/node": "^22.18.12",
 		"@types/pg": "^8.15.5",
 		"dotenv": "^17.2.3",
-		"pino-pretty": "^13.1.2",
 		"pg": "^8.16.3",
+		"pino-pretty": "^13.1.2",
 		"tsx": "^4.19.2"
 	}
 }

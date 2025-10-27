@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { envSchemaZod } from "../utils/env_validator.zod.utils";
+import { envSchemaZod } from "@frontend/utils/env_validator.zod.utils";
 
 export type Env = z.infer<typeof envSchemaZod>;
 

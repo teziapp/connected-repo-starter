@@ -8,11 +8,11 @@
  */
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
-import { env } from "./configs/env.config";
-import { loggerConfig } from "./configs/logger.config";
-import { registerErrorHandler } from "./middlewares/errorHandler";
-import { appTrpcRouter } from "./router.trpc";
-import { createTRPCContext, type TrpcContext } from "./trpc";
+import { env } from "@server/configs/env.config";
+import { loggerConfig } from "@server/configs/logger.config";
+import { registerErrorHandler } from "@server/middlewares/errorHandler";
+import { appTrpcRouter } from "@server/router.trpc";
+import { createTRPCContext, type TrpcContext } from "@server/trpc";
 
 export const app = fastify({
 	logger: loggerConfig[env.NODE_ENV],

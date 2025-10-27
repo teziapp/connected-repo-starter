@@ -9,8 +9,8 @@
 	"license": "AGPL-3.0-only",
 	"private": true,
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsc --watch",
+		"build": "tsc && tsc-alias",
+		"dev": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
 		"clean": "rm -rf node_modules && rm -rf dist",
 		"lint": "biome check .",
 		"typecheck": "tsc --noEmit"
@@ -34,7 +34,8 @@
 			"default": "./dist/components/*.js"
 		},
 		"./theme/*": {
-			"types": "./src/theme/*.tsx",
+			"_cant-load-from-src-as-there-are-absoulte-imports-in-them": null,
+			"types": "./dist/theme/*.d.ts",
 			"import": "./dist/theme/*.js",
 			"default": "./dist/theme/*.js"
 		},
