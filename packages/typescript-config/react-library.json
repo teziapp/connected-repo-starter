@@ -1,7 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"extends": "./base.json",
+	"extends": "./library.json",
 	"compilerOptions": {
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"]
 	}
 }

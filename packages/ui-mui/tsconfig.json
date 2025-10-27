@@ -3,13 +3,6 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"emitDeclarationOnly": false,
-		"jsx": "react-jsx",
-		"moduleResolution": "Bundler",
-		"module": "ESNext",
 		"paths": {
 			"@ui-mui/*": ["./src/*"]
 		}

@@ -1,14 +1,8 @@
 {
-	"extends": "@connected-repo/typescript-config/base.json",
+	"extends": "@connected-repo/typescript-config/library.json",
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"emitDeclarationOnly": false,
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
 		"paths": {
 			"@zod-schemas/*": ["./src/*"]
 		}
