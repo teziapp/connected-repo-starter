@@ -1,5 +1,5 @@
+import { BaseTable } from "@backend/db/base_table";
 import { z } from "zod";
-import { BaseTable } from "@server/db/base_table";
 
 export class PostTable extends BaseTable {
 	readonly table = "post";
@@ -24,7 +24,7 @@ export class PostTable extends BaseTable {
 }
 
 // Import UserTable after the PostTable definition to avoid circular imports
-import { UserTable } from "@server/db/tables/user.table";
+import { UserTable } from "@backend/db/tables/user.table";
 
 // Zod schemas for validation
 export const createPostSchema = z.object({

@@ -6,13 +6,13 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
+import { env } from "@backend/configs/env.config";
+import { loggerConfig } from "@backend/configs/logger.config";
+import { registerErrorHandler } from "@backend/middlewares/errorHandler";
+import { appTrpcRouter } from "@backend/router.trpc";
+import { createTRPCContext, type TrpcContext } from "@backend/trpc";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
-import { env } from "@server/configs/env.config";
-import { loggerConfig } from "@server/configs/logger.config";
-import { registerErrorHandler } from "@server/middlewares/errorHandler";
-import { appTrpcRouter } from "@server/router.trpc";
-import { createTRPCContext, type TrpcContext } from "@server/trpc";
 
 export const app = fastify({
 	logger: loggerConfig[env.NODE_ENV],

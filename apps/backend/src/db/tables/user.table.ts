@@ -1,5 +1,5 @@
+import { BaseTable } from "@backend/db/base_table";
 import { z } from "zod";
-import { BaseTable } from "@server/db/base_table";
 
 export class UserTable extends BaseTable {
 	readonly table = "user";

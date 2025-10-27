@@ -8,11 +8,11 @@
  */
 import "dotenv/config";
 
+import { app, logger } from "@backend/app";
+import { env, isDev, isProd, isStaging, isTest } from "@backend/configs/env.config";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import { BurstyRateLimiter, RateLimiterMemory } from "rate-limiter-flexible";
-import { app, logger } from "@server/app";
-import { env, isDev, isProd, isStaging, isTest } from "@server/configs/env.config";
 
 // Create global rate limiter
 const globalRateLimiter = new BurstyRateLimiter(

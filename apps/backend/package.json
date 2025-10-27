@@ -1,5 +1,5 @@
 {
-	"name": "@connected-repo/server",
+	"name": "@connected-repo/backend",
 	"version": "1.0.0",
 	"main": "server.ts",
 	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + tRPC + Reactjs with opentelemetry setup",

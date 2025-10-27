@@ -1,7 +1,7 @@
+import { isDev } from "@backend/configs/env.config";
 import { TRPCError } from "@trpc/server";
 import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ZodError } from "zod";
-import { isDev } from "@server/configs/env.config";
 
 // Custom API error class
 export class AppError extends Error {

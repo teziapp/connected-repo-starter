@@ -19,7 +19,7 @@ This is a Turborepo monorepo starter for building full-stack TypeScript applicat
 yarn dev
 
 # Start only the backend server
-cd apps/server && yarn dev
+cd apps/backend && yarn dev
 
 # Start only the frontend
 cd apps/frontend && yarn dev
@@ -31,7 +31,7 @@ cd apps/frontend && yarn dev
 yarn build
 
 # Build specific app
-cd apps/server && yarn build
+cd apps/backend && yarn build
 cd apps/frontend && yarn build
 ```
 
@@ -52,16 +52,16 @@ The project uses Orchid ORM with PostgreSQL.
 
 ### Testing
 Currently, the project does not have a test suite configured. When adding tests, consider:
-- Backend: Add test scripts to `apps/server/package.json`
+- Backend: Add test scripts to `apps/backend/package.json`
 - Frontend: Add test scripts to `apps/frontend/package.json`
 - Configure Turbo to run tests across workspaces
 
 ### Production
 ```bash
 # Build and start the backend server
-cd apps/server
+cd apps/backend
 yarn build
-yarn start  # Runs from dist/src/server.js
+yarn start  # Runs from dist/src/backend.js
 ```
 
 ## Architecture
@@ -70,7 +70,7 @@ yarn start  # Runs from dist/src/server.js
 
 ```
 apps/
-├── server/          # Fastify + tRPC API server
+├── backend/          # Fastify + tRPC API server
 └── frontend/        # React + Vite frontend
 packages/
 ├── typescript-config/  # Shared TypeScript configurations
@@ -119,7 +119,7 @@ import * as schemas from '@repo/zod-schemas'
 4. Add to root `package.json` workspaces
 5. Update TypeScript references if needed
 
-### Backend Architecture (`apps/server`)
+### Backend Architecture (`apps/backend`)
 
 **Key Directories:**
 - `src/db/` - Database configuration and ORM setup
@@ -196,7 +196,7 @@ Error types handled:
 
 **tRPC Client Pattern:**
 ```typescript
-// Type-safe client imports server router type
+// Type-safe client imports backend router type
 export const trpc = createTRPCReact<AppTrpcRouter>();
 
 // Usage in components
@@ -213,7 +213,7 @@ const createUser = trpc.user.create.useMutation();
 
 The monorepo achieves full type safety and validation consistency by:
 1. Backend exports `AppTrpcRouter` type from `router.trpc.ts`
-2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../server/src/router.trpc"`
+2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../backend/src/router.trpc"`
 3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
 4. All API calls have autocomplete and type checking
 5. VERY IMPORTANT - Don't use `any` or `as unknown` for type safety
@@ -223,7 +223,7 @@ The monorepo achieves full type safety and validation consistency by:
 ### Environment Configuration
 
 1. Common environment variables `.env` (see `.env.example`)
-2. Backend `apps/server/.env` (see `apps/server/.env.example`)
+2. Backend `apps/backend/.env` (see `apps/backend/.env.example`)
 3. Frontend (`apps/frontend/.env`) (see `apps/frontend/.env.example`)
 
 ### Development Workflow
@@ -237,9 +237,9 @@ The monorepo achieves full type safety and validation consistency by:
 ### Adding New Features
 
 **New Database Table:**
-1. Create table class in `apps/server/src/db/tables/`
+1. Create table class in `apps/backend/src/db/tables/`
 2. Add Zod schemas in `packages/zod-schemas/` to be shared across apps
-3. Register in `apps/server/src/db/db.ts`
+3. Register in `apps/backend/src/db/db.ts`
 4. Run SQL to create table in PostgreSQL
 5. Add tRPC procedures in `router.trpc.ts`
 
@@ -272,7 +272,7 @@ Tasks run with `turbo run <task>` or via yarn scripts.
 
 ## Known Issues
 
-- FIXME in `apps/server/src/trpc.ts:30` - Error logging in tRPC errorFormatter not capturing full error context
+- FIXME in `apps/backend/src/trpc.ts:30` - Error logging in tRPC errorFormatter not capturing full error context
 - Manual database migrations required (no migration system configured)
 - OpenTelemetry config in `opentelemetry.ts` has placeholder credentials
 

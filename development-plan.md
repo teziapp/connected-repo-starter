@@ -56,14 +56,14 @@ Building a **Scheduled Prompt & Journal** app that provides:
 - **Week 2:** Epics 4-5 (Scheduling, Search)
 
 ### **Phase 2: MVP Quality & Deploy (Week 3)**
-- Epics 6-9 (Testing, PWA, CI/CD, Monitoring)
+- Epics 6-9 (Testing, PWA, CI/CD, Mobile App)
 - **Target: MVP Launch**
 
 ### **Phase 3: Growth Features (Weeks 4-5)**
-- Epics 10-11 (Gamification, Payments)
+- Epics 10-12 (Monitoring, Gamification, Payments)
 
 ### **Phase 4: Mobile & Scale (Week 6+)**
-- Epics 12-14 (Mobile App, Advanced Features, Ads)
+- Epics 13-14 (Advanced Features, Ads)
 
 ---
 
@@ -431,7 +431,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Cron job runs reliably
   - Correctly converts timezones
   - Emails sent at scheduled time (±1 min)
-  - Errors logged but don't crash server
+  - Errors logged but don't crash backend
   - No duplicate sends
 
 #### Issue 4.6: Create email template for prompts
@@ -558,7 +558,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Vitest runs successfully
   - Test database isolated
   - Example test passes
-  - Can run `yarn test` in apps/server
+  - Can run `yarn test` in apps/backend
 
 #### Issue 6.2: Write API endpoint tests (auth, journal CRUD)
 - **Estimate:** 6h
@@ -710,6 +710,152 @@ Building a **Scheduled Prompt & Journal** app that provides:
 
 ---
 
+## **EPIC 8: Mobile App with Capacitor [P1]** 📲
+
+**Goal:** Native iOS and Android apps using Capacitor
+
+**Why:** Better mobile experience with native features
+
+**Technical Approach:**
+- Use existing React frontend
+- Add Capacitor to create native wrapper
+- Implement native push notifications
+- Build and test on physical devices
+
+### Issues:
+
+#### Issue 12.1: Initialize Capacitor project in monorepo
+- **Estimate:** 4h
+- **Description:**
+  - Install Capacitor CLI
+  - Initialize Capacitor in apps/frontend
+  - Configure capacitor.config.ts
+  - Add iOS and Android platforms
+  - Sync web assets to native projects
+  - Test basic app launch
+- **Acceptance Criteria:**
+  - Capacitor initialized
+  - iOS and Android folders created
+  - App launches in simulators
+  - Web assets sync correctly
+
+#### Issue 12.2: Configure Android build environment
+- **Estimate:** 5h
+- **Description:**
+  - Install Android Studio
+  - Configure Gradle build
+  - Set up app signing (debug and release)
+  - Configure app permissions (notifications, internet)
+  - Update app icon and splash screen
+  - Build debug APK
+- **Acceptance Criteria:**
+  - Android Studio opens project
+  - Debug build succeeds
+  - APK installs on emulator
+  - App icon and splash correct
+
+#### Issue 12.3: Configure iOS build environment
+- **Estimate:** 5h
+- **Description:**
+  - Install Xcode
+  - Configure iOS project settings
+  - Set up code signing (development)
+  - Configure app permissions (notifications, internet)
+  - Update app icon and launch screen
+  - Build to iOS simulator
+- **Acceptance Criteria:**
+  - Xcode opens project
+  - Simulator build succeeds
+  - App runs on iOS simulator
+  - App icon and launch screen correct
+
+#### Issue 12.4: Implement native push notifications (Android FCM)
+- **Estimate:** 6h
+- **Description:**
+  - Set up Firebase Cloud Messaging
+  - Install Capacitor push notification plugin
+  - Configure Android push notification setup
+  - Request notification permissions
+  - Handle notification received
+  - Test notification delivery
+- **Acceptance Criteria:**
+  - Permissions requested properly
+  - Notifications received on Android
+  - Tapping notification opens app
+  - Works in background and foreground
+
+#### Issue 12.5: Implement native push notifications (iOS APNs)
+- **Estimate:** 6h
+- **Description:**
+  - Configure Apple Push Notification service
+  - Set up push certificates
+  - Configure iOS push in Capacitor
+  - Request notification permissions
+  - Handle notification received
+  - Test notification delivery
+- **Acceptance Criteria:**
+  - Permissions requested properly
+  - Notifications received on iOS
+  - Tapping notification opens app
+  - Works in background and foreground
+
+#### Issue 12.6: Add native share functionality
+- **Estimate:** 3h
+- **Description:**
+  - Install Capacitor Share plugin
+  - Add share button to entry detail
+  - Share entry text via native share sheet
+  - Test on Android and iOS
+- **Acceptance Criteria:**
+  - Share button visible
+  - Native share sheet appears
+  - Entry text shared correctly
+  - Works on both platforms
+
+#### Issue 12.7: Create app icons & splash screens
+- **Estimate:** 3h
+- **Description:**
+  - Design app icon (1024x1024)
+  - Generate all required sizes
+  - Design splash screen
+  - Use capacitor-assets to generate
+  - Update Android and iOS projects
+- **Acceptance Criteria:**
+  - Icon looks good at all sizes
+  - Splash screen displays on launch
+  - Branding consistent
+  - No placeholder icons remain
+
+#### Issue 12.8: Test on Android physical device
+- **Estimate:** 3h
+- **Description:**
+  - Build release APK
+  - Install on Android phone
+  - Test all features (auth, entries, notifications)
+  - Check performance
+  - Verify offline mode works
+- **Acceptance Criteria:**
+  - App installs successfully
+  - All features work
+  - Performance acceptable
+  - No crashes
+
+#### Issue 12.9: Test on iOS physical device
+- **Estimate:** 3h
+- **Description:**
+  - Build to connected iPhone
+  - Install via Xcode
+  - Test all features (auth, entries, notifications)
+  - Check performance
+  - Verify offline mode works
+- **Acceptance Criteria:**
+  - App installs successfully
+  - All features work
+  - Performance acceptable
+  - No crashes
+
+---
+
 ## **EPIC 8: CI/CD & Deployment [P0]** 🚀
 
 **Goal:** Automated testing and deployment pipeline
@@ -746,7 +892,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
 - **Description:**
   - Extend CI workflow to include build step
   - Build frontend (apps/frontend)
-  - Build backend (apps/server)
+  - Build backend (apps/backend)
   - Verify build artifacts created
   - Fail if build has errors
 - **Acceptance Criteria:**
@@ -833,7 +979,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
 - **Description:**
   - Create Sentry account and project
   - Install @sentry/node
-  - Initialize Sentry in server.ts
+  - Initialize Sentry in backend.ts
   - Configure error sampling
   - Test error reporting
   - Set up source maps for better stack traces
@@ -1031,7 +1177,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
 
 ### Issues:
 
-#### Issue 11.1: Design subscription tiers schema (free/paid)
+#### Issue 12.1: Design subscription tiers schema (free/paid)
 - **Estimate:** 3h
 - **Description:**
   - Create `Subscription` table (userId, tier, status, expiresAt, provider)
@@ -1044,7 +1190,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Status tracking works
   - Middleware blocks paid features for free users
 
-#### Issue 11.2: Integrate Stripe for web payments
+#### Issue 12.2: Integrate Stripe for web payments
 - **Estimate:** 6h
 - **Description:**
   - Create Stripe account
@@ -1060,7 +1206,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - User upgraded to paid tier
   - Test mode transactions succeed
 
-#### Issue 11.3: Build subscription management UI
+#### Issue 12.3: Build subscription management UI
 - **Estimate:** 6h
 - **Description:**
   - Create subscription settings page
@@ -1075,7 +1221,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Cancellation works
   - Payment history accurate
 
-#### Issue 11.4: Implement webhook handlers for Stripe events
+#### Issue 12.4: Implement webhook handlers for Stripe events
 - **Estimate:** 5h
 - **Description:**
   - Create webhook endpoint
@@ -1091,7 +1237,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Cancellations handled
   - Webhook logs for debugging
 
-#### Issue 11.5: Add subscription status middleware
+#### Issue 12.5: Add subscription status middleware
 - **Estimate:** 3h
 - **Description:**
   - Create tRPC middleware to check subscription
@@ -1105,7 +1251,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Error messages helpful
   - Expired subscriptions handled
 
-#### Issue 11.6: Create billing history page
+#### Issue 12.6: Create billing history page
 - **Estimate:** 4h
 - **Description:**
   - Fetch payment history from Stripe
@@ -1119,14 +1265,14 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Responsive layout
   - Handles edge cases
 
-#### Issue 11.7: Integrate Google Play Billing SDK
+#### Issue 12.7: Integrate Google Play Billing SDK
 - **Estimate:** 6h
 - **Description:**
   - Set up Google Play Console
   - Create subscription product
   - Integrate billing library (React Native)
   - Implement purchase flow
-  - Verify purchases server-side
+  - Verify purchases backend-side
   - Update subscription status
 - **Acceptance Criteria:**
   - Android users can subscribe
@@ -1134,166 +1280,20 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Subscription status synced
   - Test purchases work
 
-#### Issue 11.8: Integrate Apple In-App Purchase
+#### Issue 12.8: Integrate Apple In-App Purchase
 - **Estimate:** 6h
 - **Description:**
   - Set up App Store Connect
   - Create subscription product
   - Integrate StoreKit (React Native)
   - Implement purchase flow
-  - Verify receipts server-side
+  - Verify receipts backend-side
   - Update subscription status
 - **Acceptance Criteria:**
   - iOS users can subscribe
   - Receipts validated on backend
   - Subscription status synced
   - Sandbox testing works
-
----
-
-## **EPIC 12: Mobile App with Capacitor [P1]** 📲
-
-**Goal:** Native iOS and Android apps using Capacitor
-
-**Why:** Better mobile experience with native features
-
-**Technical Approach:**
-- Use existing React frontend
-- Add Capacitor to create native wrapper
-- Implement native push notifications
-- Build and test on physical devices
-
-### Issues:
-
-#### Issue 12.1: Initialize Capacitor project in monorepo
-- **Estimate:** 4h
-- **Description:**
-  - Install Capacitor CLI
-  - Initialize Capacitor in apps/frontend
-  - Configure capacitor.config.ts
-  - Add iOS and Android platforms
-  - Sync web assets to native projects
-  - Test basic app launch
-- **Acceptance Criteria:**
-  - Capacitor initialized
-  - iOS and Android folders created
-  - App launches in simulators
-  - Web assets sync correctly
-
-#### Issue 12.2: Configure Android build environment
-- **Estimate:** 5h
-- **Description:**
-  - Install Android Studio
-  - Configure Gradle build
-  - Set up app signing (debug and release)
-  - Configure app permissions (notifications, internet)
-  - Update app icon and splash screen
-  - Build debug APK
-- **Acceptance Criteria:**
-  - Android Studio opens project
-  - Debug build succeeds
-  - APK installs on emulator
-  - App icon and splash correct
-
-#### Issue 12.3: Configure iOS build environment
-- **Estimate:** 5h
-- **Description:**
-  - Install Xcode
-  - Configure iOS project settings
-  - Set up code signing (development)
-  - Configure app permissions (notifications, internet)
-  - Update app icon and launch screen
-  - Build to iOS simulator
-- **Acceptance Criteria:**
-  - Xcode opens project
-  - Simulator build succeeds
-  - App runs on iOS simulator
-  - App icon and launch screen correct
-
-#### Issue 12.4: Implement native push notifications (Android FCM)
-- **Estimate:** 6h
-- **Description:**
-  - Set up Firebase Cloud Messaging
-  - Install Capacitor push notification plugin
-  - Configure Android push notification setup
-  - Request notification permissions
-  - Handle notification received
-  - Test notification delivery
-- **Acceptance Criteria:**
-  - Permissions requested properly
-  - Notifications received on Android
-  - Tapping notification opens app
-  - Works in background and foreground
-
-#### Issue 12.5: Implement native push notifications (iOS APNs)
-- **Estimate:** 6h
-- **Description:**
-  - Configure Apple Push Notification service
-  - Set up push certificates
-  - Configure iOS push in Capacitor
-  - Request notification permissions
-  - Handle notification received
-  - Test notification delivery
-- **Acceptance Criteria:**
-  - Permissions requested properly
-  - Notifications received on iOS
-  - Tapping notification opens app
-  - Works in background and foreground
-
-#### Issue 12.6: Add native share functionality
-- **Estimate:** 3h
-- **Description:**
-  - Install Capacitor Share plugin
-  - Add share button to entry detail
-  - Share entry text via native share sheet
-  - Test on Android and iOS
-- **Acceptance Criteria:**
-  - Share button visible
-  - Native share sheet appears
-  - Entry text shared correctly
-  - Works on both platforms
-
-#### Issue 12.7: Create app icons & splash screens
-- **Estimate:** 3h
-- **Description:**
-  - Design app icon (1024x1024)
-  - Generate all required sizes
-  - Design splash screen
-  - Use capacitor-assets to generate
-  - Update Android and iOS projects
-- **Acceptance Criteria:**
-  - Icon looks good at all sizes
-  - Splash screen displays on launch
-  - Branding consistent
-  - No placeholder icons remain
-
-#### Issue 12.8: Test on Android physical device
-- **Estimate:** 3h
-- **Description:**
-  - Build release APK
-  - Install on Android phone
-  - Test all features (auth, entries, notifications)
-  - Check performance
-  - Verify offline mode works
-- **Acceptance Criteria:**
-  - App installs successfully
-  - All features work
-  - Performance acceptable
-  - No crashes
-
-#### Issue 12.9: Test on iOS physical device
-- **Estimate:** 3h
-- **Description:**
-  - Build to connected iPhone
-  - Install via Xcode
-  - Test all features (auth, entries, notifications)
-  - Check performance
-  - Verify offline mode works
-- **Acceptance Criteria:**
-  - App installs successfully
-  - All features work
-  - Performance acceptable
-  - No crashes
 
 ---
 
@@ -1366,7 +1366,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Create IndexedDB schema
   - Store journal entries offline
   - Store prompts offline
-  - Sync with server periodically
+  - Sync with backend periodically
   - Replace localStorage
 - **Acceptance Criteria:**
   - IndexedDB initialized
@@ -1382,7 +1382,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
   - Retry failed syncs
   - Handle network reconnection
   - Show sync status indicator
-  - Resolve conflicts (server wins for MVP)
+  - Resolve conflicts (backend wins for MVP)
   - Test offline → online flow
 - **Acceptance Criteria:**
   - Offline entries queued
@@ -1559,7 +1559,7 @@ Building a **Scheduled Prompt & Journal** app that provides:
 
 ### Known Limitations (OK for MVP)
 - No Redis (sessions in PostgreSQL or in-memory)
-- Basic conflict resolution (server wins)
+- Basic conflict resolution (backend wins)
 - Email notifications only (no SMS, push for web initially)
 - Simple prompt rotation (not personalized)
 

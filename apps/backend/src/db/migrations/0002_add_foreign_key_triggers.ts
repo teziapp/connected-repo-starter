@@ -1,4 +1,4 @@
-import { change } from '@server/db/db_script';
+import { change } from '@backend/db/db_script';
 
 change(async (db) => {
   await db.changeTable('post', (t) => ({

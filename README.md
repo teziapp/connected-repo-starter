@@ -30,7 +30,7 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 ```
 .
 ├── apps/
-│   ├── server/          # Fastify + tRPC API server
+│   ├── backend/          # Fastify + tRPC API server
 │   │   ├── src/
 │   │   │   ├── db/      # Database tables and ORM config
 │   │   │   ├── configs/ # App configuration
@@ -81,11 +81,11 @@ yarn install
 ```bash
 # Copy environment examples
 cp .env.example .env
-cp apps/server/.env.example apps/server/.env
+cp apps/backend/.env.example apps/backend/.env
 cp apps/frontend/.env.example apps/frontend/.env
 ```
 
-4. Configure your database connection in `apps/server/.env`
+4. Configure your database connection in `apps/backend/.env`
 
 5. Create a PostgreSQL database, run migrations & seed data:
 ```bash
@@ -104,7 +104,7 @@ yarn dev
 Or run them individually:
 ```bash
 # Backend only (http://localhost:3000)
-cd apps/server && yarn dev
+cd apps/backend && yarn dev
 
 # Frontend only (http://localhost:5173)
 cd apps/frontend && yarn dev
@@ -123,7 +123,7 @@ cd apps/frontend && yarn dev
 ### Production
 ```bash
 # Build and start the backend
-cd apps/server
+cd apps/backend
 yarn build
 yarn start
 ```
@@ -192,10 +192,10 @@ Multi-layer error handling system:
 
 ### New Database Table
 
-1. Create table class in `apps/server/src/db/tables/`
+1. Create table class in `apps/backend/src/db/tables/`
 2. Add Zod validation schemas
-3. Register in `apps/server/src/db/db.ts`
-4. `yarn run db g <migration_name>` (A new migration file will be created in  `apps/server/src/db/migrations/`)
+3. Register in `apps/backend/src/db/db.ts`
+4. `yarn run db g <migration_name>` (A new migration file will be created in  `apps/backend/src/db/migrations/`)
 5. `yarn run db up` (Run migrations)
 
 ### New API Endpoint

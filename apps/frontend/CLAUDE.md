@@ -170,7 +170,7 @@ Each feature module should export its own router:
 1. **Always use Zod resolver** for consistent validation across frontend and backend
 2. **Leverage `formState`** for loading, error, and dirty states
 3. **Reset forms** after successful submission with `reset()`
-4. **Handle server errors** using `setError()` to map backend errors to form fields
+4. **Handle backend errors** using `setError()` to map backend errors to form fields
 5. **Use `watch()` sparingly** - it can cause re-renders. Prefer `getValues()` when you don't need reactivity
 6. **Type forms properly** using Zod inferred types from `@connected-repo/zod-schemas`
 
@@ -208,7 +208,7 @@ lightweight, simple, and works seamlessly with React 19.
 
 ### Type-Safe API Calls
 
-The frontend automatically gets types from the backend router (`apps/server/src/router.trpc.ts`).
+The frontend automatically gets types from the backend router (`apps/backend/src/router.trpc.ts`).
 
 ### Error Handling
 
@@ -232,13 +232,13 @@ Use error boundaries for component-level error handling:
 
 ### Understanding Backend Modular Structure
 
-The backend router (`apps/server/src/router.trpc.ts`) uses nested routers for organization
+The backend router (`apps/backend/src/router.trpc.ts`) uses nested routers for organization
 
 ### When Adding New Features
 
 **1. Backend creates modular router:**
 ```typescript
-// apps/server/src/router.trpc.ts
+// apps/backend/src/router.trpc.ts
 export const appTrpcRouter = trpcRouter({
   // Existing routers...
 

@@ -10,7 +10,7 @@ const path = require("path");
 
 // Paths
 const ROOT_ENV = path.join(__dirname, "../.env");
-const WORKSPACES = [path.join(__dirname, "../apps/server/.env"), path.join(__dirname, "../apps/frontend/.env")];
+const WORKSPACES = [path.join(__dirname, "../apps/backend/.env"), path.join(__dirname, "../apps/frontend/.env")];
 
 /**
  * Parse .env file into key-value object
@@ -57,7 +57,7 @@ function syncEnvFile(workspacePath, rootEnv) {
 	const lines = content.split("\n");
 	const updatedLines = [];
 	let updatedCount = 0;
-	const isServerWorkspace = workspacePath.includes("apps/server");
+	const isBackendWorkspace = workspacePath.includes("apps/backend");
 
 	lines.forEach((line) => {
 		const trimmed = line.trim();
@@ -75,7 +75,7 @@ function syncEnvFile(workspacePath, rootEnv) {
 			const currentValue = match[2].trim();
 
 			// Special case: sync VITE_NODE_ENV to NODE_ENV for server workspace
-			if (isServerWorkspace && key === "NODE_ENV" && "VITE_NODE_ENV" in rootEnv) {
+			if (isBackendWorkspace && key === "NODE_ENV" && "VITE_NODE_ENV" in rootEnv) {
 				const rootValue = rootEnv["VITE_NODE_ENV"];
 				if (currentValue !== rootValue) {
 					updatedLines.push(`${key}=${rootValue}`);

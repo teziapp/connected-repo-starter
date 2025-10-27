@@ -1,5 +1,5 @@
-import { db } from "@server/db/db";
-import { protectedProcedure, publicProcedure, trpcRouter } from "@server/trpc";
+import { db } from "@backend/db/db";
+import { protectedProcedure, publicProcedure, trpcRouter } from "@backend/trpc";
 //import { tracing } from "./tracing-middleware";
 
 import {
@@ -9,13 +9,13 @@ import {
 	type CreatePostInput,
 	type GetPostByIdInput,
 	type GetPostsByAuthorInput,
-} from "@server/db/tables/post.table";
+} from "@backend/db/tables/post.table";
 import {
 	createUserSchema,
 	getUserByIdSchema,
 	type CreateUserInput,
 	type GetUserByIdInput,
-} from "@server/db/tables/user.table";
+} from "@backend/db/tables/user.table";
 
 export const appTrpcRouter = trpcRouter({
 	hello: publicProcedure.query(async () => {
