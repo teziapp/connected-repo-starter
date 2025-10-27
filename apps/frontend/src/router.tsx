@@ -1,6 +1,6 @@
+import { ErrorFallback } from "@frontend/components/error_fallback";
 import { lazy } from "react";
 import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
-import { ErrorFallback } from "@frontend/components/error_fallback";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -29,7 +29,7 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 				path: "demo",
 				// FIXME: This is not working. Need to investigate why.
 				lazy: async () => {
-					const DatabaseDemo = lazy(() => import("@frontend/pages/DatabaseDemo"));
+					const DatabaseDemo = await import("@frontend/pages/DatabaseDemo");
 					return { Component: DatabaseDemo };
 				},
 			},
