@@ -8,7 +8,10 @@
 		"sourceMap": true,
 		"emitDeclarationOnly": false,
 		"module": "ESNext",
-		"moduleResolution": "Bundler"
+		"moduleResolution": "Bundler",
+		"paths": {
+			"@zod-schemas/*": ["./src/*"]
+		}
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

@@ -5,7 +5,7 @@ import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
 import { useQuery } from "@tanstack/react-query";
-import { trpc } from "../utils/trpc.client";
+import { trpc } from "@frontend/utils/trpc.client";
 
 export function PostList() {
 	const { data: posts, isLoading, error } = useQuery(trpc.post.getAll.queryOptions());

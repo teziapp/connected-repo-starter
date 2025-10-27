@@ -1,7 +1,12 @@
 {
 	"extends": "@connected-repo/typescript-config/base.json",
 	"compilerOptions": {
-		"outDir": "dist"
+		"outDir": "dist",
+		"rootDir": "src",
+		"baseUrl": ".",
+		"paths": {
+			"@server/*": ["./src/*"]
+		}
 	},
 	"include": ["src"],
 	"exclude": ["node_modules"]

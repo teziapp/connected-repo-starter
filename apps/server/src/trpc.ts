@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
-import { isDev } from "./configs/env.config";
-import { trpcErrorParser } from "./utils/errorParser";
+import { isDev } from "@server/configs/env.config";
+import { trpcErrorParser } from "@server/utils/errorParser";
 
 // Define user type
 export const createTRPCContext = (input: CreateFastifyContextOptions) => {

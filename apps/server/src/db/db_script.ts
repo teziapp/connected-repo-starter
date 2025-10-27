@@ -1,6 +1,6 @@
 import { rakeDb } from "orchid-orm/migrations/node-postgres";
-import { BaseTable } from "./base_table";
-import { dbConfig } from "./config";
+import { BaseTable } from "@server/db/base_table";
+import { dbConfig } from "@server/db/config";
 
 export const change = rakeDb([dbConfig], {
 	baseTable: BaseTable,

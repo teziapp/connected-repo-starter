@@ -4,11 +4,11 @@ import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Grid } from "@connected-repo/ui-mui/layout/Grid";
 import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { useQuery } from "@tanstack/react-query";
-import { CreatePostForm } from "../components/CreatePostForm";
-import { CreateUserForm } from "../components/CreateUserForm";
-import { PostList } from "../components/PostList";
-import { UserList } from "../components/UserList";
-import { trpc } from "../utils/trpc.client";
+import { CreatePostForm } from "@frontend/components/CreatePostForm";
+import { CreateUserForm } from "@frontend/components/CreateUserForm";
+import { PostList } from "@frontend/components/PostList";
+import { UserList } from "@frontend/components/UserList";
+import { trpc } from "@frontend/utils/trpc.client";
 
 const DatabaseDemo = () => {
 	const { data: hello } = useQuery(trpc.hello.queryOptions());

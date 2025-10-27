@@ -10,10 +10,16 @@
 		/* Bundler mode */
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx",
+
+		/* Path Aliases */
+		"baseUrl": ".",
+		"paths": {
+			"@frontend/*": ["./src/*"],
+			"@server/*": ["../server/src/*"]
+		},
 
 		/* Linting */
 		"strict": true,

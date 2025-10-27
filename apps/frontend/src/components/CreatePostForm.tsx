@@ -10,8 +10,8 @@ import { TextField } from "@connected-repo/ui-mui/form/TextField";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { queryClient } from "../utils/queryClient";
-import { trpc } from "../utils/trpc.client";
+import { queryClient } from "@frontend/utils/queryClient";
+import { trpc } from "@frontend/utils/trpc.client";
 
 export function CreatePostForm() {
 	const [title, setTitle] = useState("");

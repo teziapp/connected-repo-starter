@@ -10,8 +10,8 @@ const statsPath = path.resolve(__dirname, ".dev", "stats.json");
 export default defineConfig({
 	base: "/",
 	plugins: [
-		envValidationVitePlugin(), 
-		react(), 
+		envValidationVitePlugin(),
+		react(),
 		analyzer({
 			analyzerMode: "json",
 			fileName: statsPath,
@@ -22,6 +22,12 @@ export default defineConfig({
 			// openAnalyzer: true,
 		})
 	],
+	resolve: {
+		alias: {
+			'@frontend': path.resolve(__dirname, './src'),
+			'@server': path.resolve(__dirname, '../server/src'),
+		},
+	},
 	build: {
 		rollupOptions: {
 			output: {

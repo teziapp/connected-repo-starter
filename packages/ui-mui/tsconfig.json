@@ -9,7 +9,10 @@
 		"emitDeclarationOnly": false,
 		"jsx": "react-jsx",
 		"moduleResolution": "Bundler",
-		"module": "ESNext"
+		"module": "ESNext",
+		"paths": {
+			"@ui-mui/*": ["./src/*"]
+		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"exclude": ["node_modules", "dist"]
