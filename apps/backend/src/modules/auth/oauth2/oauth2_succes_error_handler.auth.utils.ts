@@ -3,13 +3,19 @@ import { SessionUser, setSession } from "@backend/modules/auth/session.auth.util
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export const oauth2SuccessHandler = (
-	request: FastifyRequest, reply: FastifyReply, userInfo: SessionUser
+	request: FastifyRequest,
+	reply: FastifyReply,
+	sessionUser: SessionUser,
 ) => {
 
-	setSession(request, userInfo);
+	setSession(request, sessionUser);
 
 	// Redirect to frontend app
-	return reply.redirect(`${env.WEBAPP_URL}/auth/success`);
+	if (sessionUser.userId) {
+		return reply.redirect(`${env.WEBAPP_URL}/dashboard`);
+	} else {
+		return reply.redirect(`${env.WEBAPP_URL}/register`);
+	}
 }
 
 export const oauth2ErrorHandler = (

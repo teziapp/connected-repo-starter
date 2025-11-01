@@ -1,4 +1,5 @@
 import { BaseTable } from "@backend/db/base_table";
+import { UserTable } from "@backend/modules/users/users/users.table";
 import { ulid } from "ulid";
 
 export class SessionTable extends BaseTable {
@@ -8,8 +9,8 @@ export class SessionTable extends BaseTable {
 		sessionId: t.uuid().primaryKey().default(() => ulid()),
 		userId: t.string().nullable(),
 		email: t.string(),
-		name: t.string(),
-		picture: t.string().nullable(),
+		name: t.string().nullable(),
+		displayPicture: t.string().nullable(),
 		ipAddress: t.string().nullable(),
 		userAgent: t.text().nullable(),
 		browser: t.string().nullable(),
@@ -29,4 +30,12 @@ export class SessionTable extends BaseTable {
 			"deviceFingerprint"
 		])
 	]);
+
+	relations = {
+		user: this.belongsTo(() => UserTable, {
+			columns: ["userId"],
+			references: ["userId"],
+			foreignKey: false
+		}),
+	};
 }
