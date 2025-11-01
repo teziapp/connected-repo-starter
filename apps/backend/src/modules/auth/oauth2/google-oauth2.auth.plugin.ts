@@ -94,12 +94,12 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 				return oauth2SuccessHandler(request, reply, existingUser);
 			} else {
 
-			const sessionUser: SessionUser = {
-				userId: null,
-				email: googleUserInfo.email,
-				name: googleUserInfo.name,
-				displayPicture: googleUserInfo.picture || null,
-			}
+				const sessionUser: SessionUser = {
+					userId: null,
+					email: googleUserInfo.email,
+					name: googleUserInfo.name,
+					displayPicture: googleUserInfo.picture || null,
+				}
 				// New user - create session with null userId and redirect to registration
 				app.log.info({ email: sessionUser.email }, "New user, redirecting to registration");
 				return oauth2SuccessHandler(request, reply, sessionUser);

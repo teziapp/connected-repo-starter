@@ -25,7 +25,7 @@ const DashboardPage = () => {
 			if (!sessionInfo.hasSession) {
 				navigate("/auth/login");
 			} else if (!sessionInfo.isRegistered) {
-				navigate("/register");
+				navigate("/auth/register");
 			}
 		}
 	}, [sessionInfo, navigate]);

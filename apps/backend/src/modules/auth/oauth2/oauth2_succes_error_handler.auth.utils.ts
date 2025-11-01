@@ -14,7 +14,7 @@ export const oauth2SuccessHandler = (
 	if (sessionUser.userId) {
 		return reply.redirect(`${env.WEBAPP_URL}/dashboard`);
 	} else {
-		return reply.redirect(`${env.WEBAPP_URL}/register`);
+		return reply.redirect(`${env.WEBAPP_URL}/auth/register`);
 	}
 }
 

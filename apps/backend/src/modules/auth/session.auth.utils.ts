@@ -62,7 +62,7 @@ export const setSession = (
 		os: `${parsedUA.os.name} ${parsedUA.os.version}`,
 		device: parsedUA.device.type,
 		deviceFingerprint: generateDeviceFingerprint(request),
-	};;
+	};
 };
 
 /**
