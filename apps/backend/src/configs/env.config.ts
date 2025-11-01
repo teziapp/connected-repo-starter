@@ -10,6 +10,11 @@ const envSchema = z.object({
 	DB_USER: z.string().optional(),
 	DB_PASSWORD: z.string().optional(),
 	DB_NAME: z.string().optional(),
+	GOOGLE_CLIENT_ID: z.string().min(1).includes(".apps.googleusercontent.com"),
+	GOOGLE_CLIENT_SECRET: z.string().min(1),
+	SESSION_SECRET: z.string().min(32, "Session secret must be at least 32 characters"),
+	WEBAPP_URL: z.url(),
+	VITE_API_URL: z.url(),
 });
 
 // ----------------------------------------

@@ -1,4 +1,5 @@
 # The "Scheduled Prompt & Journal"
+**Name: OneQ**
 
 **The Problem:** People want to journal or think about their lives, but they get analysis paralysis staring at a blank page. They need a simple, timely nudge.
 

@@ -16,8 +16,11 @@
 	},
 	"dependencies": {
 		"@connected-repo/zod-schemas": "*",
+		"@fastify/cookie": "^11.0.2",
 		"@fastify/cors": "^11.1.0",
 		"@fastify/helmet": "^13.0.2",
+		"@fastify/oauth2": "^8.1.2",
+		"@fastify/session": "^11.1.0",
 		"fastify": "^5.6.1",
 		"orchid-orm": "^1.57.6",
 		"rate-limiter-flexible": "^8.1.0"

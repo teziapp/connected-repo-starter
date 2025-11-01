@@ -9,8 +9,11 @@
 import { env } from "@backend/configs/env.config";
 import { loggerConfig } from "@backend/configs/logger.config";
 import { registerErrorHandler } from "@backend/middlewares/errorHandler";
+import { oauth2Plugin } from "@backend/modules/auth/oauth2/oauth2.plugin";
 import { appTrpcRouter } from "@backend/router.trpc";
 import { createTRPCContext, type TrpcContext } from "@backend/trpc";
+import cookie from "@fastify/cookie";
+import session from "@fastify/session";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
 
@@ -19,6 +22,25 @@ export const app = fastify({
 	maxParamLength: 5000,
 });
 export const logger = app.log;
+
+// Register cookie support for sessions
+app.register(cookie);
+
+// Register session management
+app.register(session, {
+	secret: env.SESSION_SECRET,
+	cookie: {
+		secure: env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+		httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+		sameSite: "lax", // Provides some CSRF protection
+	},
+});
+
+// Register OAuth2 module (all OAuth2 providers + routes)
+app.register(oauth2Plugin, {
+	prefix: "/oauth2"
+});
 
 // Define a simple route with Zod validation
 app.get(
