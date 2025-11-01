@@ -23,7 +23,8 @@
 		"@fastify/session": "^11.1.0",
 		"fastify": "^5.6.1",
 		"orchid-orm": "^1.57.6",
-		"rate-limiter-flexible": "^8.1.0"
+		"rate-limiter-flexible": "^8.1.0",
+		"ua-parser-js": "^2.0.6"
 	},
 	"devDependencies": {
 		"@connected-repo/typescript-config": "*",

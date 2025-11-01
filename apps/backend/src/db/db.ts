@@ -1,6 +1,7 @@
 import { dbConfig } from "@backend/db/config";
 import { PostTable } from "@backend/db/tables/post.table";
 import { UserTable } from "@backend/db/tables/user.table";
+import { SessionTable } from "@backend/modules/auth/tables/session.table";
 import { orchidORM } from "orchid-orm/node-postgres";
 
 const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}?ssl=${dbConfig.ssl ? "require" : "false"}`;
@@ -13,5 +14,6 @@ export const db = orchidORM(
 	{
 		user: UserTable,
 		post: PostTable,
+		session: SessionTable,
 	},
 );

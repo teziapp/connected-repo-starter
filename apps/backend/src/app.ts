@@ -8,8 +8,10 @@
  */
 import { env } from "@backend/configs/env.config";
 import { loggerConfig } from "@backend/configs/logger.config";
+import { db } from "@backend/db/db";
 import { registerErrorHandler } from "@backend/middlewares/errorHandler";
 import { oauth2Plugin } from "@backend/modules/auth/oauth2/oauth2.plugin";
+import { DatabaseSessionStore } from "@backend/modules/auth/session.store";
 import { appTrpcRouter } from "@backend/router.trpc";
 import { createTRPCContext, type TrpcContext } from "@backend/trpc";
 import cookie from "@fastify/cookie";
@@ -26,13 +28,19 @@ export const logger = app.log;
 // Register cookie support for sessions
 app.register(cookie);
 
-// Register session management
+// Create database session store
+const sessionStore = new DatabaseSessionStore(db);
+
+export const cookieMaxAge = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+// Register session management with database-backed storage
 app.register(session, {
 	secret: env.SESSION_SECRET,
+	store: sessionStore,
 	cookie: {
 		secure: env.NODE_ENV === "production", // Only send cookie over HTTPS in production
 		httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+		maxAge: cookieMaxAge, // Cookie expiration time
 		sameSite: "lax", // Provides some CSRF protection
 	},
 });
