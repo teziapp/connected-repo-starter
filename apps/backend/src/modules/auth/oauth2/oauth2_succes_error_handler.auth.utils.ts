@@ -1,5 +1,5 @@
 import { env } from "@backend/configs/env.config";
-import { SessionUser, setSession } from "@backend/modules/auth/session.utils";
+import { SessionUser, setSession } from "@backend/modules/auth/session.auth.utils";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export const oauth2SuccessHandler = (

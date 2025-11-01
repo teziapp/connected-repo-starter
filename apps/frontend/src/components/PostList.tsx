@@ -4,11 +4,11 @@ import { List, ListItem } from "@connected-repo/ui-mui/data-display/List";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
-import { useQuery } from "@tanstack/react-query";
 import { trpc } from "@frontend/utils/trpc.client";
+import { useQuery } from "@tanstack/react-query";
 
 export function PostList() {
-	const { data: posts, isLoading, error } = useQuery(trpc.post.getAll.queryOptions());
+	const { data: posts, isLoading, error } = useQuery(trpc.posts.getAll.queryOptions());
 
 	if (isLoading) return <LoadingSpinner text="Loading posts..." />;
 
@@ -25,7 +25,7 @@ export function PostList() {
 			{posts && posts.length > 0 ? (
 				<List sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 					{posts.map((post) => (
-						<ListItem key={post.id} sx={{ p: 0 }}>
+						<ListItem key={post.postId} sx={{ p: 0 }}>
 							<Card sx={{ width: "100%", border: "1px solid", borderColor: "divider" }}>
 								<CardContent>
 									<Typography variant="h6" component="h3" gutterBottom>

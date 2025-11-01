@@ -15,7 +15,7 @@ change(async (db) => {
     id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
     title: t.string(),
     content: t.text(),
-    authorId: t.uuid().foreignKey('user', 'id'),
+    authorUserId: t.uuid().foreignKey('user', 'id'),
     createdAt: t.timestamps().createdAt,
     updatedAt: t.timestamps().updatedAt,
   }));

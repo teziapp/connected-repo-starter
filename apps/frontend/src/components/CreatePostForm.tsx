@@ -8,23 +8,23 @@ import { MenuItem } from "@connected-repo/ui-mui/form/MenuItem";
 import { Select } from "@connected-repo/ui-mui/form/Select";
 import { TextField } from "@connected-repo/ui-mui/form/TextField";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import { queryClient } from "@frontend/utils/queryClient";
 import { trpc } from "@frontend/utils/trpc.client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export function CreatePostForm() {
 	const [title, setTitle] = useState("");
 	const [content, setContent] = useState("");
-	const [authorId, setAuthorId] = useState("");
+	const [authorUserId, setAuthorId] = useState("");
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	const { data: users } = useQuery(trpc.user.getAll.queryOptions())
+	const { data: users } = useQuery(trpc.users.getAll.queryOptions())
 
-	const createPostMutation = useMutation(trpc.post.create.mutationOptions({
+	const createPostMutation = useMutation(trpc.posts.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: trpc.post.getAll.queryKey() });
+			queryClient.invalidateQueries({ queryKey: trpc.posts.getAll.queryKey() });
 			setTitle("");
 			setContent("");
 			setAuthorId("");
@@ -44,7 +44,7 @@ export function CreatePostForm() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!title.trim() || !content.trim() || !authorId) {
+		if (!title.trim() || !content.trim() || !authorUserId) {
 			setError("Title, content, and author are required");
 			return;
 		}
@@ -52,7 +52,7 @@ export function CreatePostForm() {
 		createPostMutation.mutate({
 			title: title.trim(),
 			content: content.trim(),
-			authorId,
+			authorUserId,
 		});
 	};
 
@@ -86,7 +86,7 @@ export function CreatePostForm() {
 						<InputLabel id="author-label">Author</InputLabel>
 						<Select
 							labelId="author-label"
-							value={authorId}
+							value={authorUserId}
 							onChange={(e) => setAuthorId(e.target.value)}
 							disabled={createPostMutation.isPending}
 							label="Author"
@@ -95,7 +95,7 @@ export function CreatePostForm() {
 								<em>Select an author</em>
 							</MenuItem>
 							{users?.map((user) => (
-								<MenuItem key={user.id} value={user.id}>
+								<MenuItem key={user.userId} value={user.userId}>
 									{user.name} ({user.email})
 								</MenuItem>
 							))}

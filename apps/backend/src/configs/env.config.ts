@@ -1,18 +1,19 @@
 import { NODE_ENV_ZOD } from "@connected-repo/zod-schemas/node_env";
+import { zString } from "@connected-repo/zod-schemas/zod_utils";
 import "dotenv/config";
 import { z } from "zod";
 
 const envSchema = z.object({
-	ALLOWED_ORIGINS: z.string().optional(),
+	ALLOWED_ORIGINS: zString.optional(),
 	NODE_ENV: NODE_ENV_ZOD,
-	DB_HOST: z.string().optional(),
-	DB_PORT: z.string().optional(),
-	DB_USER: z.string().optional(),
-	DB_PASSWORD: z.string().optional(),
-	DB_NAME: z.string().optional(),
-	GOOGLE_CLIENT_ID: z.string().min(1).includes(".apps.googleusercontent.com"),
-	GOOGLE_CLIENT_SECRET: z.string().min(1),
-	SESSION_SECRET: z.string().min(32, "Session secret must be at least 32 characters"),
+	DB_HOST: zString.optional(),
+	DB_PORT: zString.optional(),
+	DB_USER: zString.optional(),
+	DB_PASSWORD: zString.optional(),
+	DB_NAME: zString.optional(),
+	GOOGLE_CLIENT_ID: zString.min(1).includes(".apps.googleusercontent.com"),
+	GOOGLE_CLIENT_SECRET: zString.min(1),
+	SESSION_SECRET: zString.min(32, "Session secret must be at least 32 characters"),
 	WEBAPP_URL: z.url(),
 	VITE_API_URL: z.url(),
 });
