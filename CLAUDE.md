@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 
 This is a Turborepo monorepo starter for building full-stack TypeScript applications with:
-- **Backend**: Node.js + Fastify + Orchid ORM + tRPC + OpenTelemetry
+- **Backend**: Node.js + Fastify + Orchid ORM + tRPC + OpenTelemetry + OAuth2
 - **Frontend**: React 19 + Vite + TanStack Query + tRPC Client
 - **Database**: PostgreSQL with Orchid ORM
+- **Auth**: Database-backed sessions with security tracking
 - **Package Manager**: Yarn (v1.22.22)
 - **Node Version**: 22+
 
@@ -19,7 +20,7 @@ This is a Turborepo monorepo starter for building full-stack TypeScript applicat
 yarn dev
 
 # Start only the backend server
-cd apps/server && yarn dev
+cd apps/backend && yarn dev
 
 # Start only the frontend
 cd apps/frontend && yarn dev
@@ -31,7 +32,7 @@ cd apps/frontend && yarn dev
 yarn build
 
 # Build specific app
-cd apps/server && yarn build
+cd apps/backend && yarn build
 cd apps/frontend && yarn build
 ```
 
@@ -52,16 +53,16 @@ The project uses Orchid ORM with PostgreSQL.
 
 ### Testing
 Currently, the project does not have a test suite configured. When adding tests, consider:
-- Backend: Add test scripts to `apps/server/package.json`
+- Backend: Add test scripts to `apps/backend/package.json`
 - Frontend: Add test scripts to `apps/frontend/package.json`
 - Configure Turbo to run tests across workspaces
 
 ### Production
 ```bash
 # Build and start the backend server
-cd apps/server
+cd apps/backend
 yarn build
-yarn start  # Runs from dist/src/server.js
+yarn start  # Runs from dist/src/backend.js
 ```
 
 ## Architecture
@@ -70,7 +71,7 @@ yarn start  # Runs from dist/src/server.js
 
 ```
 apps/
-├── server/          # Fastify + tRPC API server
+├── backend/          # Fastify + tRPC API server
 └── frontend/        # React + Vite frontend
 packages/
 ├── typescript-config/  # Shared TypeScript configurations
@@ -89,27 +90,31 @@ All packages follow strict architectural principles for optimal build performanc
 
 **Available Packages:**
 
-- **`@repo/typescript-config`**: Shared TypeScript configurations
+- **`@connected-repo/typescript-config`**: Shared TypeScript configurations
   - `base.json` - Core TypeScript settings with strict mode
   - `library.json` - For shared library packages (extends base)
   - `react-library.json` - For React component libraries (extends library)
   - `vite.json` - For Vite-based applications (extends base)
-- **`@repo/zod-schemas`**: Shared Zod validation schemas and enums used across backend and frontend
-- **`@repo/ui-mui`**: Material-UI component library with direct exports
-  - Import pattern: `import { Button } from '@repo/ui-mui/Button'`
-  - NO barrel exports - each component is imported directly from its file
+- **`@connected-repo/zod-schemas`**: Shared Zod validation schemas following structured pattern:
+  - Entity schemas: `<entity>CreateInputZod`, `<entity>UpdateInputZod`, `<entity>SelectAllZod`
+  - Query schemas: `<entity>GetByIdZod`, `<entity>GetByXZod`
+  - Utility validators: `zString`, `zPrice`, `zGSTIN`, `zTimestamps` (from `zod_utils`)
+- **`@connected-repo/ui-mui`**: Material-UI component library with direct exports
+  - Import pattern: `import { Button } from '@connected-repo/ui-mui/form/Button'`
+  - NO barrel exports - each component imported directly from file path
   - Ensures optimal bundle splitting and tree-shaking
 
 **Import Guidelines:**
 ```typescript
 // ✅ Correct - Direct imports from specific files
-import { Button } from '@repo/ui-mui/Button'
-import { TextField } from '@repo/ui-mui/TextField'
-import { createUserSchema } from '@repo/zod-schemas/user'
+import { Button } from '@connected-repo/ui-mui/form/Button'
+import { TextField } from '@connected-repo/ui-mui/form/TextField'
+import { userCreateInputZod } from '@connected-repo/zod-schemas/user.zod'
+import { zString, zPrice } from '@connected-repo/zod-schemas/zod_utils'
 
-// ❌ Wrong - Avoid package-level imports (these won't work)
-import { Button, TextField } from '@repo/ui-mui'
-import * as schemas from '@repo/zod-schemas'
+// ❌ Wrong - Package-level imports (won't work)
+import { Button, TextField } from '@connected-repo/ui-mui'
+import * as schemas from '@connected-repo/zod-schemas'
 ```
 
 **Adding New Packages:**
@@ -119,17 +124,22 @@ import * as schemas from '@repo/zod-schemas'
 4. Add to root `package.json` workspaces
 5. Update TypeScript references if needed
 
-### Backend Architecture (`apps/server`)
+### Backend Architecture (`apps/backend`)
 
 **Key Directories:**
 - `src/db/` - Database configuration and ORM setup
   - `db.ts` - Orchid ORM instance with all registered tables
   - `baseTable.ts` - Base table configuration (snake_case enabled)
-  - `tables/` - Table schemas with Zod validation schemas
+  - `tables/` - Table class definitions (Zod schemas in @connected-repo/zod-schemas)
   - `config.ts` - Database connection configuration
 - `src/configs/` - Application configuration (env, logger)
 - `src/middlewares/` - Fastify middleware (error handling)
-- `src/utils/` - Utility functions (error parser)
+- `src/modules/auth/` - Authentication and session management
+  - `session.store.ts` - Database-backed session store
+  - `session.utils.ts` - Session utilities (set, clear, invalidate)
+  - `tables/session.table.ts` - Session table schema
+  - `oauth2/` - OAuth2 providers and handlers
+- `src/utils/` - Utility functions (error parser, request metadata)
 
 **Core Files:**
 - `server.ts` - Application entry point, registers CORS, Helmet, rate limiting
@@ -137,24 +147,49 @@ import * as schemas from '@repo/zod-schemas'
 - `trpc.ts` - tRPC initialization with context, error formatting, and middleware
 - `router.trpc.ts` - All tRPC routes (user, post endpoints)
 
-**Database Pattern:**
-1. Define table schema in `db/tables/*.table.ts` extending `BaseTable`
-2. Add Zod schemas for input validation in the same file
+**Database & Schema Pattern:**
+1. Define table class in `db/tables/*.table.ts` extending `BaseTable`
+2. Create Zod schemas in `packages/zod-schemas/src/*.zod.ts` following pattern:
+   - `<entity>MandatoryZod` - Required fields for creation
+   - `<entity>OptionalZod` - Optional/nullable fields
+   - `<entity>AutoGeneratedZod` - DB-generated fields (IDs, timestamps)
+   - `<entity>CreateInputZod` - For create operations
+   - `<entity>UpdateInputZod` - For update operations (all partial)
+   - `<entity>SelectAllZod` - Complete entity shape
+   - Query schemas (getById, getByX, etc)
 3. Register table in `db/db.ts` using `orchidORM()`
-4. Create tRPC procedures in `router.trpc.ts` using the schemas
+4. Import schemas from `@connected-repo/zod-schemas` in `router.trpc.ts`
 
-Example table structure:
+Example table (apps/backend/src/db/tables/user.table.ts):
 ```typescript
 export class UserTable extends BaseTable {
   readonly table = "user";
   columns = this.setColumns((t) => ({
-    id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-    // ... other columns
+    userId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    email: t.string().unique(),
+    name: t.string().nullable(),
+    ...t.timestamps(),
   }));
 }
+```
 
-export const createUserSchema = z.object({...});
-export type CreateUserInput = z.infer<typeof createUserSchema>;
+Example schemas (packages/zod-schemas/src/user.zod.ts):
+```typescript
+export const userMandatoryZod = z.object({
+  email: z.email(),
+});
+
+export const userOptionalZod = z.object({
+  name: zString.nullable(),
+});
+
+const userAutoGeneratedZod = z.object({
+  userId: z.uuid(),
+});
+
+export const userCreateInputZod = userMandatoryZod.extend(userOptionalZod.partial().shape);
+export const userUpdateInputZod = userMandatoryZod.extend(userOptionalZod.shape).extend(zTimestamps).partial();
+export const userSelectAllZod = userMandatoryZod.extend(userOptionalZod.shape).extend(zTimestamps).extend(userAutoGeneratedZod.shape);
 ```
 
 **tRPC Pattern:**
@@ -185,6 +220,28 @@ Error types handled:
 - Helmet for security headers
 - Environment-based configuration
 
+**Session Management:**
+Database-backed session storage with security tracking:
+- Custom `DatabaseSessionStore` implementing @fastify/session store interface
+- Session table tracks: user info, IP, user agent, browser, OS, device, fingerprint
+- Auto-captures request metadata on session creation
+- Soft-delete pattern using `markedInvalidAt` for session invalidation
+- Session expiry: 7 days (configurable via `cookieMaxAge` in app.ts)
+- Device fingerprinting via SHA-256 hash of normalized headers/UA
+- Utilities: `setSession()`, `clearSession()`, `invalidateAllUserSessions()`
+
+Session workflow:
+1. OAuth callback sets session via `setSession()` with user info
+2. Store auto-captures IP, user agent, device metadata from request
+3. Session persisted to database via DatabaseSessionStore
+4. Session query filters: not expired, not marked invalid
+5. Session touch updates expiry on each request
+
+**Request Metadata Utils:**
+- `getClientIpAddress()` - Extracts IP with proxy support (X-Forwarded-For, X-Real-IP)
+- `parseUserAgent()` - Parses UA using ua-parser-js (browser, OS, device)
+- `generateDeviceFingerprint()` - SHA-256 hash of normalized UA + headers
+
 ### Frontend Architecture (`apps/frontend`)
 
 **Key Files:**
@@ -196,7 +253,7 @@ Error types handled:
 
 **tRPC Client Pattern:**
 ```typescript
-// Type-safe client imports server router type
+// Type-safe client imports backend router type
 export const trpc = createTRPCReact<AppTrpcRouter>();
 
 // Usage in components
@@ -205,7 +262,8 @@ const createUser = trpc.user.create.useMutation();
 ```
 
 **Authentication:**
-- Currently uses hardcoded `x-user-id` header (value: "123")
+- OAuth2 with Google (cookie-based sessions)
+- Database-backed session storage with security tracking
 - AuthVerifier component for route protection
 - Login/Register pages in `modules/auth/`
 
@@ -213,7 +271,7 @@ const createUser = trpc.user.create.useMutation();
 
 The monorepo achieves full type safety and validation consistency by:
 1. Backend exports `AppTrpcRouter` type from `router.trpc.ts`
-2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../server/src/router.trpc"`
+2. Frontend imports this type directly: `import type { AppTrpcRouter } from "../../backend/src/router.trpc"`
 3. Shared Zod schemas and enums are defined in `packages/zod-schemas/` and imported by both backend and frontend for consistent validation and type inference
 4. All API calls have autocomplete and type checking
 5. VERY IMPORTANT - Don't use `any` or `as unknown` for type safety
@@ -223,7 +281,7 @@ The monorepo achieves full type safety and validation consistency by:
 ### Environment Configuration
 
 1. Common environment variables `.env` (see `.env.example`)
-2. Backend `apps/server/.env` (see `apps/server/.env.example`)
+2. Backend `apps/backend/.env` (see `apps/backend/.env.example`)
 3. Frontend (`apps/frontend/.env`) (see `apps/frontend/.env.example`)
 
 ### Development Workflow
@@ -237,16 +295,24 @@ The monorepo achieves full type safety and validation consistency by:
 ### Adding New Features
 
 **New Database Table:**
-1. Create table class in `apps/server/src/db/tables/`
-2. Add Zod schemas in `packages/zod-schemas/` to be shared across apps
-3. Register in `apps/server/src/db/db.ts`
-4. Run SQL to create table in PostgreSQL
-5. Add tRPC procedures in `router.trpc.ts`
+1. Create table class in `apps/backend/src/db/tables/<entity>.table.ts` extending BaseTable
+   - Use descriptive ID names: `userId`, `postId`, `productId` (not just `id`)
+   - Use descriptive FK names: `authorUserId`, `categoryId` (not just `authorId`)
+2. Create Zod schemas in `packages/zod-schemas/src/<entity>.zod.ts`:
+   - Define `<entity>MandatoryZod` (required fields)
+   - Define `<entity>OptionalZod` (optional/nullable fields)
+   - Define `<entity>AutoGeneratedZod` (DB-generated: IDs, timestamps)
+   - Export `<entity>CreateInputZod`, `<entity>UpdateInputZod`, `<entity>SelectAllZod`
+   - Export query schemas: `<entity>GetByIdZod`, etc
+3. Register table in `apps/backend/src/db/db.ts`
+4. Run migration: `yarn run db g <migration_name>` then `yarn run db up`
+5. Import schemas in `router.trpc.ts` and create tRPC procedures
 
 **New tRPC Endpoint:**
-1. Add procedure to `router.trpc.ts` with Zod input schema imported from `zod-schemas`
-2. Use `protectedProcedure` for operations that require auth
-3. Frontend automatically gets types - no codegen needed
+1. Import schema from `@connected-repo/zod-schemas/<entity>.zod`
+2. Add procedure to `router.trpc.ts`: `.input(<schema>Zod)`
+3. Use `protectedProcedure` for operations requiring auth/DB error handling
+4. Frontend auto-gets types via tRPC router type import
 
 **New Frontend Page:**
 1. Create component in `apps/frontend/src/pages/`
@@ -272,7 +338,7 @@ Tasks run with `turbo run <task>` or via yarn scripts.
 
 ## Known Issues
 
-- FIXME in `apps/server/src/trpc.ts:30` - Error logging in tRPC errorFormatter not capturing full error context
+- FIXME in `apps/backend/src/trpc.ts:30` - Error logging in tRPC errorFormatter not capturing full error context
 - Manual database migrations required (no migration system configured)
 - OpenTelemetry config in `opentelemetry.ts` has placeholder credentials
 
