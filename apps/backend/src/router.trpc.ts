@@ -1,3 +1,4 @@
+import { authRouterTrpc } from "@backend/modules/auth/auth.trpc";
 import { postsRouterTrpc } from "@backend/modules/posts/posts.trpc";
 import { usersRouterTrpc } from "@backend/modules/users/users.trpc";
 import { publicProcedure, trpcRouter } from "@backend/trpc";
@@ -9,6 +10,9 @@ export const appTrpcRouter = trpcRouter({
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return "Hello from tRPC";
 	}),
+
+	// Auth routes
+	auth: authRouterTrpc,
 
 	// User routes
 	users: usersRouterTrpc,

@@ -1,15 +1,16 @@
 import { db } from "@backend/db/db";
 import { generateDeviceFingerprint, getClientIpAddress, parseUserAgent } from "@backend/utils/request-metadata.utils";
+import type { FastifySessionObject } from "@fastify/session";
 import type { FastifyRequest } from "fastify";
 
 /**
  * User info stored in session
  */
 export interface SessionUser {
-	id: string;
+	userId: string | null;
 	email: string;
-	name: string;
-	picture?: string;
+	name: string | null;
+	displayPicture: string | null;
 }
 
 /**
@@ -32,6 +33,10 @@ declare module "fastify" {
 		user?: SessionUser;
 		metadata?: SessionMetadata;
 	}
+
+	interface FastifyRequest {
+		session: FastifySessionObject;
+	}
 };
 
 /**
@@ -41,15 +46,11 @@ declare module "fastify" {
  */
 export const setSession = (
 	request: FastifyRequest,
-	userInfo: SessionUser,
+	sessionUser: SessionUser,
 ) => {
 	// Store user info in session (works with any OAuth provider)
-	request.session.user = {
-		id: userInfo.id,
-		email: userInfo.email,
-		name: userInfo.name,
-		picture: userInfo.picture,
-	};
+	request.session.user = sessionUser;
+
 	const userAgentString = request.headers["user-agent"] || "unknown";
 	const parsedUA = parseUserAgent(userAgentString);
 
@@ -61,7 +62,7 @@ export const setSession = (
 		os: `${parsedUA.os.name} ${parsedUA.os.version}`,
 		device: parsedUA.device.type,
 		deviceFingerprint: generateDeviceFingerprint(request),
-	};;
+	};
 };
 
 /**
@@ -85,4 +86,34 @@ export async function invalidateAllUserSessions(userId: string): Promise<number>
 		});
 
 	return result;
+}
+
+/**
+ * Update session with database user ID
+ * Called after user registration to link session to database user
+ * Updates both in-memory session and database record
+ */
+export async function updateSessionUserId(
+	request: FastifyRequest,
+	userId: string
+): Promise<void> {
+	if(!request.session.user) {
+		throw new Error("No session user found to update userId");
+	};
+
+	// Update in-memory session
+	request.session.user = {
+		...request.session.user!,
+		userId,
+	};
+
+	// Update database session record
+	const sessionId = request.session.sessionId;
+	if (sessionId) {
+		await db.session
+			.find(sessionId)
+			.update({
+				userId,
+			});
+	}
 }

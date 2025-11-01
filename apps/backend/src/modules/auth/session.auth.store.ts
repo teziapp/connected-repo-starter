@@ -1,15 +1,15 @@
 import { cookieMaxAge } from "@backend/app";
 import { sql } from "@backend/db/base_table";
 import type { db } from "@backend/db/db";
+import type { SessionStore } from "@fastify/session";
 import type { FastifyRequest } from "fastify";
-
 type Database = typeof db;
 
 /**
  * Session Store for @fastify/session
  * Implements database-backed session storage using Orchid ORM
  */
-export class DatabaseSessionStore {
+export class DatabaseSessionStore implements SessionStore {
 	private db: Database;
 
 	constructor(db: Database) {
@@ -40,10 +40,10 @@ export class DatabaseSessionStore {
 					// If session doesn't exist, create it
 					await this.db.session.create({
 						sessionId,
-						userId: session.user!.id,
+						userId: session.user?.userId || null,  // Database user ID (nullable for OAuth users pending registration)
 						email: session.user!.email,
 						name: session.user!.name,
-						picture: session.user!.picture || null,
+						displayPicture: session.user!.displayPicture || null,
 						ipAddress: session.metadata?.ipAddress || null,
 						userAgent: session.metadata?.userAgent || null,
 						browser: session.metadata?.browser || null,
@@ -70,14 +70,18 @@ export class DatabaseSessionStore {
 		callback: (err: Error | null, session?: FastifyRequest["session"]) => void,
 	): Promise<void> {
 		try {
-			const sessionData = await this.db.session.findOptional(
-				sessionId,
-			).where({
-				markedInvalidAt: null,
-				expiresAt: {
-					gt: sql`NOW()`
-				},
-			});
+			const sessionData = await this.db.session
+				.findOptional(
+					sessionId,
+				).where({
+					markedInvalidAt: null,
+					expiresAt: {
+						gt: sql`NOW()`
+					},
+				})
+				.select("*", {
+					user: (q) => q.user.select("name", "displayPicture"),
+				});
 
 			// Session not found
 			if (!sessionData) {
@@ -87,10 +91,10 @@ export class DatabaseSessionStore {
 			// Reconstruct session object for Fastify
 			const session = {
 				user: {
-					id: sessionData.userId || "",
+					userId: sessionData.userId,  // OAuth provider ID (not stored in DB, only in-memory during OAuth flow)
 					email: sessionData.email,
-					name: sessionData.name,
-					picture: sessionData.picture || undefined,
+					name: sessionData.user?.name ?? sessionData.name,
+					displayPicture: sessionData.user?.displayPicture ?? sessionData.displayPicture,
 				},
 				metadata: {
 					ipAddress: sessionData.ipAddress || undefined,

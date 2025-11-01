@@ -9,6 +9,7 @@
 	"license": "AGPL-3.0-only",
 	"private": true,
 	"scripts": {
+		"check-types": "tsc --noEmit",
 		"build": "tsc && tsc-alias",
 		"dev": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
 		"clean": "rm -rf node_modules && rm -rf dist",

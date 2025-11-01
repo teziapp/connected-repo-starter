@@ -1,6 +1,8 @@
 import { db } from "@backend/db/db";
-import { protectedProcedure, trpcRouter } from "@backend/trpc";
+import { updateSessionUserId } from "@backend/modules/auth/session.auth.utils";
+import { protectedProcedure, publicProcedure, trpcRouter } from "@backend/trpc";
 import { userCreateInputZod, userGetByIdInputZod } from "@connected-repo/zod-schemas/user.zod";
+import { TRPCError } from "@trpc/server";
 
 export const usersRouterTrpc = trpcRouter({
     // Get all users
@@ -23,12 +25,42 @@ export const usersRouterTrpc = trpcRouter({
       return user;
     }),
 
-    // Create user
-    create: protectedProcedure.input(userCreateInputZod).mutation(async ({ input }) => {
+    // Register user from OAuth flow
+    create: publicProcedure.input(userCreateInputZod).mutation(async ({ input, ctx }) => {
+      // Validate session exists
+      if (!ctx.req.session?.user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "No active session found. Please login via OAuth first.",
+        });
+      }
+
+      // Security check: ensure email matches session email
+      if (ctx.req.session.user.email !== input.email) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Email mismatch. Cannot register with a different email than your OAuth account.",
+        });
+      }
+
+      // Check if session already has a userId (user already registered)
+      if (ctx.req.session.user.userId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User already registered. Please go to dashboard.",
+        });
+      }
+
+      // Create user in database
       const newUser = await db.user.create({
         email: input.email,
         name: input.name,
+        displayPicture: input.displayPicture,
       });
+
+      // Update session with new database userId
+      await updateSessionUserId(ctx.req, newUser.userId);
+
       return newUser;
     }),
   });

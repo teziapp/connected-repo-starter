@@ -1,5 +1,7 @@
 import { env } from "@backend/configs/env.config";
+import { db } from "@backend/db/db";
 import { oauth2ErrorHandler, oauth2SuccessHandler } from "@backend/modules/auth/oauth2/oauth2_succes_error_handler.auth.utils";
+import { SessionUser } from "@backend/modules/auth/session.auth.utils";
 import type { OAuth2Namespace } from "@fastify/oauth2";
 import oauthPlugin from "@fastify/oauth2";
 import type { FastifyInstance } from "fastify";
@@ -76,12 +78,32 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 				await app.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
 			// Fetch user info from Google using the access token
-			const userInfo = await fetchGoogleUserInfo(token.access_token);
+			const googleUserInfo = await fetchGoogleUserInfo(token.access_token);
 
-			app.log.info({ userInfo }, "User authenticated via Google OAuth");
+			app.log.info({ googleUserInfo }, "User authenticated via Google OAuth");
 
-			// Use centralized session middleware to set session and redirect
-			return oauth2SuccessHandler(request, reply, userInfo);
+			// Check if user exists in database by email (auto-link accounts by email)
+			const existingUser = await db.user
+				.select("userId", "email", "name", "displayPicture")
+				.findBy({ email: googleUserInfo.email })
+				.take();
+
+			if (existingUser) {
+				// Existing user found - link session to database user and redirect to dashboard
+				app.log.info({ userId: existingUser.userId }, "Existing user found, linking session");
+				return oauth2SuccessHandler(request, reply, existingUser);
+			} else {
+
+				const sessionUser: SessionUser = {
+					userId: null,
+					email: googleUserInfo.email,
+					name: googleUserInfo.name,
+					displayPicture: googleUserInfo.picture || null,
+				}
+				// New user - create session with null userId and redirect to registration
+				app.log.info({ email: sessionUser.email }, "New user, redirecting to registration");
+				return oauth2SuccessHandler(request, reply, sessionUser);
+			}
 		} catch (error) {
 			app.log.error({ error }, "OAuth callback error");
 			// Use centralized error handler for consistent error handling

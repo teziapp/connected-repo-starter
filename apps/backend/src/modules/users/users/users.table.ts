@@ -7,6 +7,7 @@ export class UserTable extends BaseTable {
 		userId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 		email: t.string().unique(),
 		name: t.string().nullable(),
+		displayPicture: t.string().nullable(),
 		...t.timestamps(),
 	}));
 }

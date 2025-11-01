@@ -26,6 +26,10 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 				Component: lazy(() => import("@frontend/modules/auth/auth.router")),
 			},
 			{
+				path: "dashboard",
+				Component: lazy(() => import("@frontend/pages/Dashboard.page")),
+			},
+			{
 				path: "demo",
 				// FIXME: This is not working. Need to investigate why.
 				lazy: async () => {

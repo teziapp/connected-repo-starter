@@ -8,14 +8,10 @@ export const createTRPCContext = (input: CreateFastifyContextOptions) => {
 	const userId = input.req.headers["x-user-id"];
 
 	return {
-		...input,
+		req: input.req,
+		res: input.res,
 		userId,
-	} as {
-		req: CreateFastifyContextOptions["req"];
-		res: CreateFastifyContextOptions["res"];
-		info: CreateFastifyContextOptions["info"];
-		userId: string;
-	};
+	}
 };
 
 export type TrpcContext = Awaited<ReturnType<typeof createTRPCContext>>;
@@ -50,14 +46,8 @@ const t = initTRPC.context<TrpcContext>().create({
 	isDev,
 });
 
-export const publicProcedure = t.procedure.use(async (opts) => {
-	return opts.next();
-});
-
-export const trpcRouter = t.router;
-
 // Database error middleware - now simplified since error parsing is centralized
-export const dbErrorMiddleware = t.middleware(async ({ next }) => {
+export const centralTrpcErrorMiddleware = t.middleware(async ({ next }) => {
 	try {
 		return await next();
 	} catch (cause) {
@@ -75,5 +65,20 @@ export const dbErrorMiddleware = t.middleware(async ({ next }) => {
 	}
 });
 
+export const publicProcedure = t.procedure.use(centralTrpcErrorMiddleware).use(async (opts) => {
+	return opts.next();
+});
+
+export const trpcRouter = t.router;
+
+// isAuthenticated middleware
+const isAuthenticatedMiddleware = t.middleware(({ ctx, next }) => {
+	if (!ctx.req.session.user?.userId) {
+		throw new TRPCError({ code: "UNAUTHORIZED", message: "User is not authenticated" });
+	}
+	return next();
+});
+
+
 // Protected procedure with database error handling
-export const protectedProcedure = publicProcedure.use(dbErrorMiddleware);
+export const protectedProcedure = publicProcedure.use(isAuthenticatedMiddleware);
