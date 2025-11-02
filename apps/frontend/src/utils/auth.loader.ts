@@ -1,12 +1,14 @@
 import { queryClient } from "@frontend/utils/queryClient";
 import { trpc } from "@frontend/utils/trpc.client";
 import { redirect } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import { userContext } from "@frontend/contexts/UserContext";
 
 /**
  * Auth loader for protected routes
- * Checks session and redirects based on auth state
+ * Fetches session, sets React Router context, and redirects based on auth state
  */
-export async function authLoader() {
+export async function authLoader({ context }: LoaderFunctionArgs) {
 	try {
 		// Fetch session info from backend
 		const sessionInfo = await queryClient.fetchQuery(
@@ -15,19 +17,23 @@ export async function authLoader() {
 
 		// No session - redirect to login
 		if (!sessionInfo.hasSession) {
-			return redirect("/auth/login");
+			throw redirect("/auth/login");
 		}
 
 		// Session exists but not registered - redirect to register
 		if (!sessionInfo.isRegistered) {
-			return redirect("/auth/register");
+			throw redirect("/auth/register");
 		}
 
-		// Authenticated and registered - return session data
+		// Set user context in React Router context
+		context.set(userContext, sessionInfo);
+
+		// Return session data for loader
 		return sessionInfo;
+
 	} catch (error) {
 		console.error("Auth loader error:", error);
-		return redirect("/auth/login");
+		throw redirect("/auth/login");
 	}
 }
 

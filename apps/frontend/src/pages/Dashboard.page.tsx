@@ -7,12 +7,11 @@ import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card } from "@connected-repo/ui-mui/layout/Card";
 import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
-import { trpc } from "@frontend/utils/trpc.client";
-import { useQuery } from "@tanstack/react-query";
+import { useSessionInfo } from "@frontend/contexts/UserContext";
 
 const DashboardPage = () => {
-	// Fetch session info to display user data
-	const { data: sessionInfo } = useQuery(trpc.auth.getSessionInfo.queryOptions());
+	// Get user data from session context (provided by AppLayout)
+	const { user, isRegistered } = useSessionInfo();
 
 	return (
 		<Box
@@ -40,10 +39,10 @@ const DashboardPage = () => {
 								spacing={3}
 								alignItems={{ xs: "center", sm: "flex-start" }}
 							>
-								{sessionInfo.user?.picture && (
+								{user?.displayPicture && (
 									<Avatar
-										src={sessionInfo.user.picture}
-										alt={sessionInfo.user.name || undefined}
+										src={user.displayPicture}
+										alt={user.name || undefined}
 										sx={{
 											width: 80,
 											height: 80,
@@ -54,10 +53,10 @@ const DashboardPage = () => {
 								)}
 								<Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
 									<Typography variant="h4" fontWeight={600} gutterBottom>
-										Welcome back, {sessionInfo.user?.name || "User"}!
+										Welcome back, {user?.name || "User"}!
 									</Typography>
 									<Typography variant="body1" sx={{ opacity: 0.9 }}>
-										{sessionInfo.user?.email}
+										{user?.email}
 									</Typography>
 								</Box>
 							</Stack>

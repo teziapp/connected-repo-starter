@@ -138,7 +138,7 @@ export class DatabaseSessionStore implements SessionStore {
 	 */
 	async touch(
 		sessionId: string,
-		session: FastifyRequest["session"],
+		_session: FastifyRequest["session"],
 		callback: (err?: Error) => void,
 	): Promise<void> {
 		try {

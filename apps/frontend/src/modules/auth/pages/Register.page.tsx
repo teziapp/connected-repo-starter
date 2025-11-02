@@ -48,7 +48,7 @@ const RegisterPage = () => {
 		if (sessionInfo?.user) {
 			setValue("email", sessionInfo.user.email);
 			setValue("name", sessionInfo.user.name || "");
-			setValue("displayPicture", sessionInfo.user.picture || null);
+			setValue("displayPicture", sessionInfo.user.displayPicture || null);
 		}
 	}, [sessionInfo, setValue]);
 
@@ -106,9 +106,9 @@ const RegisterPage = () => {
 					>
 						<Stack spacing={3} alignItems="center">
 							{/* Profile Picture */}
-							{sessionInfo?.user?.picture && (
+							{sessionInfo?.user?.displayPicture && (
 								<Avatar
-									src={sessionInfo.user.picture}
+									src={sessionInfo.user.displayPicture}
 									alt={sessionInfo.user.name || undefined}
 									sx={{
 										width: 80,
