@@ -1,5 +1,6 @@
 import { GoogleIcon } from "@connected-repo/ui-mui/components/GoogleIcon";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
+import { Alert } from "@connected-repo/ui-mui/feedback/Alert";
 import { Fade } from "@connected-repo/ui-mui/feedback/Fade";
 import { Button } from "@connected-repo/ui-mui/form/Button";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
@@ -7,20 +8,20 @@ import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { useState } from "react";
+import { useSearchParams } from "react-router";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const LoginPage = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [showContent] = useState(true);
+	const [searchParams] = useSearchParams();
+	const error = searchParams.get("error");
 
-	const handleGoogleLogin = async () => {
+	const handleGoogleLogin = () => {
 		setIsLoading(true);
-
-		// TODO: Implement Google OAuth flow
-		// This will redirect to Google's OAuth consent screen
-		// and handle the callback with the authentication token
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		setIsLoading(false);
+		// Redirect to backend OAuth endpoint
+		window.location.href = `${API_URL}/oauth2/google`;
 	};
 
 	return (
@@ -92,6 +93,24 @@ export const LoginPage = () => {
 										A simple way to journal and reflect on your day with timely, thought-provoking prompts
 									</Typography>
 								</Box>
+
+								{/* Error Alert */}
+								{error && (
+									<Fade in>
+										<Alert
+											severity="error"
+											sx={{
+												width: "100%",
+												maxWidth: 400,
+												borderRadius: 2,
+											}}
+										>
+											{error === "oauth_failed"
+												? "Authentication failed. Please try again."
+												: "An error occurred during login. Please try again."}
+										</Alert>
+									</Fade>
+								)}
 
 								{/* Google Sign In Button */}
 								<Box sx={{ width: "100%", maxWidth: 360 }}>

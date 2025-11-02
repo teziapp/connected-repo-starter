@@ -6,7 +6,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  */
-import { env } from "@backend/configs/env.config";
+import { env, isDev, isProd } from "@backend/configs/env.config";
 import { loggerConfig } from "@backend/configs/logger.config";
 import { db } from "@backend/db/db";
 import { registerErrorHandler } from "@backend/middlewares/errorHandler";
@@ -28,20 +28,25 @@ export const logger = app.log;
 // Register cookie support for sessions
 app.register(cookie);
 
-// Create database session store
-const sessionStore = new DatabaseSessionStore(db);
-
+// Session configuration
 export const cookieMaxAge = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+// Create database session store
+const sessionStore = new DatabaseSessionStore(db, cookieMaxAge);
 
 // Register session management with database-backed storage
 app.register(session, {
 	secret: env.SESSION_SECRET,
 	store: sessionStore,
 	cookie: {
-		secure: env.NODE_ENV === "production", // Only send cookie over HTTPS in production
+		secure: isProd, // true in production (HTTPS), false in development (HTTP)
 		httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
 		maxAge: cookieMaxAge, // Cookie expiration time
 		sameSite: "lax", // Provides some CSRF protection
+		path: "/", // Cookie available for all paths
+		// IMPORTANT: For cross-port localhost communication (dev: :3000 ↔ :5173)
+		// we need domain=localhost and sameSite=lax
+		domain: isDev ? "localhost" : undefined, // Allow cross-port in dev
 	},
 });
 

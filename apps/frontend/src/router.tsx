@@ -1,6 +1,7 @@
 import { ErrorFallback } from "@frontend/components/error_fallback";
+import { authLoader } from "@frontend/utils/auth.loader";
 import { lazy } from "react";
-import { createBrowserRouter, Outlet, type RouteObject } from "react-router";
+import { createBrowserRouter, Outlet, redirect, type RouteObject } from "react-router";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -19,7 +20,7 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 		children: [
 			{
 				index: true,
-				// element: <AuthVerifier />,
+				loader: () => redirect("/dashboard"),
 			},
 			{
 				path: "auth/*",
@@ -28,14 +29,12 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 			{
 				path: "dashboard",
 				Component: lazy(() => import("@frontend/pages/Dashboard.page")),
+				loader: authLoader,
 			},
 			{
 				path: "demo",
-				// FIXME: This is not working. Need to investigate why.
-				lazy: async () => {
-					const DatabaseDemo = await import("@frontend/pages/DatabaseDemo");
-					return { Component: DatabaseDemo };
-				},
+				Component: lazy(() => import("@frontend/pages/DatabaseDemo")),
+				loader: authLoader,
 			},
 		],
 	},

@@ -1,13 +1,12 @@
-import { BaseTable } from "@backend/db/base_table";
+import { BaseTable, sql } from "@backend/db/base_table";
 import { UserTable } from "@backend/modules/users/users/users.table";
-import { ulid } from "ulid";
 
 export class SessionTable extends BaseTable {
 	readonly table = "session";
 
 	columns = this.setColumns((t) => ({
-		sessionId: t.uuid().primaryKey().default(() => ulid()),
-		userId: t.string().nullable(),
+		sessionId: t.string().primaryKey(),
+		userId: t.uuid().nullable(),
 		email: t.string(),
 		name: t.string().nullable(),
 		displayPicture: t.string().nullable(),
@@ -23,7 +22,7 @@ export class SessionTable extends BaseTable {
 	}),
 	(t) => [
 		t.index([
-			"userId", 
+			"sessionId", 
 			{ column: "expiresAt", order: "DESC" }, 
 			{ column: "markedInvalidAt", order: "DESC" },
 			"device",
@@ -38,4 +37,13 @@ export class SessionTable extends BaseTable {
 			foreignKey: false
 		}),
 	};
+
+	scopes = this.setScopes({
+		default: (q) => q.where({ 
+			expiresAt: {
+				gt: sql`NOW()`
+			},
+			markedInvalidAt: null 
+		}),
+	})
 }
