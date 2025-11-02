@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [
 		{
-			name: "tezi-fast",
+			name: "oneq",
 			script: "dist/src/server.js",
 			instances: "max",
 			watch: false,

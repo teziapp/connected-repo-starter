@@ -1,7 +1,10 @@
 import { isDev } from "@backend/configs/env.config";
+import { SessionSecurityLevel, validateSessionSecurity } from "@backend/middlewares/sessionSecurity.middleware";
 import { trpcErrorParser } from "@backend/utils/errorParser";
+import { getClientIpAddress } from "@backend/utils/request-metadata.utils";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
+import { BurstyRateLimiter, RateLimiterMemory } from "rate-limiter-flexible";
 
 // Define user type
 export const createTRPCContext = (input: CreateFastifyContextOptions) => {
@@ -79,6 +82,70 @@ const isAuthenticatedMiddleware = t.middleware(({ ctx, next }) => {
 	return next();
 });
 
+/**
+ * Session security middleware - validates device fingerprint and IP for suspicious activity
+ * Uses MODERATE mode by default to avoid disrupting user experience
+ * For sensitive operations, use sensitiveProcedure instead
+ */
+const sessionSecurityMiddleware = (securityLevel: SessionSecurityLevel = SessionSecurityLevel.MODERATE) => t.middleware(({ ctx, next }) => {
+	const result = validateSessionSecurity(ctx.req, securityLevel);
+
+	if (result.action === "block") {
+		throw new TRPCError({
+			code: "FORBIDDEN",
+			message: "Session security validation failed. Please log in again.",
+		});
+	}
+
+	return next();
+});
 
 // Protected procedure with database error handling
 export const protectedProcedure = publicProcedure.use(isAuthenticatedMiddleware);
+
+/**
+ * Sensitive procedure - for operations requiring additional security validation
+ * Use this for: password changes, account deletion, payment processing, admin actions, etc.
+ */
+export const sensitiveProcedure = protectedProcedure.use(sessionSecurityMiddleware(SessionSecurityLevel.STRICT));
+
+/**
+ * Rate limiting middleware for tRPC procedures
+ * Uses rate-limiter-flexible with in-memory storage
+ */
+const rateLimiters = {
+	moderate: new BurstyRateLimiter(
+		new RateLimiterMemory({ points: 20, duration: 60 }), // 20 req/min
+		new RateLimiterMemory({ keyPrefix: "burst", points: 5, duration: 120 }),
+	),
+	strict: new BurstyRateLimiter(
+		new RateLimiterMemory({ points: 5, duration: 60 }), // 5 req/min
+		new RateLimiterMemory({ keyPrefix: "burst", points: 2, duration: 300 }),
+	),
+};
+
+export const moderateRateLimit = t.middleware(async ({ ctx, next }) => {
+	const ip = getClientIpAddress(ctx.req);
+	try {
+		await rateLimiters.moderate.consume(ip);
+		return next();
+	} catch {
+		throw new TRPCError({
+			code: "TOO_MANY_REQUESTS",
+			message: "Too many requests. Please try again later.",
+		});
+	}
+});
+
+export const strictRateLimit = t.middleware(async ({ ctx, next }) => {
+	const ip = getClientIpAddress(ctx.req);
+	try {
+		await rateLimiters.strict.consume(ip);
+		return next();
+	} catch {
+		throw new TRPCError({
+			code: "TOO_MANY_REQUESTS",
+			message: "Too many attempts. Please wait and try again.",
+		});
+	}
+});

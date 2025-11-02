@@ -12,20 +12,6 @@ import { app, logger } from "@backend/app";
 import { env, isDev, isProd, isStaging, isTest } from "@backend/configs/env.config";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import { BurstyRateLimiter, RateLimiterMemory } from "rate-limiter-flexible";
-
-// Create global rate limiter
-const globalRateLimiter = new BurstyRateLimiter(
-	new RateLimiterMemory({
-		points: 2, // 2 requests
-		duration: 1, // per second
-	}),
-	new RateLimiterMemory({
-		keyPrefix: "burst",
-		points: 5, // 5 requests
-		duration: 10, // per 10 seconds
-	}),
-);
 
 // Extend allowed origins with Capacitor/Ionic local origins
 const allowedOrigins = [...(env.ALLOWED_ORIGINS?.split(",") || [])];
@@ -36,19 +22,6 @@ logger.info(env.ALLOWED_ORIGINS, "ALLOWED_ORIGINS env:");
 
 export const build = async () => {
 	const server = app;
-
-	// Global rate limiting hook
-	if ((isProd || isStaging) && globalRateLimiter) {
-		server.addHook("preHandler", async (req, reply) => {
-			try {
-				await globalRateLimiter.consume(req.ip);
-			} catch (_err) {
-				reply.code(429).send({
-					error: "Too Many Requests please try again later.",
-				});
-			}
-		});
-	}
 
 	await server.register(cors, {
 		origin: (origin, cb) => {

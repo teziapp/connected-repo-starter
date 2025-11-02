@@ -1,4 +1,4 @@
-import type { AppTrpcRouter } from "@backend/router.trpc";
+import type { AppTrpcRouter } from "@backend/routers/trpc.router";
 import { env } from "@frontend/configs/env.config";
 import { queryClient } from '@frontend/utils/queryClient';
 import { createTRPCClient, httpBatchStreamLink } from '@trpc/client';

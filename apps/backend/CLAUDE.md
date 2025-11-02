@@ -1,0 +1,1 @@
+- Always use database time for any date/time related operations. Dont use javascript date object.

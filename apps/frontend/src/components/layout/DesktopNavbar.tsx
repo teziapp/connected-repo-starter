@@ -56,7 +56,7 @@ export const DesktopNavbar = () => {
 							letterSpacing: -0.5,
 						}}
 					>
-						TezApp
+						OneQ
 					</Typography>
 				</Box>
 

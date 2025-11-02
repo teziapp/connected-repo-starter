@@ -34,6 +34,7 @@ export class SessionTable extends BaseTable {
 		user: this.belongsTo(() => UserTable, {
 			columns: ["userId"],
 			references: ["userId"],
+			// Foreign Key is set to false to preserve userId data in event of user deletion.
 			foreignKey: false
 		}),
 	};

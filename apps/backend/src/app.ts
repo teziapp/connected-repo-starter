@@ -10,13 +10,11 @@ import { env, isDev, isProd } from "@backend/configs/env.config";
 import { loggerConfig } from "@backend/configs/logger.config";
 import { db } from "@backend/db/db";
 import { registerErrorHandler } from "@backend/middlewares/errorHandler";
-import { oauth2Plugin } from "@backend/modules/auth/oauth2/oauth2.auth.plugin";
 import { DatabaseSessionStore } from "@backend/modules/auth/session.auth.store";
-import { appTrpcRouter } from "@backend/router.trpc";
-import { createTRPCContext, type TrpcContext } from "@backend/trpc";
+import { appRouter } from "@backend/routers/app.router";
 import cookie from "@fastify/cookie";
+import rateLimit from "@fastify/rate-limit";
 import session from "@fastify/session";
-import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import fastify from "fastify";
 
 export const app = fastify({
@@ -27,6 +25,21 @@ export const logger = app.log;
 
 // Register cookie support for sessions
 app.register(cookie);
+
+// Global rate limiting (generous limits to prevent DoS)
+// Uses in-memory storage (upgrade to Redis for production with multiple servers)
+app.register(rateLimit, {
+	global: true,
+	max: 200, // 200 requests
+	timeWindow: 1000 * 60, // per minute per IP
+	cache: 10000, // Keep 10k IPs in memory
+	allowList: isDev ? ["127.0.0.1", "::1", "localhost"] : undefined, // Skip rate limit in dev for localhost
+	errorResponseBuilder: () => ({
+		statusCode: 429,
+		error: "Too Many Requests",
+		message: "Rate limit exceeded. Please try again later.",
+	}),
+});
 
 // Session configuration
 export const cookieMaxAge = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -51,67 +64,7 @@ app.register(session, {
 });
 
 // Register OAuth2 module (all OAuth2 providers + routes)
-app.register(oauth2Plugin, {
-	prefix: "/oauth2"
-});
-
-// Define a simple route with Zod validation
-app.get(
-	"/",
-	{
-		schema: {
-			response: {
-				200: {
-					type: "object",
-					properties: {
-						message: { type: "string" },
-					},
-					required: ["message"],
-				},
-			},
-		},
-	},
-	async () => {
-		app.log.info("Hello API endpoint hit app.log.info");
-		return { message: "Hello API" };
-	},
-);
-
-app.register(fastifyTRPCPlugin, {
-	prefix: "/trpc",
-	trpcOptions: {
-		router: appTrpcRouter,
-		createContext: createTRPCContext,
-		/**
-		 * tRPC error logger for Fastify
-		 */
-		onError({
-			error,
-			path,
-			type,
-			ctx,
-			input,
-		}: {
-			error: Error;
-			path?: string;
-			type?: string;
-			ctx?: TrpcContext;
-			input?: unknown;
-		}) {
-			app.log.error(
-				{
-					error: error.message,
-					stack: error.stack,
-					path,
-					type,
-					input,
-					userId: ctx?.userId,
-				},
-				"tRPC error",
-			);
-		},
-	},
-});
+app.register(appRouter);
 
 // Register central error handler
 registerErrorHandler(app);

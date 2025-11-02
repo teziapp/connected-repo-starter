@@ -100,7 +100,7 @@ export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
 								letterSpacing: -0.5,
 							}}
 						>
-							TezApp
+							OneQ
 						</Typography>
 					</Box>
 

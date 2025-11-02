@@ -1,6 +1,8 @@
+import { sql } from "@backend/db/base_table";
 import { db } from "@backend/db/db";
 import { generateDeviceFingerprint, getClientIpAddress, parseUserAgent } from "@backend/utils/request-metadata.utils";
 import type { FastifySessionObject } from "@fastify/session";
+import { TRPCError } from "@trpc/server";
 import type { FastifyRequest } from "fastify";
 
 /**
@@ -72,7 +74,7 @@ export const setSession = (
 export async function clearSession(request: FastifyRequest): Promise<void> {
 	// Regenerate creates a new session with a new sessionId
 	// The old session will be marked invalid in the database
-	// Needed for when the user logs outand the existing session is marked invalid.
+	// Needed for when the user logs out and the existing session is marked invalid.
 	await new Promise<void>((resolve, reject) => {
 		request.session.regenerate((err) => {
 			if (err) reject(err);
@@ -89,8 +91,7 @@ export async function invalidateAllUserSessions(userId: string): Promise<number>
 	const result = await db.session
 		.where({ userId, markedInvalidAt: null })
 		.update({
-			markedInvalidAt: new Date(),
-			updatedAt: Date.now(),
+			markedInvalidAt: () => sql`NOW()`,
 		});
 
 	return result;
@@ -105,23 +106,27 @@ export async function updateSessionUserId(
 	request: FastifyRequest,
 	userId: string
 ): Promise<void> {
-	if(!request.session.user) {
-		throw new Error("No session user found to update userId");
-	};
+	if (!request.session.user) {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "No session user found to update userId"
+		});
+	}
 
-	// Update in-memory session
+	const sessionId = request.session.sessionId;
+	if (!sessionId) {
+		throw new TRPCError({
+			code: "INTERNAL_SERVER_ERROR",
+			message: "Session ID not found"
+		});
+	}
+
+	// Update database FIRST - prevents race condition where in-memory has userId but DB doesn't
+	await db.session.find(sessionId).update({ userId });
+
+	// Only update in-memory session if DB update succeeded
 	request.session.user = {
-		...request.session.user!,
+		...request.session.user,
 		userId,
 	};
-
-	// Update database session record
-	const sessionId = request.session.sessionId;
-	if (sessionId) {
-		await db.session
-			.find(sessionId)
-			.update({
-				userId,
-			});
-	}
 }
