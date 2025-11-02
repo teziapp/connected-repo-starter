@@ -19,6 +19,7 @@
 	"peerDependencies": {
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.1",
+		"@mui/icons-material": "^7.3.4",
 		"@mui/material": "^7.3.4",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0"
@@ -35,8 +36,7 @@
 			"default": "./dist/components/*.js"
 		},
 		"./theme/*": {
-			"_cant-load-from-src-as-there-are-absoulte-imports-in-them": null,
-			"types": "./dist/theme/*.d.ts",
+			"types": "./src/theme/*.tsx",
 			"import": "./dist/theme/*.js",
 			"default": "./dist/theme/*.js"
 		},
@@ -59,6 +59,19 @@
 			"types": "./src/data-display/*.tsx",
 			"import": "./dist/data-display/*.js",
 			"default": "./dist/data-display/*.js"
+		},
+		"./navigation/*": {
+			"types": "./src/navigation/*.ts",
+			"import": "./dist/navigation/*.js",
+			"default": "./dist/navigation/*.js"
+		},
+		"./icons/*": {
+			"types": "./src/icons/*.ts",
+			"import": "./dist/icons/*.js",
+			"default": "./dist/icons/*.js"
 		}
+	},
+	"dependencies": {
+		"@mui/icons-material": "^7.3.4"
 	}
 }

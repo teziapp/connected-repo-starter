@@ -7,7 +7,7 @@
  * (at your option) any later version.
  */
 import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
-import { ThemeProvider } from "@connected-repo/ui-mui/theme/ThemeProvider";
+import { ThemeContextProvider } from "@connected-repo/ui-mui/theme/ThemeContext";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
@@ -19,13 +19,13 @@ import { router } from "@frontend/router";
 // `main.tsx` following the tRPC + TanStack React Query recommended setup.
 function App() {
 	return (
-		<ThemeProvider>
+		<ThemeContextProvider>
 			<Suspense fallback={<LoadingSpinner text="Loading..." />}>
 				<ErrorBoundary fallback={<ErrorFallback />}>
 					<RouterProvider router={router} />
 				</ErrorBoundary>
 			</Suspense>
-		</ThemeProvider>
+		</ThemeContextProvider>
 	);
 }
 

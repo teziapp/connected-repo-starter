@@ -66,11 +66,19 @@ export const setSession = (
 };
 
 /**
- * Clear/destroy a single session
- * This marks the session as invalid in the database
+ * Clear/destroy a single session and regenerate a new one
+ * This marks the old session as invalid and creates a new session with a new ID
  */
-export function clearSession(request: FastifyRequest) {
-	request.session.destroy();
+export async function clearSession(request: FastifyRequest): Promise<void> {
+	// Regenerate creates a new session with a new sessionId
+	// The old session will be marked invalid in the database
+	// Needed for when the user logs outand the existing session is marked invalid.
+	await new Promise<void>((resolve, reject) => {
+		request.session.regenerate((err) => {
+			if (err) reject(err);
+			else resolve();
+		});
+	});
 }
 
 /**

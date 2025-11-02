@@ -1,4 +1,5 @@
 import { publicProcedure, trpcRouter } from "@backend/trpc";
+import { clearSession } from "./session.auth.utils";
 
 export const authRouterTrpc = trpcRouter({
 	// Get current session info (for pre-filling registration form)
@@ -10,7 +11,7 @@ export const authRouterTrpc = trpcRouter({
 				user: {
 					email: ctx.req.session.user.email,
 					name: ctx.req.session.user.name,
-					picture: ctx.req.session.user.displayPicture,
+					displayPicture: ctx.req.session.user.displayPicture,
 				},
 				isRegistered: !!ctx.req.session.user.userId, // Has database userId
 			};
@@ -21,5 +22,11 @@ export const authRouterTrpc = trpcRouter({
 			user: null,
 			isRegistered: false,
 		};
+	}),
+
+	// Logout - destroys current session and generates new session ID
+	logout: publicProcedure.mutation(async ({ ctx }) => {
+		await clearSession(ctx.req);
+		return { success: true };
 	}),
 });
