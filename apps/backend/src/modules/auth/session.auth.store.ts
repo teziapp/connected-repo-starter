@@ -1,4 +1,3 @@
-import { cookieMaxAge } from "@backend/app";
 import { sql } from "@backend/db/base_table";
 import type { db } from "@backend/db/db";
 import type { SessionStore } from "@fastify/session";
@@ -11,13 +10,17 @@ type Database = typeof db;
  */
 export class DatabaseSessionStore implements SessionStore {
 	private db: Database;
+	private cookieMaxAgeSeconds: number;
 
-	constructor(db: Database) {
+	constructor(db: Database, cookieMaxAgeMs: number) {
 		this.db = db;
+		// Convert to seconds for PostgreSQL interval
+		this.cookieMaxAgeSeconds = Math.floor(cookieMaxAgeMs / 1000);
 	}
 
 	/**
 	 * Store a session in the database
+	 * Only saves to DB if session contains user data (after OAuth)
 	 */
 	async set(
 		sessionId: string,
@@ -25,20 +28,23 @@ export class DatabaseSessionStore implements SessionStore {
 		callback: (err?: Error) => void,
 	): Promise<void> {
 		try {
+			// Skip DB write for sessions without user data (pre-OAuth)
+			// These sessions still work via cookie, just not persisted to DB
 			if (!session.user) {
-				return callback(new Error("Session must contain user data"));
+				return callback();
 			}
 
 			// Upsert session data
+			// Try to update existing session first
 			await this.db.session
+				.selectAll()
 				.findBy({ sessionId })
-				.update({
-					// Update session expiry every time it's set
-					expiresAt: () => sql`NOW() + INTERVAL ${cookieMaxAge} SECOND `,
-				})
-				.catch(async () => {
-					// If session doesn't exist, create it
-					await this.db.session.create({
+				.upsert({
+					data: {
+						// Update session expiry every time it's set
+						expiresAt: () => sql`NOW() + ${this.cookieMaxAgeSeconds} * INTERVAL '1 SECOND'`,
+					},
+					create: {
 						sessionId,
 						userId: session.user?.userId || null,  // Database user ID (nullable for OAuth users pending registration)
 						email: session.user!.email,
@@ -50,9 +56,8 @@ export class DatabaseSessionStore implements SessionStore {
 						os: session.metadata?.os || null,
 						device: session.metadata?.device || null,
 						deviceFingerprint: session.metadata?.deviceFingerprint || null,
-						expiresAt: () => sql`NOW() + INTERVAL ${cookieMaxAge} SECOND `,
 						markedInvalidAt: null,
-					});
+					}
 				});
 
 			callback();
@@ -71,17 +76,12 @@ export class DatabaseSessionStore implements SessionStore {
 	): Promise<void> {
 		try {
 			const sessionData = await this.db.session
-				.findOptional(
-					sessionId,
-				).where({
-					markedInvalidAt: null,
-					expiresAt: {
-						gt: sql`NOW()`
-					},
-				})
 				.select("*", {
 					user: (q) => q.user.select("name", "displayPicture"),
-				});
+				})
+				.findOptional(
+					sessionId,
+				);
 
 			// Session not found
 			if (!sessionData) {
@@ -144,7 +144,7 @@ export class DatabaseSessionStore implements SessionStore {
 		try {
 
 			await this.db.session.findBy({ sessionId }).update({
-				expiresAt: () => sql`NOW() + INTERVAL ${cookieMaxAge} SECOND `,
+				expiresAt: () => sql`NOW() + ${this.cookieMaxAgeSeconds} * INTERVAL '1 SECOND'`,
 			});
 
 			callback();

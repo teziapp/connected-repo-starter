@@ -29,7 +29,7 @@ export const GOOGLE_OAUTH2_CONFIG = {
 		auth: oauthPlugin.GOOGLE_CONFIGURATION,
 	},
 	scope: ["profile", "email"],
-	startRedirectPath: "/auth/google",
+	startRedirectPath: "/",
 	callbackUri: `${env.VITE_API_URL}/oauth2/google/callback`,
 };
 
@@ -86,7 +86,7 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 			const existingUser = await db.user
 				.select("userId", "email", "name", "displayPicture")
 				.findBy({ email: googleUserInfo.email })
-				.take();
+				.takeOptional();
 
 			if (existingUser) {
 				// Existing user found - link session to database user and redirect to dashboard
@@ -105,7 +105,11 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 				return oauth2SuccessHandler(request, reply, sessionUser);
 			}
 		} catch (error) {
-			app.log.error({ error }, "OAuth callback error");
+			app.log.error({
+				error,
+				message: error instanceof Error ? error.message : 'Unknown error',
+				stack: error instanceof Error ? error.stack : undefined,
+			}, "OAuth callback error");
 			// Use centralized error handler for consistent error handling
 			return oauth2ErrorHandler(reply);
 		}

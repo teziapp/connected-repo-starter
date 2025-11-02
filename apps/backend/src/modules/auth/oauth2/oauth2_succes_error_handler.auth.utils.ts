@@ -22,5 +22,5 @@ export const oauth2ErrorHandler = (
 	reply: FastifyReply,
 	errorType = "oauth_failed",
 ) => {
-	return reply.redirect(`${env.WEBAPP_URL}/login?error=${errorType}`);
+	return reply.redirect(`${env.WEBAPP_URL}/auth/login?error=${errorType}`);
 }

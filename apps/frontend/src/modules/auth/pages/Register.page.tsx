@@ -12,7 +12,7 @@ import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { userCreateInputZod } from "@connected-repo/zod-schemas/user.zod";
 import { trpc } from "@frontend/utils/trpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -24,7 +24,7 @@ const RegisterPage = () => {
 	const navigate = useNavigate();
 
 	// Fetch session info to pre-fill form
-	const { data: sessionInfo, isLoading: isLoadingSession } = useQuery(trpc.auth.getSessionInfo.queryOptions());
+	const { data: sessionInfo, isLoading: isLoadingSession } = useSuspenseQuery(trpc.auth.getSessionInfo.queryOptions());
 
 	// Register mutation
 	const registerMutation = useMutation(trpc.users.create.mutationOptions({
@@ -48,6 +48,7 @@ const RegisterPage = () => {
 		if (sessionInfo?.user) {
 			setValue("email", sessionInfo.user.email);
 			setValue("name", sessionInfo.user.name || "");
+			setValue("displayPicture", sessionInfo.user.picture || null);
 		}
 	}, [sessionInfo, setValue]);
 
@@ -61,7 +62,7 @@ const RegisterPage = () => {
 	// Redirect if no session
 	useEffect(() => {
 		if (sessionInfo && !sessionInfo.hasSession) {
-			navigate("/login");
+			navigate("/auth/login");
 		}
 	}, [sessionInfo, navigate]);
 
@@ -136,6 +137,9 @@ const RegisterPage = () => {
 								sx={{ width: "100%" }}
 							>
 								<Stack spacing={3}>
+									{/* Hidden displayPicture field */}
+									<input type="hidden" {...register("displayPicture")} />
+
 									{/* Email Field (pre-filled, readonly) */}
 									<TextField
 										label="Email Address"

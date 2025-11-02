@@ -1,7 +1,6 @@
 import { Avatar } from "@connected-repo/ui-mui/data-display/Avatar";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { Alert } from "@connected-repo/ui-mui/feedback/Alert";
-import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
 import { Fade } from "@connected-repo/ui-mui/feedback/Fade";
 import { Button } from "@connected-repo/ui-mui/form/Button";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
@@ -10,44 +9,10 @@ import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
 import { trpc } from "@frontend/utils/trpc.client";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
 
 const DashboardPage = () => {
-	const navigate = useNavigate();
-
-	// Fetch session info to verify authentication
-	const { data: sessionInfo, isLoading } = useQuery(trpc.auth.getSessionInfo.queryOptions());
-
-	// Redirect if not authenticated or not registered
-	useEffect(() => {
-		if (sessionInfo) {
-			if (!sessionInfo.hasSession) {
-				navigate("/auth/login");
-			} else if (!sessionInfo.isRegistered) {
-				navigate("/auth/register");
-			}
-		}
-	}, [sessionInfo, navigate]);
-
-	if (isLoading) {
-		return (
-			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					minHeight: "100vh",
-				}}
-			>
-				<CircularProgress />
-			</Box>
-		);
-	}
-
-	if (!sessionInfo?.hasSession || !sessionInfo.isRegistered) {
-		return null; // Will redirect via useEffect
-	}
+	// Fetch session info to display user data
+	const { data: sessionInfo } = useQuery(trpc.auth.getSessionInfo.queryOptions());
 
 	return (
 		<Box
