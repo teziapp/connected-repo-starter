@@ -1,9 +1,12 @@
-import { publicProcedure, trpcRouter } from "@backend/trpc";
+import { moderateRateLimit, publicProcedure, trpcRouter } from "@backend/trpc";
 import { clearSession } from "./session.auth.utils";
 
 export const authRouterTrpc = trpcRouter({
 	// Get current session info (for pre-filling registration form)
-	getSessionInfo: publicProcedure.query(async ({ ctx }) => {
+	// Rate limited to prevent DoS and session probing attacks (20 req/min per IP)
+	getSessionInfo: publicProcedure
+		.use(moderateRateLimit)
+		.query(async ({ ctx }) => {
 		// Return session user data if session exists
 		if (ctx.req.session?.user) {
 			return {

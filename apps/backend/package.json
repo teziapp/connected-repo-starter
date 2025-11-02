@@ -21,6 +21,7 @@
 		"@fastify/cors": "^11.1.0",
 		"@fastify/helmet": "^13.0.2",
 		"@fastify/oauth2": "^8.1.2",
+		"@fastify/rate-limit": "^10.3.0",
 		"@fastify/session": "^11.1.0",
 		"fastify": "^5.6.1",
 		"orchid-orm": "^1.57.6",
