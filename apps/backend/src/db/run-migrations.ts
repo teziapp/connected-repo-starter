@@ -23,9 +23,9 @@ const runMigrations = async () => {
 
 	const { run } = rakeDb.lazy([dbConfig], {
 		baseTable: BaseTable,
-		dbPath: "./db",
+		dbPath: "apps/backend/src/db",
 		migrationId: "serial",
-		migrationsPath: "./migrations",
+		migrationsPath: "apps/backend/src/db/migrations",
 		import: (path) => import(path),
 		// Callback fires after migrations are applied
 		async afterMigrate({ migrations }) {

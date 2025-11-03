@@ -11,7 +11,6 @@ WORKDIR /app
 
 # Copy package manager files
 COPY package.json yarn.lock ./
-COPY .yarnrc ./
 
 # Copy workspace package.json files for dependency installation
 COPY apps/backend/package.json ./apps/backend/
@@ -51,7 +50,6 @@ WORKDIR /app
 
 # Copy package manager files
 COPY package.json yarn.lock ./
-COPY .yarnrc ./
 
 # Copy workspace package.json files
 COPY apps/backend/package.json ./apps/backend/
