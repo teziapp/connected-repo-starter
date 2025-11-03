@@ -1,10 +1,11 @@
 import { BaseTable } from "@backend/db/base_table";
+import { ulid } from "ulid";
 
 export class SubscriptionsTable extends BaseTable {
   readonly table = "subscriptions";
 
   columns = this.setColumns((t) => ({
-    subscriptionId: t.uuid().primaryKey(),
+    subscriptionId: t.string().primaryKey().default(() => ulid()),
     teamId: t.uuid(),
     teamReferenceId: t.string(),
     maxRequests: t.integer(),
