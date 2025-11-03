@@ -1,54 +1,17 @@
-import swagger from "@fastify/swagger";
-import swaggerUI from "@fastify/swagger-ui";
-import type { FastifyInstance } from "fastify";
-import {
-	type FastifyZodOpenApiSchema,
-	type FastifyZodOpenApiTypeProvider,
-	fastifyZodOpenApiPlugin,
-	fastifyZodOpenApiTransform,
-	fastifyZodOpenApiTransformObject,
-	serializerCompiler,
-	validatorCompiler,
-} from "fastify-zod-openapi";
+import { FastifyInstance } from "fastify";
+import { FastifyZodOpenApiSchema, FastifyZodOpenApiTypeProvider } from "fastify-zod-openapi";
 import z from "zod";
 
-export const apiRouter = async (app: FastifyInstance) => {
-
-	// Set Zod validator and serializer for OpenAPI compatibility
-	app.setValidatorCompiler(validatorCompiler);
-	app.setSerializerCompiler(serializerCompiler);
-
-	// Register OpenAPI plugin for this router only
-	await app.register(fastifyZodOpenApiPlugin);
-
-	// Register Swagger with OpenAPI 3.1.0 spec
-	await app.register(swagger, {
-		openapi: {
-			info: {
-				title: "Connected Repo REST API",
-				description: "REST API documentation for /api routes only",
-				version: "1.0.0",
-			},
-			servers: [
-				{
-					url: "http://localhost:3000/api",
-					description: "Development server",
-				},
-			],
-		},
-		transform: fastifyZodOpenApiTransform,
-		transformObject: fastifyZodOpenApiTransformObject,
-	});
-
-	// Register Swagger UI for interactive documentation
-	await app.register(swaggerUI, {
-		routePrefix: "/api/documentation",
-	});
-
-	// API routes
+export const apiRouter = (app: FastifyInstance) => {
+	/**
+	 * GET /api - Health check / root endpoint
+	 *
+	 * Returns a simple message to verify the API is running.
+	 * This endpoint appears in Swagger UI with full schema documentation.
+	 */
 	app.withTypeProvider<FastifyZodOpenApiTypeProvider>().route({
 		method: "GET",
-		url: "/api",
+		url: "/",
 		schema: {
 			response: {
 				200: z.object({
@@ -64,4 +27,7 @@ export const apiRouter = async (app: FastifyInstance) => {
 			return reply.send({ message: "Hello from API" });
 		},
 	});
-};
+
+	// Add more routes here following the pattern above
+	// Each route will automatically generate OpenAPI documentation
+}
