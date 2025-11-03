@@ -63,6 +63,24 @@ app.register(session, {
 	},
 });
 
+// Configure custom not-found handler with stricter rate limiting
+// This prevents malicious 404 scanning attacks
+app.setNotFoundHandler(
+	{
+		preHandler: app.rateLimit({
+			max: 10, // 10 requests
+			timeWindow: 1000 * 60, // per minute per IP (stricter than global)
+		}),
+	},
+	function (_request, reply) {
+		reply.code(404).send({
+			statusCode: 404,
+			error: "Not Found",
+			message: "Route not found",
+		});
+	},
+);
+
 // Register OAuth2 module (all OAuth2 providers + routes)
 app.register(appRouter);
 
