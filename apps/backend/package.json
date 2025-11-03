@@ -23,7 +23,10 @@
 		"@fastify/oauth2": "^8.1.2",
 		"@fastify/rate-limit": "^10.3.0",
 		"@fastify/session": "^11.1.0",
+		"@fastify/swagger": "^9.5.2",
+		"@fastify/swagger-ui": "^5.2.3",
 		"fastify": "^5.6.1",
+		"fastify-zod-openapi": "^5.5.0",
 		"orchid-orm": "^1.57.6",
 		"rate-limiter-flexible": "^8.1.0",
 		"ua-parser-js": "^2.0.6"

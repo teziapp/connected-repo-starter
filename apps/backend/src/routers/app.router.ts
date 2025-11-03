@@ -67,7 +67,5 @@ export const appRouter = (app: FastifyInstance) => {
     },
   });
 
-  app.register(apiRouter, {
-    prefix: "/api"
-  });
+  app.register(apiRouter);
 }
