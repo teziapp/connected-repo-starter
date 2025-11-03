@@ -58,7 +58,7 @@ COPY packages/typescript-config/package.json ./packages/typescript-config/
 
 # Install production dependencies only
 # Note: pg is in devDependencies but required at runtime by Orchid ORM
-RUN yarn install --frozen-lockfile --production=false && \
+RUN yarn install --frozen-lockfile --production && \
     yarn cache clean
 
 # Copy built backend from builder stage (includes compiled run-migrations.js)
