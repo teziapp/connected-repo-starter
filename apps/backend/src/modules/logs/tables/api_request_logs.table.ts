@@ -5,7 +5,7 @@ export class ApiRequestLogsTable extends BaseTable {
   readonly table = "api_request_logs";
   
   columns = this.setColumns((t) => ({
-    apiRequestId: t.string().default(() => ulid()),
+    apiRequestId: t.string().primaryKey().default(() => ulid()),
     teamId: t.uuid(),
     teamReferenceId: t.string(),
     requestBodyText: t.text(),
