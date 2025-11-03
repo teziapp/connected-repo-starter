@@ -1,5 +1,5 @@
-import { apiRouter } from "@backend/routers/api.router";
 import { oauth2Router } from "@backend/routers/oauth2.router";
+import { openapiPlugin } from "@backend/routers/openapi.plugin";
 import { appTrpcRouter } from "@backend/routers/trpc.router";
 import { createTRPCContext, type TrpcContext } from "@backend/trpc";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
@@ -67,7 +67,5 @@ export const appRouter = (app: FastifyInstance) => {
     },
   });
 
-  app.register(apiRouter, {
-    prefix: "/api"
-  });
+  app.register(openapiPlugin);
 }
