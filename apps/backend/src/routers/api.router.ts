@@ -1,7 +1,36 @@
+/**
+ * @example Adding new OpenAPI routes:
+ *
+ * // 1. Create Zod schema in packages/zod-schemas/src/
+ * export const userResponseZod = z.object({
+ *   userId: z.uuid().meta({ description: "User ID" }),
+ *   name: z.string().meta({ description: "User name", example: "John Doe" }),
+ * });
+ *
+ * // 2. Import and use in router with .withTypeProvider()
+ * app.withTypeProvider<FastifyZodOpenApiTypeProvider>().route({
+ *   method: "GET",
+ *   url: "/users/:id",
+ *   schema: {
+ *     params: z.object({ id: z.uuid() }),
+ *     response: {
+ *       200: userResponseZod,
+ *     },
+ *   } satisfies FastifyZodOpenApiSchema,
+ *   handler: async (req, reply) => {
+ *     // Your handler logic
+ *   },
+ * });
+ */
 import { FastifyInstance } from "fastify";
 import { FastifyZodOpenApiSchema, FastifyZodOpenApiTypeProvider } from "fastify-zod-openapi";
 import z from "zod";
 
+// ============================================================
+// API Routes
+// ============================================================
+// All routes defined below will automatically appear in OpenAPI spec
+// Use .withTypeProvider<FastifyZodOpenApiTypeProvider>() for type safety
 export const apiRouter = (app: FastifyInstance) => {
 	/**
 	 * GET /api - Health check / root endpoint
