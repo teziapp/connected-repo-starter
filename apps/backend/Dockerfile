@@ -55,4 +55,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   }).on('error', () => process.exit(1));"
 
 # Run migrations then start server
-CMD ["sh", "-c", "yarn turbo db -- migrate && node apps/backend/dist/server.js"]
+CMD ["sh", "-c", "turbo db -- up && node apps/backend/dist/server.js"]
