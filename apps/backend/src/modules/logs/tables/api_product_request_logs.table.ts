@@ -1,4 +1,5 @@
 import { BaseTable } from "@backend/db/base_table";
+import { UserTable } from "@backend/modules/users/users/users.table";
 import { ulid } from "ulid";
 
 export class ApiProductRequestLogsTable extends BaseTable {
@@ -19,4 +20,12 @@ export class ApiProductRequestLogsTable extends BaseTable {
     responseTime: t.integer(),
     ...t.timestamps(),
   }));
+
+  relations = {
+    author: this.belongsTo(() => UserTable, {
+      columns: ["teamUserReferenceId"],
+      references: ["userId"],
+      foreignKey: false // Disable foreign key constraint so that detail is not lost from logs.
+    }),
+  }
 }

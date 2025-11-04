@@ -88,7 +88,7 @@ export async function clearSession(request: FastifyRequest): Promise<void> {
  * Useful for forced logout across all devices
  */
 export async function invalidateAllUserSessions(userId: string): Promise<number> {
-	const result = await db.session
+	const result = await db.sessions
 		.where({ userId, markedInvalidAt: null })
 		.update({
 			markedInvalidAt: () => sql`NOW()`,
@@ -122,7 +122,7 @@ export async function updateSessionUserId(
 	}
 
 	// Update database FIRST - prevents race condition where in-memory has userId but DB doesn't
-	await db.session.find(sessionId).update({ userId });
+	await db.sessions.find(sessionId).update({ userId });
 
 	// Only update in-memory session if DB update succeeded
 	request.session.user = {

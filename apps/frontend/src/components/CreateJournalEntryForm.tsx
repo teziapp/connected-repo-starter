@@ -13,8 +13,8 @@ import { trpc } from "@frontend/utils/trpc.client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function CreatePostForm() {
-	const [title, setTitle] = useState("");
+export function CreateJournalEntryForm() {
+	const [prompt, setPrompt] = useState("");
 	const [content, setContent] = useState("");
 	const [authorUserId, setAuthorId] = useState("");
 	const [error, setError] = useState("");
@@ -22,13 +22,13 @@ export function CreatePostForm() {
 
 	const { data: users } = useQuery(trpc.users.getAll.queryOptions())
 
-	const createPostMutation = useMutation(trpc.posts.create.mutationOptions({
+	const createJournalEntryMutation = useMutation(trpc.journalEntries.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: trpc.posts.getAll.queryKey() });
-			setTitle("");
+			queryClient.invalidateQueries({ queryKey: trpc.journalEntries.getAll.queryKey() });
+			setPrompt("");
 			setContent("");
 			setAuthorId("");
-			setSuccess("Post created successfully!");
+			setSuccess("Journal entry created successfully!");
 			setError("");
 			setTimeout(() => setSuccess(""), 3000);
 		},
@@ -44,43 +44,46 @@ export function CreatePostForm() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!title.trim() || !content.trim() || !authorUserId) {
-			setError("Title, content, and author are required");
+		if (!prompt.trim() || !content.trim() || !authorUserId) {
+			setError("Prompt, content, and author are required");
 			return;
 		}
 
-		createPostMutation.mutate({
-			title: title.trim(),
+		createJournalEntryMutation.mutate({
+			prompt: prompt.trim(),
 			content: content.trim(),
-			authorUserId,
 		});
 	};
 
 	return (
 		<ContentCard>
 			<Typography variant="h5" component="h3" gutterBottom>
-				Create New Post
+				Create New Journal Entry
 			</Typography>
 			<form onSubmit={handleSubmit}>
 				<Stack spacing={2}>
 					<TextField
-						label="Title"
+						label="Prompt / Question"
 						type="text"
-						value={title}
-						onChange={(e) => setTitle(e.target.value)}
-						disabled={createPostMutation.isPending}
+						value={prompt}
+						onChange={(e) => setPrompt(e.target.value)}
+						disabled={createJournalEntryMutation.isPending}
 						fullWidth
 						required
+						placeholder="What question are you answering today?"
+						helperText="The question or prompt you're responding to"
 					/>
 					<TextField
-						label="Content"
+						label="Your Response"
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
-						disabled={createPostMutation.isPending}
+						disabled={createJournalEntryMutation.isPending}
 						fullWidth
 						required
 						multiline
-						rows={4}
+						rows={6}
+						placeholder="Write your thoughts here..."
+						helperText="Your journal entry content"
 					/>
 					<FormControl fullWidth required>
 						<InputLabel id="author-label">Author</InputLabel>
@@ -88,7 +91,7 @@ export function CreatePostForm() {
 							labelId="author-label"
 							value={authorUserId}
 							onChange={(e) => setAuthorId(e.target.value)}
-							disabled={createPostMutation.isPending}
+							disabled={createJournalEntryMutation.isPending}
 							label="Author"
 						>
 							<MenuItem value="">
@@ -105,9 +108,9 @@ export function CreatePostForm() {
 						type="submit"
 						variant="contained"
 						color="success"
-						disabled={createPostMutation.isPending}
+						disabled={createJournalEntryMutation.isPending}
 					>
-						{createPostMutation.isPending ? "Creating..." : "Create Post"}
+						{createJournalEntryMutation.isPending ? "Creating..." : "Create Entry"}
 					</PrimaryButton>
 				</Stack>
 			</form>

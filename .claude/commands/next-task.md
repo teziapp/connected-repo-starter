@@ -1,0 +1,1 @@
+Execute the tasks in first phase  mentioned in @TODO.md one-by-one. Once a phase is completed get confirmation from me to continue.

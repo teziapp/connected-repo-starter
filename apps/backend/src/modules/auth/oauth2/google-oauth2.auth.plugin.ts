@@ -4,8 +4,8 @@ import { oauth2ErrorHandler, oauth2SuccessHandler } from "@backend/modules/auth/
 import { SessionUser } from "@backend/modules/auth/session.auth.utils";
 import type { OAuth2Namespace } from "@fastify/oauth2";
 import oauthPlugin from "@fastify/oauth2";
-import type { FastifyInstance } from "fastify";
 import axios from "axios";
+import type { FastifyInstance } from "fastify";
 
 /**
  * Augment Fastify types to include Google-OAuth2 
@@ -84,7 +84,7 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 			app.log.info({ googleUserInfo }, "User authenticated via Google OAuth");
 
 			// Check if user exists in database by email (auto-link accounts by email)
-			const existingUser = await db.user
+			const existingUser = await db.users
 				.select("userId", "email", "name", "displayPicture")
 				.findBy({ email: googleUserInfo.email })
 				.takeOptional();

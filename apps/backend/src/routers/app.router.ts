@@ -83,7 +83,7 @@ export const appRouter = (app: FastifyInstance) => {
             path,
             type,
             input,
-            userId: ctx?.userId,
+            userId: ctx?.user?.userId,
           },
           "tRPC error",
         );

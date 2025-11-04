@@ -1,5 +1,6 @@
 import { isDev } from "@backend/configs/env.config";
 import { SessionSecurityLevel, validateSessionSecurity } from "@backend/middlewares/sessionSecurity.middleware";
+import { SessionUser } from "@backend/modules/auth/session.auth.utils";
 import { trpcErrorParser } from "@backend/utils/errorParser";
 import { getClientIpAddress } from "@backend/utils/request-metadata.utils";
 import { initTRPC, TRPCError } from "@trpc/server";
@@ -8,12 +9,11 @@ import { BurstyRateLimiter, RateLimiterMemory } from "rate-limiter-flexible";
 
 // Define user type
 export const createTRPCContext = (input: CreateFastifyContextOptions) => {
-	const userId = input.req.headers["x-user-id"];
-
+	const user = input.req.session.user;
 	return {
 		req: input.req,
 		res: input.res,
-		userId,
+		user: user,
 	}
 };
 
@@ -68,18 +68,22 @@ export const centralTrpcErrorMiddleware = t.middleware(async ({ next }) => {
 	}
 });
 
-export const publicProcedure = t.procedure.use(centralTrpcErrorMiddleware).use(async (opts) => {
-	return opts.next();
-});
+export const publicProcedure = t.procedure.use(centralTrpcErrorMiddleware);
 
 export const trpcRouter = t.router;
 
 // isAuthenticated middleware
 const isAuthenticatedMiddleware = t.middleware(({ ctx, next }) => {
-	if (!ctx.req.session.user?.userId) {
+	if (!ctx.user?.userId) {
 		throw new TRPCError({ code: "UNAUTHORIZED", message: "User is not authenticated" });
-	}
-	return next();
+	};
+
+	return next({
+		ctx: {
+			...ctx,
+			user: ctx.user as SessionUser & { userId: string }
+		}
+	});
 });
 
 /**

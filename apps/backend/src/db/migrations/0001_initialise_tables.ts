@@ -9,6 +9,52 @@ change(async (db) => {
 
   await db.createEnum('public.webhook_status_enum', ['Pending', 'Sent', 'Failed']);
 
+  await db.createTable('users', (t) => ({
+    userId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    email: t.string().unique(),
+    name: t.string().nullable(),
+    displayPicture: t.string().nullable(),
+    createdAt: t.timestamps().createdAt,
+    updatedAt: t.timestamps().updatedAt,
+  }));
+
+  await db.createTable(
+    'session',
+    (t) => ({
+      sessionId: t.string().primaryKey(),
+      userId: t.uuid().nullable(),
+      email: t.string(),
+      name: t.string().nullable(),
+      displayPicture: t.string().nullable(),
+      ipAddress: t.string().nullable(),
+      userAgent: t.text().nullable(),
+      browser: t.string().nullable(),
+      os: t.string().nullable(),
+      device: t.string().nullable(),
+      deviceFingerprint: t.string().nullable(),
+      markedInvalidAt: t.timestamp().nullable(),
+      expiresAt: t.timestamp(),
+      createdAt: t.timestamps().createdAt,
+      updatedAt: t.timestamps().updatedAt,
+    }),
+    (t) => 
+      t.index(
+        [
+          'sessionId',
+          {
+            column: 'expiresAt',
+            order: 'DESC',
+          },
+          {
+            column: 'markedInvalidAt',
+            order: 'DESC',
+          },
+          'device',
+          'deviceFingerprint',
+        ]
+      ),
+  );
+
   await db.createTable('teams', (t) => ({
     teamId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
     allowedDomains: t.array(t.string()),
@@ -23,6 +69,18 @@ change(async (db) => {
 });
 
 change(async (db) => {
+  await db.createTable('journal_entries', (t) => ({
+    journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    prompt: t.string(500),
+    content: t.text(),
+    authorUserId: t.uuid().foreignKey('users', 'userId', {
+      onUpdate: 'RESTRICT',
+      onDelete: 'CASCADE',
+    }),
+    createdAt: t.timestamps().createdAt,
+    updatedAt: t.timestamps().updatedAt,
+  }));
+
   await db.createTable('subscriptions', (t) => ({
     subscriptionId: t.string().primaryKey(),
     billingInvoiceNumber: t.string().nullable(),
@@ -50,8 +108,8 @@ change(async (db) => {
     path: t.string(),
     ip: t.string(),
     status: t.enum('api_status_enum').default('Pending'),
-    responseText: t.text(),
-    responseJson: t.json(),
+    responseText: t.text().nullable(),
+    responseJson: t.json().nullable(),
     responseTime: t.integer(),
     createdAt: t.timestamps().createdAt,
     updatedAt: t.timestamps().updatedAt,
