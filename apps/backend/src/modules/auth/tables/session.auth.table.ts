@@ -16,8 +16,8 @@ export class SessionTable extends BaseTable {
 		os: t.string().nullable(),
 		device: t.string().nullable(),
 		deviceFingerprint: t.string().nullable(),
-		markedInvalidAt: t.timestamp().nullable(),
-		expiresAt: t.timestamp(),
+		markedInvalidAt: t.timestampNumber().nullable(),
+		expiresAt: t.timestampNumber(),
 		...t.timestamps(),
 	}),
 	(t) => [

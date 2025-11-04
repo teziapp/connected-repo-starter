@@ -13,6 +13,7 @@ export const BaseTable = createBaseTable({
     apiProductRequestStatusEnum: () => t.enum("api_status_enum", API_PRODUCT_REQUEST_STATUS_ENUM),
     webhookStatusEnum: () => t.enum("webhook_status_enum", WEBHOOK_STATUS_ENUM),
 
+    timestampNumber: () => t.timestamp().asNumber(),
 		timestamps: () => ({
       createdAt: t.timestamps().createdAt.asNumber(),
       updatedAt: t.timestamps().updatedAt.asNumber(),

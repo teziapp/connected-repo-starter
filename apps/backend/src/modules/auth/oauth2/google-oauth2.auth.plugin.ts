@@ -5,6 +5,7 @@ import { SessionUser } from "@backend/modules/auth/session.auth.utils";
 import type { OAuth2Namespace } from "@fastify/oauth2";
 import oauthPlugin from "@fastify/oauth2";
 import type { FastifyInstance } from "fastify";
+import axios from "axios";
 
 /**
  * Augment Fastify types to include Google-OAuth2 
@@ -44,22 +45,22 @@ interface GoogleUserInfo {
 }
 
 /**
- * Fetches user info from Google OAuth2
+ * Fetches user info from Google OAuth2 using axios
  */
 async function fetchGoogleUserInfo(
 	accessToken: string,
 ): Promise<GoogleUserInfo> {
-	const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
+	const response = await axios.get<GoogleUserInfo>(
+		"https://www.googleapis.com/oauth2/v2/userinfo",
+		{
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+			timeout: 5000,
 		},
-	});
+	);
 
-	if (!response.ok) {
-		throw new Error("Failed to fetch user info from Google");
-	}
-
-	return response.json();
+	return response.data;
 }
 
 /**

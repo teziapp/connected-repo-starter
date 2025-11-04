@@ -14,9 +14,9 @@ export class WebhookCallQueueTable extends BaseTable {
     status: t.webhookStatusEnum(),
     attempts: t.integer().default(0),
     maxAttempts: t.integer().default(3),
-    lastAttemptAt: t.timestamp().nullable(),
-    scheduledFor: t.timestamp(),
-    sentAt: t.timestamp().nullable(),
+    lastAttemptAt: t.timestampNumber().nullable(),
+    scheduledFor: t.timestampNumber(),
+    sentAt: t.timestampNumber().nullable(),
     subscriptionId: t.string().foreignKey(() => SubscriptionsTable, "subscriptionId", {
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT"
