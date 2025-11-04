@@ -24,7 +24,7 @@ RUN cp -r out/json/. . && \
 RUN yarn install --frozen-lockfile
 
 # Build the backend using Turbo (automatically builds dependencies like zod-schemas first)
-RUN yarn turbo run build --filter=@connected-repo/backend
+RUN turbo run build --filter=@connected-repo/backend
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S backend && \
@@ -55,4 +55,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   }).on('error', () => process.exit(1));"
 
 # Run migrations then start server
-CMD ["sh", "-c", "turbo db -- up && node apps/backend/dist/server.js"]
+CMD ["sh", "-c", "cd apps/backend && yarn db up && node dist/server.js"]
