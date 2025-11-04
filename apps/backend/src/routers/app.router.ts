@@ -27,6 +27,30 @@ export const appRouter = (app: FastifyInstance) => {
     },
   );
 
+  app.get(
+    "/health",
+    {
+      schema: {
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              status: { type: "string" },
+              timestamp: { type: "string" },
+            },
+            required: ["status", "timestamp"],
+          },
+        },
+      },
+    },
+    async () => {
+      return {
+        status: "ok",
+        timestamp: new Date().toISOString(),
+      };
+    },
+  );
+
   app.register(oauth2Router, {
     prefix: "/oauth2"
   });

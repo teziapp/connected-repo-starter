@@ -29,14 +29,14 @@
 		"fastify-zod-openapi": "^5.5.0",
 		"orchid-orm": "^1.57.6",
 		"rate-limiter-flexible": "^8.1.0",
-		"ua-parser-js": "^2.0.6"
+		"ua-parser-js": "^2.0.6",
+		"pg": "^8.16.3"
 	},
 	"devDependencies": {
 		"@connected-repo/typescript-config": "*",
 		"@types/node": "^22.18.12",
 		"@types/pg": "^8.15.5",
 		"dotenv": "^17.2.3",
-		"pg": "^8.16.3",
 		"pino-pretty": "^13.1.2",
 		"tsx": "^4.19.2"
 	}
