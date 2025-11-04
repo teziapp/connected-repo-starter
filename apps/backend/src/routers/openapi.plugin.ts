@@ -58,12 +58,7 @@ export const openapiPlugin = async (app: FastifyInstance) => {
 	await app.register(swaggerUI, {
 		routePrefix: "/api/documentation",
 	});
-
-	// ============================================================
-	// API Routes
-	// ============================================================
-	// All routes defined below will automatically appear in OpenAPI spec
-	// Use .withTypeProvider<FastifyZodOpenApiTypeProvider>() for type safety
+	
   app.register(apiRouter, {
     prefix: "/api",
   });

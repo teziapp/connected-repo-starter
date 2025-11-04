@@ -3,8 +3,10 @@ import { z } from "zod";
 /* Integer Types */
 export const zSmallint = (min = -32768, max = 32767) => z.int().min(min).max(max);
 export const zInteger = (min = -2147483648, max = 2147483647) => z.int32().min(min).max(max);
-// export const zBigint = (min = -9223372036854775808n, max = 9223372036854775807n) =>
-//   z.int64().min(min).max(max);
+export const zBigint = (min = -9223372036854775808n, max = 9223372036854775807n) =>
+  z.bigint().min(min).max(max);
+
+export const zTimeEpoch = z.coerce.number().int().min(0);
 
 export const zDecimal = (precision: number, scale: number, min?: number, max?: number) => {
 	let schema = z.coerce.number().refine(
@@ -56,8 +58,8 @@ export const zVarchar = (minLength = 0, maxLength = 255) => zString.min(minLengt
 export const zText = (minLength = 0) => zString.min(minLength);
 
 export const zTimestamps = {
-	createdAt: z.coerce.number(),
-	updatedAt: z.coerce.number(),
+	createdAt: zTimeEpoch,
+	updatedAt: zTimeEpoch,
 };
 
 export const zPrice = zDecimal(10, 2, 0.01);
