@@ -121,14 +121,7 @@ export const registerErrorHandler = (server: FastifyInstance) => {
 		handleError(error, request, reply);
 	});
 
-	// Add Not Found handler
-	server.setNotFoundHandler((request, reply) => {
-		reply.status(404).send({
-			status: "error",
-			message: `Route ${request.method}:${request.url} not found`,
-			errorCode: "NOT_FOUND",
-		});
-	});
+	// Note: Not Found handler with rate limiting is registered in app.ts
 
 	// Log all errors
 	server.addHook("onError", (request, reply, error, done) => {
