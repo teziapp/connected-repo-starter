@@ -21,7 +21,7 @@ export async function findActiveSubscription(
 			requestsConsumed: { lt: sql`max_requests` },
 		})
 		.order({ createdAt: "DESC" })
-		.take();
+		.takeOptional();
 
 	return subscription;
 }

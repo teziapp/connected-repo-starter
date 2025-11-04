@@ -22,9 +22,19 @@
  *   },
  * });
  */
+import { SubscriptionSelectAll } from "@connected-repo/zod-schemas/subscription.zod";
+import { TeamSelectAll } from "@connected-repo/zod-schemas/team.zod";
 import { FastifyInstance } from "fastify";
 import { FastifyZodOpenApiSchema, FastifyZodOpenApiTypeProvider } from "fastify-zod-openapi";
 import z from "zod";
+
+declare module "fastify" {
+	interface FastifyRequest {
+		team?: TeamSelectAll;
+		subscription?: SubscriptionSelectAll;
+		requestStartTime?: number;
+	}
+}
 
 // ============================================================
 // API Routes

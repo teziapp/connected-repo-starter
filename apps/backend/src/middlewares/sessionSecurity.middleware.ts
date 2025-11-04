@@ -1,4 +1,8 @@
-import { generateDeviceFingerprint, getClientIpAddress } from "@backend/utils/request-metadata.utils";
+import { areSameSubnet } from "@backend/modules/api-gateway/utils/ipChecker.utils";
+import {
+	generateDeviceFingerprint,
+	getClientIpAddress,
+} from "@backend/utils/request-metadata.utils";
 import type { FastifyRequest } from "fastify";
 
 /**
@@ -133,31 +137,6 @@ export function validateSessionSecurity(
 	}
 
 	return result;
-}
-
-/**
- * Check if two IP addresses are in the same /24 subnet
- * This allows for dynamic IPs within same network (common for mobile/home users)
- *
- * @param ip1 - First IP address
- * @param ip2 - Second IP address
- * @returns true if IPs are in same /24 subnet
- */
-function areSameSubnet(ip1: string, ip2: string): boolean {
-	try {
-		// Handle IPv4 only for now
-		const parts1 = ip1.split(".");
-		const parts2 = ip2.split(".");
-
-		if (parts1.length !== 4 || parts2.length !== 4) {
-			return false; // Not IPv4 or invalid format
-		}
-
-		// Compare first 3 octets (/24 subnet)
-		return parts1[0] === parts2[0] && parts1[1] === parts2[1] && parts1[2] === parts2[2];
-	} catch {
-		return false;
-	}
 }
 
 /**

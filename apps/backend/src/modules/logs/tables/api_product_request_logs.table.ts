@@ -14,8 +14,8 @@ export class ApiProductRequestLogsTable extends BaseTable {
     path: t.string(),
     ip: t.string(),
     status: t.apiProductRequestStatusEnum().default("Pending"),
-    responseText: t.text(),
-    responseJson: t.json(),
+    responseText: t.text().nullable(),
+    responseJson: t.json().nullable(),
     responseTime: t.integer(),
     ...t.timestamps(),
   }));
