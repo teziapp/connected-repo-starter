@@ -20,9 +20,10 @@ export function subscriptionCheckHook(apiProductSku: ApiProductSku) {
 		}
 
 		const { teamId } = request.team;
+		const { teamUserReferenceId } = request.query as { teamUserReferenceId: string };
 
 		// Find active subscription for this team and product
-		const subscription = await findActiveSubscription(teamId, apiProductSku);
+		const subscription = await findActiveSubscription(teamId, teamUserReferenceId, apiProductSku);
 
 		if (!subscription) {
 			return reply.code(402).send({

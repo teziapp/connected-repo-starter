@@ -7,11 +7,11 @@ export type ApiProductRequestStaus = z.infer<typeof apiProductRequestStatusZod>;
 export const API_PRODUCTS = [
   {
     name: "Save Journal Entry",
-    sku: "save_journal_entry",
+    sku: "journal_entry_create",
     unit_size: 100
   }
 ]as const;
-export const apiProductSkuEnum = API_PRODUCTS.map(product => product.sku) as ["save_journal_entry"];
+export const apiProductSkuEnum = API_PRODUCTS.map(product => product.sku) as ["journal_entry_create"];
 export const apiProductSkuZod = z.enum(apiProductSkuEnum);
 export type ApiProductSku = z.infer<typeof apiProductSkuZod>;
 

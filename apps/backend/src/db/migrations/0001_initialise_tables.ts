@@ -1,7 +1,7 @@
 import { change } from '../db_script';
 
 change(async (db) => {
-  await db.createEnum('public.api_product_enum', ['save_journal_entry']);
+  await db.createEnum('public.api_product_enum', ['journal_entry_create']);
 
   await db.createEnum('public.api_request_method_enum', ['GET', 'POST', 'PUT', 'DELETE']);
 

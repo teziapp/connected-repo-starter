@@ -45,11 +45,7 @@ export async function saveJournalEntryHandler(
 			contentLength: content.length,
 		}, "Journal entry saved successfully");
 
-		return reply.code(201).send({
-			success: true,
-			journalEntryId: journalEntry.journalEntryId,
-			message: "Journal entry saved successfully",
-		});
+		return reply.code(201).send(journalEntry);
 	} catch (error) {
 		request.log.error({
 			error,

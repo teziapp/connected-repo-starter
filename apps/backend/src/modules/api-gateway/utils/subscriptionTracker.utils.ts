@@ -11,11 +11,13 @@ import { subscriptionAlertWebhookPayloadZod } from "@connected-repo/zod-schemas/
  */
 export async function findActiveSubscription(
 	teamId: string,
+	teamUserReferenceId: string,
 	apiProductSku: ApiProductSku,
 ) {
 	const subscription = await db.subscriptions
 		.where({
 			teamId,
+			teamUserReferenceId,
 			apiProductSku,
 			expiresAt: { gt: sql`NOW()` },
 			requestsConsumed: { lt: sql`max_requests` },

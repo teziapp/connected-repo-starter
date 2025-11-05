@@ -9,17 +9,20 @@ export class SubscriptionsTable extends BaseTable {
   columns = this.setColumns((t) => ({
     subscriptionId: t.string().primaryKey().default(() => ulid()),
 
-    billingInvoiceNumber: t.string().nullable(),
-    billingInvoiceDate: t.timestampNumber().nullable(),
+    
     expiresAt: t.timestampNumber(),
     maxRequests: t.integer(),
-    paymentReceivedDate: t.timestampNumber().nullable(),
-    paymentTransactionId: t.string().nullable(),
     apiProductSku: t.apiProductSkuEnum(),
-    notifiedAt90PercentUse: t.timestampNumber().nullable(),
     requestsConsumed: t.integer(),
     teamId: t.uuid(),
     teamUserReferenceId: t.string(),
+
+    billingInvoiceNumber: t.string().nullable(),
+    billingInvoiceDate: t.timestampNumber().nullable(),
+    notifiedAt90PercentUse: t.timestampNumber().nullable(),
+    paymentReceivedDate: t.timestampNumber().nullable(),
+    paymentTransactionId: t.string().nullable(),
+
     ...t.timestamps(),
   }));
 

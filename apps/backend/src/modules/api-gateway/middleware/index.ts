@@ -20,12 +20,12 @@
  *   requestLoggerHooks,
  * } from '@backend/modules/api-gateway/middleware';
  *
- * fastify.post('/api/v1/save_journal_entry', {
+ * fastify.post('/api/v1/journal_entry_create', {
  *   preHandler: [
  *     apiKeyAuthHook,
  *     whitelistCheckHook,
  *     teamRateLimitHook,
- *     subscriptionCheckHook('save_journal_entry'),
+ *     subscriptionCheckHook('journal_entry_create'),
  *   ],
  *   onRequest: requestLoggerHooks.onRequest,
  *   onResponse: requestLoggerHooks.onResponse,
@@ -34,11 +34,11 @@
  */
 
 export { apiKeyAuthHook } from "./apiKeyAuth.middleware";
-export { whitelistCheckHook } from "./whitelist.middleware";
-export { teamRateLimitHook } from "./teamRateLimit.middleware";
-export { subscriptionCheckHook } from "./subscriptionCheck.middleware";
 export {
-	requestLoggerOnRequest,
-	requestLoggerOnResponse,
-	requestLoggerHooks,
+  requestLoggerHooks, requestLoggerOnRequest,
+  requestLoggerOnResponse
 } from "./requestLogger.middleware";
+export { subscriptionCheckHook } from "./subscriptionCheck.middleware";
+export { teamRateLimitHook } from "./teamRateLimit.middleware";
+export { whitelistCheckHook } from "./whitelist.middleware";
+
