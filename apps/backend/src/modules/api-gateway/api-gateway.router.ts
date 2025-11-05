@@ -242,7 +242,7 @@ export const apiGatewayRouter = async (app: FastifyInstance) => {
 			const totalPages = Math.ceil(total / limit);
 
 			return reply.code(200).send({
-				logs: logs as any,
+				logs,
 				total,
 				page,
 				limit,
