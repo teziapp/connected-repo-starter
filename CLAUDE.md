@@ -148,7 +148,7 @@ import * as schemas from '@connected-repo/zod-schemas'
 - `router.trpc.ts` - All tRPC routes (user, post endpoints)
 
 **Database & Schema Pattern:**
-1. Define table class in `db/tables/*.table.ts` extending `BaseTable`
+1. Define table class in `modules/<feature>/tables/*.table.ts` extending `BaseTable`
 2. Create Zod schemas in `packages/zod-schemas/src/*.zod.ts` following pattern:
    - `<entity>MandatoryZod` - Required fields for creation
    - `<entity>OptionalZod` - Optional/nullable fields
@@ -212,13 +212,15 @@ Error types handled:
 
 **OpenTelemetry Integration:**
 - Initialized in `opentelemetry.ts` (imported by `server.ts`)
-- tRPC errors are automatically traced with custom spans (see `app.ts` onError handler)
+- tRPC errors automatically traced with custom spans (see `app.ts` onError handler)
 
 **Security Features:**
-- Rate limiting (2 req/sec, burst 5 req/10sec in production)
-- CORS with configurable origins
+- Global rate limiting: 2 req/sec, burst 5 req/10sec (production)
+- Global CORS allows all origins (team-specific validation via middleware)
 - Helmet for security headers
 - Environment-based configuration
+- API Gateway: per-team CORS, IP whitelist, rate limiting, API key auth
+- OpenAPI security schemes defined for external APIs
 
 **Session Management:**
 Database-backed session storage with security tracking:
@@ -241,6 +243,9 @@ Session workflow:
 - `getClientIpAddress()` - Extracts IP with proxy support (X-Forwarded-For, X-Real-IP)
 - `parseUserAgent()` - Parses UA using ua-parser-js (browser, OS, device)
 - `generateDeviceFingerprint()` - SHA-256 hash of normalized UA + headers
+
+**Utility Functions:**
+- `omitKeys()` - Remove specified keys from object (used to mask sensitive fields)
 
 ### Frontend Architecture (`apps/frontend`)
 

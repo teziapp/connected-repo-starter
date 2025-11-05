@@ -7,10 +7,14 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 ### Backend
 - **Runtime**: Node.js 22+
 - **Framework**: [Fastify](https://fastify.dev/) - Fast and low overhead web framework
-- **API Layer**: [tRPC](https://trpc.io/) - End-to-end typesafe APIs
+- **API Layer**:
+  - [tRPC](https://trpc.io/) - End-to-end typesafe APIs for internal/frontend communication
+  - REST/OpenAPI - External product APIs with automatic Swagger documentation
 - **Database**: PostgreSQL with [Orchid ORM](https://orchid-orm.netlify.app/)
+- **API Gateway**: API key authentication, rate limiting, CORS validation, IP whitelisting, subscription management
 - **Observability**: OpenTelemetry integration
-- **Security**: Helmet, CORS, Rate Limiting
+- **Security**: Helmet, CORS, Rate Limiting, OAuth2 (Google)
+- **Deployment**: Docker support with automated migrations
 
 ### Frontend
 - **Framework**: [React 19](https://react.dev/) with [Vite](https://vitejs.dev/)
@@ -30,28 +34,41 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 ```
 .
 ├── apps/
-│   ├── backend/          # Fastify + tRPC API server
+│   ├── backend/                      # Fastify server
 │   │   ├── src/
-│   │   │   ├── db/      # Database tables and ORM config
-│   │   │   ├── configs/ # App configuration
-│   │   │   ├── middlewares/
-│   │   │   ├── utils/
-│   │   │   ├── server.ts       # Entry point
-│   │   │   ├── app.ts          # Fastify setup
-│   │   │   ├── trpc.ts         # tRPC initialization
-│   │   │   └── router.trpc.ts  # API routes
+│   │   │   ├── modules/              # Feature modules
+│   │   │   │   ├── api-gateway/      # External REST API with OpenAPI
+│   │   │   │   ├── auth/             # OAuth2 + session management
+│   │   │   │   ├── journal-entries/  # Journal entry feature (tRPC)
+│   │   │   │   ├── users/            # User management (tRPC)
+│   │   │   │   ├── teams/            # Teams & members
+│   │   │   │   ├── subscriptions/    # API subscriptions
+│   │   │   │   └── logs/             # API request logs
+│   │   │   ├── routers/              # Route aggregation
+│   │   │   │   ├── app.router.ts     # Main router
+│   │   │   │   ├── openapi.plugin.ts # OpenAPI/Swagger setup
+│   │   │   │   └── trpc.router.ts    # tRPC routes
+│   │   │   ├── db/                   # Database layer
+│   │   │   ├── configs/              # App configuration
+│   │   │   ├── middlewares/          # Global middleware
+│   │   │   ├── server.ts             # Entry point
+│   │   │   ├── app.ts                # Fastify setup
+│   │   │   └── trpc.ts               # tRPC initialization
+│   │   ├── Dockerfile                # Docker configuration
+│   │   ├── DEPLOYMENT.md             # Deployment guide
 │   │   └── package.json
-│   └── frontend/        # React + Vite frontend
+│   └── frontend/                     # React + Vite
 │       ├── src/
-│       │   ├── components/
-│       │   ├── pages/
-│       │   ├── modules/
+│       │   ├── components/           # Reusable components
+│       │   ├── pages/                # Page components
+│       │   ├── modules/              # Feature modules
 │       │   ├── App.tsx
 │       │   └── router.tsx
 │       └── package.json
 ├── packages/
-│   ├── typescript-config/  # Shared TypeScript configs
-│   └── zod-schemas/        # Shared Zod schemas and enums for validation and type safety
+│   ├── typescript-config/            # Shared TypeScript configs
+│   ├── ui-mui/                       # Material-UI component library
+│   └── zod-schemas/                  # Shared Zod schemas for validation
 ├── turbo.json
 └── package.json
 ```
@@ -130,54 +147,77 @@ yarn start
 
 ## Key Features
 
+### Dual API Architecture
+
+**tRPC for Internal APIs:**
+- Type-safe APIs for frontend-backend communication
+- Zero code generation - types flow automatically
+- Routes: `/trpc/*`
+- Example: `trpc.journalEntry.create.useMutation()`
+
+**REST/OpenAPI for External APIs:**
+- Automatic Swagger documentation at `/api/documentation`
+- OpenAPI 3.1.0 spec generation from Zod schemas
+- Routes: `/api/v1/*`
+- Full middleware chain: API key auth, rate limiting, CORS validation, IP whitelist, subscription tracking
+
+### API Gateway Features
+
+**Authentication & Authorization:**
+- API key-based authentication (`x-api-key` + `x-team-id` headers)
+- Team-based access control with scrypt-hashed API keys
+- User-specific subscriptions (teamId + userId + productSku)
+- Bearer token authentication for webhooks
+
+**Security:**
+- Global rate limiting (2 req/sec, burst 5 req/10sec in production)
+- Global CORS allows all origins; team-specific CORS validation via middleware
+- Per-team rate limiting (configurable requests per minute)
+- CORS validation against team's allowed domains with preflight handling
+- IP whitelist per team
+- OpenAPI security schemes (apiKey, teamId headers)
+- Request logging to `api_product_request_logs` table
+- 404 route protection with stricter rate limiting
+
+**Subscription Management:**
+- Quota enforcement per subscription
+- Atomic real-time usage tracking
+- 90% usage threshold triggers webhook alert
+- Webhook queue with retry logic (3 max attempts, exponential backoff)
+- Batch processing limit: 50 webhooks per run
+- Configuration constants in `api-gateway/constants/apiGateway.constants.ts`
+
 ### End-to-End Type Safety & Shared Schemas
 
-The monorepo achieves full type safety without code generation using shared Zod schemas:
+The monorepo achieves full type safety without code generation:
 
 1. Backend exports router type from `router.trpc.ts`
 2. Frontend imports this type directly via TypeScript workspace references
-3. Shared Zod schemas in `packages/zod-schemas/` with structured pattern:
+3. Shared Zod schemas in `packages/zod-schemas/`:
    - Entity schemas: `<entity>CreateInputZod`, `<entity>UpdateInputZod`, `<entity>SelectAllZod`
-   - Query schemas: `<entity>GetByIdZod`, etc
-   - Utility validators: `zString`, `zPrice`, `zTimestamps`, etc
+   - API product schemas with OpenAPI metadata
+   - Enum definitions for request status, webhook status, etc.
 4. All API calls have autocomplete and compile-time type checking
 
 ```typescript
-// Import entity schemas
-import { userCreateInputZod } from '@connected-repo/zod-schemas/user.zod';
+// tRPC usage (internal)
+const { data } = trpc.journalEntry.getAll.useQuery();
+const create = trpc.journalEntry.create.useMutation();
 
-// Frontend auto-gets types from backend
-const { data } = trpc.user.getAll.useQuery();
-const createUser = trpc.user.create.useMutation();
+// OpenAPI usage (external)
+// See interactive docs at /api/documentation
 ```
 
 ### Database Layer & Shared Validation
 
 - **ORM**: Orchid ORM with automatic snake_case conversion
-- **Type Safety**: Zod schemas for input validation
-- **Pattern**: Table definitions + centralized schemas in `packages/zod-schemas/`
-- **Naming**: Descriptive IDs (`userId`, `postId`) and FKs (`authorUserId`)
+- **Type Safety**: Zod schemas for input validation across backend and frontend
+- **Timestamps**: Epoch milliseconds (number) not Date objects
+- **Naming**: Descriptive IDs (`userId`, `teamId`) and FKs (`authorUserId`)
+- **Tables**: Organized by feature module in `modules/<feature>/tables/`
+- **Indexes**: Composite indexes on frequently queried columns for performance
 
-Table structure:
-```typescript
-export class UserTable extends BaseTable {
-  readonly table = 'user';
-  columns = this.setColumns((t) => ({
-    userId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-    email: t.string().unique(),
-    name: t.string().nullable(),
-    ...t.timestamps(),
-  }));
-}
-```
-
-Shared schemas:
-```typescript
-// packages/zod-schemas/src/user.zod.ts
-export const userMandatoryZod = z.object({ email: z.email() });
-export const userOptionalZod = z.object({ name: zString.nullable() });
-export const userCreateInputZod = userMandatoryZod.extend(userOptionalZod.partial().shape);
-```
+Key tables: users, sessions, teams, team_members, journal_entries, subscriptions, api_product_request_logs, webhook_call_queue
 
 ### Error Handling
 
@@ -188,10 +228,22 @@ Multi-layer error handling system:
 
 ### Security
 
-- Rate limiting (production/staging only)
-- CORS with configurable origins
+**Global:**
+- Rate limiting: 2 req/sec, burst 5 req/10sec (production)
+- CORS allows all origins globally (team validation via middleware)
 - Helmet security headers
+- 404 route protection (stricter rate limiting)
 - Environment-based configuration
+
+**API Gateway:**
+- API key authentication (scrypt hashed) via x-api-key + x-team-id headers
+- Team-based access control
+- Per-team rate limiting (configurable per minute)
+- Per-team CORS validation against allowedDomains with preflight handling
+- Per-team IP whitelist validation
+- OpenAPI security schemes defined
+- Internal routes secured by bearer token (INTERNAL_API_SECRET)
+- Webhook endpoints secured by bearer token (team.subscriptionAlertWebhookBearerToken)
 
 ### Observability
 
@@ -202,26 +254,36 @@ Multi-layer error handling system:
 
 ### New Database Table
 
-1. Create table in `apps/backend/src/db/tables/<entity>.table.ts`
-   - Use descriptive IDs: `userId`, `postId` (not generic `id`)
+1. Create table in `apps/backend/src/modules/<feature>/tables/<entity>.table.ts`
+   - Use descriptive IDs: `userId`, `teamId` (not generic `id`)
    - Use descriptive FKs: `authorUserId` (not just `authorId`)
-2. Create schemas in `packages/zod-schemas/src/<entity>.zod.ts`:
-   - `<entity>MandatoryZod`, `<entity>OptionalZod`, `<entity>AutoGeneratedZod`
-   - `<entity>CreateInputZod`, `<entity>UpdateInputZod`, `<entity>SelectAllZod`
-3. Register in `apps/backend/src/db/db.ts`
+   - Use `timestampNumber` for timestamps (epoch milliseconds)
+2. Create Zod schemas in `packages/zod-schemas/src/<entity>.zod.ts`
+3. Register table in `apps/backend/src/db/db.ts`
 4. Run `yarn run db g <migration_name>` then `yarn run db up`
 
-### New API Endpoint
+### New tRPC Endpoint (Internal API)
 
 1. Import schema from `@connected-repo/zod-schemas/<entity>.zod`
-2. Add procedure to `router.trpc.ts`: `.input(<schema>Zod)`
-3. Use `protectedProcedure` for operations requiring auth
-4. Frontend auto-gets types via tRPC router type import
+2. Create procedure in `apps/backend/src/modules/<feature>/<feature>.trpc.ts`
+3. Register in `apps/backend/src/routers/trpc.router.ts`
+4. Use `protectedProcedure` for operations requiring auth
+5. Frontend auto-gets types via tRPC router type import
+
+### New API Product Endpoint (External OpenAPI)
+
+1. Define Zod schemas in `packages/zod-schemas/src/<entity>.zod.ts`
+2. Add product to `API_PRODUCTS` array in `packages/zod-schemas/src/enums.zod.ts`
+3. Create handler in `apps/backend/src/modules/api-gateway/handlers/<product>.handler.ts`
+4. Add route in `apps/backend/src/modules/api-gateway/api-gateway.router.ts`:
+   - Use `.withTypeProvider<FastifyZodOpenApiTypeProvider>()`
+   - Apply middleware chain (apiKeyAuth, CORS, whitelist, rateLimit, subscriptionCheck)
+5. Test via Swagger UI at `/api/documentation`
 
 ### New Frontend Page
 
-1. Create component in `apps/frontend/src/pages/`
-2. Add route in `apps/frontend/src/router.tsx`
+1. Create component in `apps/frontend/src/pages/` or `modules/<feature>/pages/`
+2. Add route in `apps/frontend/src/router.tsx` with lazy loading
 3. Use tRPC hooks for data fetching
 
 ## Turborepo
@@ -240,7 +302,26 @@ Learn more:
 
 ## Documentation
 
-- See [CLAUDE.md](./CLAUDE.md) for detailed architecture and development guidance
+- [CLAUDE.md](./CLAUDE.md) - Comprehensive architecture and development guide
+- [apps/backend/CLAUDE.md](./apps/backend/CLAUDE.md) - Backend-specific guidance
+- [apps/backend/DEPLOYMENT.md](./apps/backend/DEPLOYMENT.md) - Deployment guide with Docker
+- [apps/backend/src/modules/api-gateway/WEBHOOK_CRON_SETUP.md](./apps/backend/src/modules/api-gateway/WEBHOOK_CRON_SETUP.md) - Webhook processor setup
+- [apps/frontend/CLAUDE.md](./apps/frontend/CLAUDE.md) - Frontend React patterns and best practices
+- [packages/CLAUDE.md](./packages/CLAUDE.md) - Package architecture overview
+- [packages/zod-schemas/CLAUDE.md](./packages/zod-schemas/CLAUDE.md) - Zod schema documentation
+
+## API Documentation
+
+**Interactive API Documentation:**
+- Swagger UI: http://localhost:3000/api/documentation
+- OpenAPI Spec: http://localhost:3000/api/documentation/json
+
+**Endpoints:**
+- tRPC APIs: http://localhost:3000/trpc
+- REST APIs: http://localhost:3000/api/v1/*
+- Health Check: http://localhost:3000/health
+- OAuth2: http://localhost:3000/oauth2/google
+- Internal APIs: http://localhost:3000/internal/* (secured by bearer token)
 
 ## License
 
