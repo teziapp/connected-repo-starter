@@ -1,8 +1,8 @@
+import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
+import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { ErrorFallback } from "@frontend/components/error_fallback";
 import { AppLayout } from "@frontend/components/layout/AppLayout";
 import { authLoader } from "@frontend/utils/auth.loader";
-import { Box } from "@connected-repo/ui-mui/layout/Box";
-import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
 import { lazy } from "react";
 import { createBrowserRouter, Outlet, redirect, type RouteObject } from "react-router";
 
@@ -55,16 +55,12 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 						Component: lazy(() => import("@frontend/pages/Dashboard.page")),
 					},
 					{
-						path: "demo",
-						Component: lazy(() => import("@frontend/pages/DatabaseDemo")),
+						path: "journal-entries",
+						Component: lazy(() => import("@frontend/pages/JournalEntries.page")),
 					},
 					{
-						path: "posts",
-						Component: lazy(() => import("@frontend/pages/Dashboard.page")), // TODO: Create Posts page
-					},
-					{
-						path: "posts/new",
-						Component: lazy(() => import("@frontend/pages/Dashboard.page")), // TODO: Create CreatePost page
+						path: "journal-entries/new",
+						Component: lazy(() => import("@frontend/pages/CreateJournalEntry.page")),
 					},
 					{
 						path: "profile",

@@ -10,13 +10,13 @@ export const usersRouterTrpc = trpcRouter({
     getAll: protectedProcedure.query(async () => {
       // Added code to simulate a error for testing
       // throw new Error("User not found");
-      const users = await db.user.select("userId", "email", "name", "createdAt", "updatedAt");
+      const users = await db.users.select("userId", "email", "name", "createdAt", "updatedAt");
       return users;
     }),
 
     // Get user by ID
     getById: protectedProcedure.input(userGetByIdInputZod).query(async ({ input: { userId } }) => {
-      const user = await db.user.select("userId", "email", "name", "createdAt", "updatedAt").where({ userId }).take();
+      const user = await db.users.select("userId", "email", "name", "createdAt", "updatedAt").where({ userId }).take();
 
       if (!user) {
         throw new Error("User not found");
@@ -52,7 +52,7 @@ export const usersRouterTrpc = trpcRouter({
       }
 
       // Create user in database
-      const newUser = await db.user.create({
+      const newUser = await db.users.create({
         email: input.email,
         name: input.name,
         displayPicture: input.displayPicture,

@@ -1,4 +1,6 @@
 import { BaseTable } from "@backend/db/base_table";
+import { WebhookCallQueueTable } from "@backend/modules/subscriptions/tables/webhookCallQueue.table";
+import { UserTable } from "@backend/modules/users/users/users.table";
 import { ulid } from "ulid";
 
 export class SubscriptionsTable extends BaseTable {
@@ -6,15 +8,33 @@ export class SubscriptionsTable extends BaseTable {
 
   columns = this.setColumns((t) => ({
     subscriptionId: t.string().primaryKey().default(() => ulid()),
-    teamId: t.uuid(),
-    teamReferenceId: t.string(),
+
+    
+    expiresAt: t.timestampNumber(),
     maxRequests: t.integer(),
-    expiresAt: t.timestamp(),
-    requestsConsumed: t.integer().default(0),
+    apiProductSku: t.apiProductSkuEnum(),
+    requestsConsumed: t.integer(),
+    teamId: t.uuid(),
+    teamUserReferenceId: t.string(),
+
     billingInvoiceNumber: t.string().nullable(),
-    billingInvoiceDate: t.timestamp().nullable(),
-    paymentReceivedDate: t.timestamp().nullable(),
+    billingInvoiceDate: t.timestampNumber().nullable(),
+    notifiedAt90PercentUse: t.timestampNumber().nullable(),
+    paymentReceivedDate: t.timestampNumber().nullable(),
     paymentTransactionId: t.string().nullable(),
+
     ...t.timestamps(),
   }));
+
+  relations = {
+    webHooksCalled: this.hasMany(() => WebhookCallQueueTable, {
+      columns: ["subscriptionId"],
+      references: ["subscriptionId"],
+    }),
+    user: this.belongsTo(() => UserTable, {
+      columns: ["teamUserReferenceId"],
+      references: ["userId"],
+      foreignKey: false // Disable foreign key constraint so that detail is not lost from subscriptions.
+    }),
+  }
 }

@@ -36,7 +36,7 @@ export class DatabaseSessionStore implements SessionStore {
 
 			// Upsert session data
 			// Try to update existing session first
-			await this.db.session
+			await this.db.sessions
 				.selectAll()
 				.findBy({ sessionId })
 				.upsert({
@@ -75,7 +75,7 @@ export class DatabaseSessionStore implements SessionStore {
 		callback: (err: Error | null, session?: FastifyRequest["session"]) => void,
 	): Promise<void> {
 		try {
-			const sessionData = await this.db.session
+			const sessionData = await this.db.sessions
 				.select("*", {
 					user: (q) => q.user.select("name", "displayPicture"),
 				})
@@ -123,7 +123,7 @@ export class DatabaseSessionStore implements SessionStore {
 		callback: (err?: Error) => void,
 	): Promise<void> {
 		try {
-			await this.db.session.findBy({ sessionId }).update({
+			await this.db.sessions.findBy({ sessionId }).update({
 				markedInvalidAt: () => sql`NOW()`,
 			});
 
@@ -143,7 +143,7 @@ export class DatabaseSessionStore implements SessionStore {
 	): Promise<void> {
 		try {
 
-			await this.db.session.findBy({ sessionId }).update({
+			await this.db.sessions.findBy({ sessionId }).update({
 				expiresAt: () => sql`NOW() + ${this.cookieMaxAgeSeconds} * INTERVAL '1 SECOND'`,
 			});
 

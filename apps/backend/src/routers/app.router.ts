@@ -1,3 +1,4 @@
+import { internalRouter } from "@backend/modules/api-gateway/internal.router";
 import { oauth2Router } from "@backend/routers/oauth2.router";
 import { openapiPlugin } from "@backend/routers/openapi.plugin";
 import { appTrpcRouter } from "@backend/routers/trpc.router";
@@ -55,6 +56,10 @@ export const appRouter = (app: FastifyInstance) => {
     prefix: "/oauth2"
   });
 
+  app.register(internalRouter, {
+    prefix: "/internal"
+  });
+
   app.register(fastifyTRPCPlugin, {
     prefix: "/trpc",
     trpcOptions: {
@@ -83,7 +88,7 @@ export const appRouter = (app: FastifyInstance) => {
             path,
             type,
             input,
-            userId: ctx?.userId,
+            userId: ctx?.user?.userId,
           },
           "tRPC error",
         );

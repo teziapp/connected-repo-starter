@@ -41,26 +41,6 @@ app.register(rateLimit, {
 	}),
 });
 
-// Register rate-limited not-found handler as a plugin (runs after rate limit is ready)
-// This prevents malicious 404 scanning attacks with stricter rate limiting
-app.register(async (instance) => {
-	instance.setNotFoundHandler(
-		{
-			preHandler: instance.rateLimit({
-				max: 10, // 10 requests
-				timeWindow: 1000 * 60, // per minute per IP (stricter than global)
-			}),
-		},
-		function (_request, reply) {
-			reply.code(404).send({
-				status: "error",
-				message: `Route ${_request.method}:${_request.url} not found`,
-				errorCode: "NOT_FOUND",
-			});
-		},
-	);
-});
-
 // Session configuration
 export const cookieMaxAge = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -85,6 +65,28 @@ app.register(session, {
 
 // Register OAuth2 module (all OAuth2 providers + routes)
 app.register(appRouter);
+
+// Note: Custom 404 handler conflicts with @fastify/swagger-ui
+// Swagger UI sets its own notFoundHandler which conflicts with root-level handlers
+// Configure custom not-found handler with stricter rate limiting
+// This prevents malicious 404 scanning attacks
+app.after(() => {
+	app.setNotFoundHandler(
+		{
+			preHandler: app.rateLimit({
+				max: 10, // 10 requests
+				timeWindow: 1000 * 60, // per minute per IP (stricter than global)
+			}),
+		},
+		function (_request, reply) {
+			reply.code(404).send({
+				statusCode: 404,
+				error: "Not Found",
+				message: "Route not found",
+			});
+		},
+	);
+});
 
 // Register central error handler
 registerErrorHandler(app);

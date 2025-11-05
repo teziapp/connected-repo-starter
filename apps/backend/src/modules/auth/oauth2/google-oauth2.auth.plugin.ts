@@ -4,6 +4,7 @@ import { oauth2ErrorHandler, oauth2SuccessHandler } from "@backend/modules/auth/
 import { SessionUser } from "@backend/modules/auth/session.auth.utils";
 import type { OAuth2Namespace } from "@fastify/oauth2";
 import oauthPlugin from "@fastify/oauth2";
+import axios from "axios";
 import type { FastifyInstance } from "fastify";
 
 /**
@@ -44,22 +45,22 @@ interface GoogleUserInfo {
 }
 
 /**
- * Fetches user info from Google OAuth2
+ * Fetches user info from Google OAuth2 using axios
  */
 async function fetchGoogleUserInfo(
 	accessToken: string,
 ): Promise<GoogleUserInfo> {
-	const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
+	const response = await axios.get<GoogleUserInfo>(
+		"https://www.googleapis.com/oauth2/v2/userinfo",
+		{
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+			timeout: 5000,
 		},
-	});
+	);
 
-	if (!response.ok) {
-		throw new Error("Failed to fetch user info from Google");
-	}
-
-	return response.json();
+	return response.data;
 }
 
 /**
@@ -83,7 +84,7 @@ export async function googleOAuth2Plugin(app: FastifyInstance ) {
 			app.log.info({ googleUserInfo }, "User authenticated via Google OAuth");
 
 			// Check if user exists in database by email (auto-link accounts by email)
-			const existingUser = await db.user
+			const existingUser = await db.users
 				.select("userId", "email", "name", "displayPicture")
 				.findBy({ email: googleUserInfo.email })
 				.takeOptional();
