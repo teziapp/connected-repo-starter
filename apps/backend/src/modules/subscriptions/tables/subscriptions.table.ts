@@ -24,7 +24,9 @@ export class SubscriptionsTable extends BaseTable {
     paymentTransactionId: t.string().nullable(),
 
     ...t.timestamps(),
-  }));
+    }), 
+    (t) => t.index(['teamId', 'teamUserReferenceId', 'apiProductSku'])
+  );
 
   relations = {
     webHooksCalled: this.hasMany(() => WebhookCallQueueTable, {

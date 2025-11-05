@@ -2,6 +2,10 @@ import { sql } from "@backend/db/base_table";
 import { db } from "@backend/db/db";
 import type { ApiProductSku } from "@connected-repo/zod-schemas/enums.zod";
 import { subscriptionAlertWebhookPayloadZod } from "@connected-repo/zod-schemas/webhook_call_queue.zod";
+import {
+	SUBSCRIPTION_USAGE_ALERT_THRESHOLD_PERCENT,
+	WEBHOOK_MAX_RETRY_ATTEMPTS,
+} from "../constants/apiGateway.constants";
 
 /**
  * Find an active subscription for a team and product
@@ -20,7 +24,7 @@ export async function findActiveSubscription(
 			teamUserReferenceId,
 			apiProductSku,
 			expiresAt: { gt: sql`NOW()` },
-			requestsConsumed: { lt: sql`max_requests` },
+			requestsConsumed: { lt: sql`"max_requests"` },
 		})
 		.order({ createdAt: "DESC" })
 		.takeOptional();
@@ -29,7 +33,7 @@ export async function findActiveSubscription(
 }
 
 /**
- * Atomically increment subscription usage and check for 90% threshold
+ * Atomically increment subscription usage and check for usage threshold
  * @param subscriptionId - The subscription ID
  * @returns Updated subscription with new usage count
  */
@@ -44,14 +48,14 @@ export async function incrementSubscriptionUsage(subscriptionId: string) {
 		throw new Error(`Subscription ${subscriptionId} not found`);
 	}
 
-	// Check if 90% threshold reached and webhook not already sent
+	// Check if usage threshold reached and webhook not already sent
 	await checkAndQueueWebhookAt90Percent(updatedSubscription);
 
 	return updatedSubscription;
 }
 
 /**
- * Check if subscription has reached 90% usage and queue webhook if needed
+ * Check if subscription has reached usage threshold and queue webhook if needed
  * @param subscription - The subscription object
  */
 export async function checkAndQueueWebhookAt90Percent(subscription: {
@@ -65,9 +69,12 @@ export async function checkAndQueueWebhookAt90Percent(subscription: {
 	const usagePercent = (subscription.requestsConsumed / subscription.maxRequests) * 100;
 
 	// Only queue if:
-	// 1. Usage is >= 90%
+	// 1. Usage is >= threshold percentage
 	// 2. Notification hasn't been sent yet
-	if (usagePercent >= 90 && !subscription.notifiedAt90PercentUse) {
+	if (
+		usagePercent >= SUBSCRIPTION_USAGE_ALERT_THRESHOLD_PERCENT &&
+		!subscription.notifiedAt90PercentUse
+	) {
 		// Get team webhook URL
 		const team = await db.teams.findBy({
 			teamId: subscription.teamId,
@@ -101,7 +108,7 @@ export async function checkAndQueueWebhookAt90Percent(subscription: {
 			webhookUrl: team.subscriptionAlertWebhookUrl,
 			status: "Pending",
 			attempts: 0,
-			maxAttempts: 3,
+			maxAttempts: WEBHOOK_MAX_RETRY_ATTEMPTS,
 			scheduledFor: () => sql`NOW()`,
 			payload,
 		});

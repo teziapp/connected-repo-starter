@@ -1,6 +1,8 @@
 import { findActiveSubscription } from "@backend/modules/api-gateway/utils/subscriptionTracker.utils";
 import type { ApiProductSku } from "@connected-repo/zod-schemas/enums.zod";
+import { zString } from "@connected-repo/zod-schemas/zod_utils";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import z from "zod";
 
 /**
  * Subscription Check Middleware
@@ -20,7 +22,7 @@ export function subscriptionCheckHook(apiProductSku: ApiProductSku) {
 		}
 
 		const { teamId } = request.team;
-		const { teamUserReferenceId } = request.query as { teamUserReferenceId: string };
+		const { teamUserReferenceId } = z.object({teamUserReferenceId: zString}).parse(request.query);
 
 		// Find active subscription for this team and product
 		const subscription = await findActiveSubscription(teamId, teamUserReferenceId, apiProductSku);

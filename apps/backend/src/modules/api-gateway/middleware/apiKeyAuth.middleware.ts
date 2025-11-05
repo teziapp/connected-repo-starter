@@ -1,6 +1,7 @@
 import { db } from "@backend/db/db";
 import { verifyApiKey } from "@backend/modules/api-gateway/utils/apiKeyGenerator.utils";
-import type { FastifyRequest, FastifyReply } from "fastify";
+import { omitKeys } from "@backend/utils/omit.utils";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 /**
  * API Key Authentication Middleware
@@ -56,5 +57,5 @@ export async function apiKeyAuthHook(
 	}
 
 	// Attach team to request object
-	request.team = team;
+	request.team = omitKeys(team, ["rateLimitPerMinute"]);
 }

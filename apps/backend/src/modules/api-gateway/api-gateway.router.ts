@@ -28,6 +28,7 @@ import { db } from "@backend/db/db";
 import { saveJournalEntryHandler } from "@backend/modules/api-gateway/handlers/save_journal_entry.handler";
 import {
 	apiKeyAuthHook,
+	corsValidationHook,
 	requestLoggerHooks,
 	subscriptionCheckHook,
 	teamRateLimitHook,
@@ -70,15 +71,6 @@ const errorResponseZod = z.object({
 	message: z.string(),
 });
 
-// Success response schema for journal_entry_create
-const saveJournalEntryResponseZod = z.object({
-	success: z.boolean(),
-	journalEntryId: z.string(),
-	message: z.string(),
-});
-
-
-
 // ============================================================
 // API Routes
 // ============================================================
@@ -86,6 +78,7 @@ const saveJournalEntryResponseZod = z.object({
 // Use .withTypeProvider<FastifyZodOpenApiTypeProvider>() for type safety
 export const apiGatewayRouter = async (app: FastifyInstance) => {
 	app.addHook("preHandler", apiKeyAuthHook);
+	app.addHook("preHandler", corsValidationHook);
 	app.addHook("preHandler", whitelistCheckHook);
 	app.addHook("preHandler", teamRateLimitHook);
 	/**
