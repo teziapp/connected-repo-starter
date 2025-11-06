@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router";
 export const JournalEntriesRouter = () => {
 	return (
 		<Routes>
-      <Route path="/"element={<JournalEntriesPage />} />
+      <Route path="/" element={<JournalEntriesPage />} />
       <Route path="/new" element={<CreateJournalEntryPage />} />
       <Route path="/:entryId" element={<JournalEntryDetailPage />} />
     </Routes>

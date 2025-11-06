@@ -24,7 +24,7 @@ export const journalEntrySelectAllZod = journalEntryMandatoryZod.extend(journalE
 export type JournalEntrySelectAll = z.infer<typeof journalEntrySelectAllZod>;
 
 export const journalEntryGetByIdZod = z.object({
-	journalEntryId: z.uuid(),
+	journalEntryId: z.ulid(),
 });
 export type GetJournalEntryByIdInput = z.infer<typeof journalEntryGetByIdZod>;
 
@@ -34,6 +34,6 @@ export const journalEntryGetByUserZod = z.object({
 export type GetJournalEntriesByUserInput = z.infer<typeof journalEntryGetByUserZod>;
 
 export const journalEntryDeleteZod = z.object({
-	journalEntryId: z.uuid(),
+	journalEntryId: z.ulid(),
 });
 export type DeleteJournalEntryInput = z.infer<typeof journalEntryDeleteZod>;
