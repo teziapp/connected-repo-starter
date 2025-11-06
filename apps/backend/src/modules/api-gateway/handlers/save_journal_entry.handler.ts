@@ -41,7 +41,7 @@ export async function saveJournalEntryHandler(
 			journalEntryId: journalEntry.journalEntryId,
 			teamId,
 			teamUserReferenceId,
-			promptLength: prompt.length,
+			promptLength: prompt?.length ?? 0,
 			contentLength: content.length,
 		}, "Journal entry saved successfully");
 
