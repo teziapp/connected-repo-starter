@@ -1,16 +1,15 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
-import { getClientIpAddress } from "@backend/utils/request-metadata.utils";
 import {
-	isDomainWhitelisted,
-	isIPWhitelisted,
+	isIPWhitelisted
 } from "@backend/modules/api-gateway/utils/ipChecker.utils";
+import { getClientIpAddress } from "@backend/utils/request-metadata.utils";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 /**
  * Domain/IP Whitelist Middleware
  * Checks request origin against team.allowedDomains (if not empty)
  * Checks request IP against team.allowedIPs (exact match, if not empty)
  */
-export async function whitelistCheckHook(
+export async function ipWhitelistCheckHook(
 	request: FastifyRequest,
 	reply: FastifyReply,
 ) {
@@ -23,32 +22,7 @@ export async function whitelistCheckHook(
 		});
 	}
 
-	const { allowedDomains, allowedIPs } = request.team;
-
-	// Check domain whitelist (if configured)
-	if (allowedDomains && allowedDomains.length > 0) {
-		const origin = request.headers.origin || request.headers.referer;
-
-		if (!origin) {
-			return reply.code(403).send({
-				statusCode: 403,
-				error: "Forbidden",
-				message: "Request origin not provided",
-			});
-		}
-
-		const isDomainAllowed = allowedDomains.some((whitelistEntry) =>
-			isDomainWhitelisted(origin, whitelistEntry),
-		);
-
-		if (!isDomainAllowed) {
-			return reply.code(403).send({
-				statusCode: 403,
-				error: "Forbidden",
-				message: "Request origin not whitelisted",
-			});
-		}
-	}
+	const { allowedIPs } = request.team;
 
 	// Check IP whitelist (if configured)
 	if (allowedIPs && allowedIPs.length > 0) {

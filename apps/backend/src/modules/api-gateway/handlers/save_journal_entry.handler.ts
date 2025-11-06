@@ -29,6 +29,13 @@ export async function saveJournalEntryHandler(
 	const { teamUserReferenceId } = request.subscription;
 
 	try {
+		const userExists = await db.users.findBy({ userId: teamUserReferenceId }).exists();
+
+		if (!userExists) {
+			// return empty response
+			return reply.code(204).send();
+		};
+
 		// Create journal entry in database
 		const journalEntry = await db.journalEntries.create({
 			authorUserId: teamUserReferenceId,

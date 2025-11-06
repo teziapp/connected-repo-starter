@@ -11,6 +11,7 @@ const subscriptionMandatoryZod = z.object({
   expiresAt: zTimeEpoch,
   maxRequests: zSmallint(0),
   apiProductSku: apiProductSkuZod,
+  apiProductQuantity: zSmallint(1),
   requestsConsumed: zSmallint(0).default(0),
   teamId: z.uuid(),
   teamUserReferenceId: zString,
