@@ -11,6 +11,7 @@ export class SubscriptionsTable extends BaseTable {
     expiresAt: t.timestampNumber(),
     maxRequests: t.integer(),
     apiProductSku: t.apiProductSkuEnum(),
+    apiProductQuantity: t.smallint(),
     requestsConsumed: t.integer(),
     teamId: t.uuid(),
     teamUserReferenceId: t.string(),
