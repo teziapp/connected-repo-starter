@@ -1,13 +1,12 @@
 import { BaseTable } from "@backend/db/base_table";
 import { UserTable } from "@backend/modules/users/users/users.table";
-import { ulid } from "ulid";
 
 export class ApiProductRequestLogsTable extends BaseTable {
   readonly table = "api_product_request_logs";
   
   columns = this.setColumns(
     (t) => ({
-      apiProductRequestId: t.string().primaryKey().default(() => ulid()),
+      apiProductRequestId: t.ulid().primaryKey(),
       teamId: t.uuid(),
       teamUserReferenceId: t.string(),
       requestBodyText: t.text().nullable(),
