@@ -14,6 +14,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function CreateJournalEntryForm() {
+	const [promptId, setPromptId] = useState("");
 	const [prompt, setPrompt] = useState("");
 	const [content, setContent] = useState("");
 	const [authorUserId, setAuthorId] = useState("");
@@ -21,10 +22,14 @@ export function CreateJournalEntryForm() {
 	const [success, setSuccess] = useState("");
 
 	const { data: users } = useQuery(trpc.users.getAll.queryOptions())
+	const { data: prompts = [] } = useQuery(trpc.prompts.getActive.queryOptions({ isActive: true }))
+
+	const createPromptMutation = useMutation(trpc.prompts.create.mutationOptions());
 
 	const createJournalEntryMutation = useMutation(trpc.journalEntries.create.mutationOptions({
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: trpc.journalEntries.getAll.queryKey() });
+			setPromptId("");
 			setPrompt("");
 			setContent("");
 			setAuthorId("");
@@ -42,17 +47,41 @@ export function CreateJournalEntryForm() {
 		},
 	}));
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handlePromptSelect = (selectedPromptId: string) => {
+		setPromptId(selectedPromptId);
+		const selectedPrompt = prompts.find(p => p.promptId === selectedPromptId);
+		if (selectedPrompt) {
+			setPrompt(selectedPrompt.text);
+		}
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!prompt.trim() || !content.trim() || !authorUserId) {
 			setError("Prompt, content, and author are required");
 			return;
 		}
 
-		createJournalEntryMutation.mutate({
-			prompt: prompt.trim(),
-			content: content.trim(),
-		});
+		try {
+			let finalPromptId = promptId;
+
+			// If no prompt selected, create a new one
+			if (!finalPromptId) {
+				const newPrompt = await createPromptMutation.mutateAsync({
+					text: prompt.trim(),
+					isActive: true,
+				});
+				finalPromptId = newPrompt.promptId;
+			}
+
+			createJournalEntryMutation.mutate({
+				promptId: finalPromptId,
+				prompt: prompt.trim(),
+				content: content.trim(),
+			});
+		} catch (err) {
+			setError("Failed to create prompt");
+		}
 	};
 
 	return (
@@ -62,6 +91,25 @@ export function CreateJournalEntryForm() {
 			</Typography>
 			<form onSubmit={handleSubmit}>
 				<Stack spacing={2}>
+					<FormControl fullWidth>
+						<InputLabel id="prompt-label">Select Existing Prompt (Optional)</InputLabel>
+						<Select
+							labelId="prompt-label"
+							value={promptId}
+							onChange={(e) => handlePromptSelect(e.target.value)}
+							disabled={createJournalEntryMutation.isPending}
+							label="Select Existing Prompt (Optional)"
+						>
+							<MenuItem value="">
+								<em>Type a new prompt below</em>
+							</MenuItem>
+							{prompts?.map((p) => (
+								<MenuItem key={p.promptId} value={p.promptId}>
+									{p.text}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
 					<TextField
 						label="Prompt / Question"
 						type="text"
@@ -71,7 +119,7 @@ export function CreateJournalEntryForm() {
 						fullWidth
 						required
 						placeholder="What question are you answering today?"
-						helperText="The question or prompt you're responding to"
+						helperText={promptId ? "Selected prompt (you can edit it)" : "Type a new prompt or select one above"}
 					/>
 					<TextField
 						label="Your Response"

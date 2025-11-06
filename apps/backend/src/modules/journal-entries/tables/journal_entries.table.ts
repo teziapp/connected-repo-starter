@@ -7,6 +7,10 @@ export class JournalEntryTable extends BaseTable {
 	columns = this.setColumns((t) => ({
 		journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 
+		promptId: t.ulid().foreignKey("prompts", "promptId", {
+			onDelete: "RESTRICT",
+			onUpdate: "RESTRICT",
+		}),
 		prompt: t.string(500),
 		content: t.text(),
 		authorUserId: t.uuid().foreignKey("users", "userId", {
@@ -21,6 +25,6 @@ export class JournalEntryTable extends BaseTable {
 		author: this.belongsTo(() => UserTable, {
 			columns: ["authorUserId"],
 			references: ["userId"],
-		}),
+		})
 	};
 }

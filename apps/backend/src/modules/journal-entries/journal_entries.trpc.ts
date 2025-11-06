@@ -34,6 +34,7 @@ export const journalEntriesRouterTrpc = trpcRouter({
 		.mutation(async ({ input, ctx: { user } }) => {
 			const newJournalEntry = await db.journalEntries.create({
 				authorUserId: user.userId,
+				promptId: input.promptId,
 				prompt: input.prompt,
 				content: input.content,
 			});

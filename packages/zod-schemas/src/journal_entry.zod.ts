@@ -3,6 +3,7 @@ import { zString, zTimestamps } from "./zod_utils.js";
 
 export const journalEntryMandatoryZod = z.object({
 	prompt: zString.min(1, "Prompt is required").max(500),
+	promptId: z.ulid(),
 	content: zString.min(1, "Content is required").max(50000),
 	authorUserId: z.uuid(),
 });

@@ -18,6 +18,16 @@ change(async (db) => {
     updatedAt: t.timestamps().updatedAt,
   }));
 
+  await db.createTable('prompts', (t) => ({
+    promptId: t.string(26).primaryKey(),
+    text: t.string(500),
+    category: t.string(100).nullable(),
+    tags: t.array(t.string()).nullable(),
+    isActive: t.boolean().default(true),
+    createdAt: t.timestamps().createdAt,
+    updatedAt: t.timestamps().updatedAt,
+  }));
+
   await db.createTable(
     'session',
     (t) => ({
@@ -72,7 +82,10 @@ change(async (db) => {
 change(async (db) => {
   await db.createTable('journal_entries', (t) => ({
     journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-    prompt: t.string(500),
+    promptId: t.string(26).foreignKey('prompts', 'promptId', {
+      onUpdate: 'RESTRICT',
+      onDelete: 'RESTRICT',
+    }),
     content: t.text(),
     authorUserId: t.uuid().foreignKey('users', 'userId', {
       onUpdate: 'RESTRICT',
@@ -85,7 +98,7 @@ change(async (db) => {
   await db.createTable(
     'subscriptions',
     (t) => ({
-      subscriptionId: t.string().primaryKey(),
+      subscriptionId: t.string(26).primaryKey(),
       expiresAt: t.timestamp(),
       maxRequests: t.integer(),
       apiProductSku: t.enum('api_product_enum'),
@@ -106,7 +119,7 @@ change(async (db) => {
   await db.createTable(
     'api_product_request_logs',
     (t) => ({
-      apiProductRequestId: t.string().primaryKey(),
+      apiProductRequestId: t.string(26).primaryKey(),
       teamId: t.uuid(),
       teamUserReferenceId: t.string(),
       requestBodyText: t.text().nullable(),
@@ -138,7 +151,7 @@ change(async (db) => {
   await db.createTable(
     'webhook_call_queue',
     (t) => ({
-      webhookCallQueueId: t.string().primaryKey(),
+      webhookCallQueueId: t.string(26).primaryKey(),
       teamId: t.uuid(),
       webhookUrl: t.string(),
       payload: t.json(),
