@@ -6,26 +6,9 @@ import { BottomNavigation } from "@connected-repo/ui-mui/navigation/BottomNaviga
 import { BottomNavigationAction } from "@connected-repo/ui-mui/navigation/BottomNavigationAction";
 import { Toolbar } from "@connected-repo/ui-mui/navigation/Toolbar";
 import { navItems } from "@frontend/config/nav.config";
-import type { SessionInfo } from "@frontend/contexts/UserContext";
 import { useLocation, useNavigate } from "react-router";
 import { UserProfileMenu } from "./UserProfileMenu";
 
-interface MobileNavbarProps {
-	sessionInfo: SessionInfo;
-}
-
-/**
- * MobileNavbar - Mobile navigation with top bar + bottom navigation
- *
- * Features:
- * - Minimal top bar with logo and user avatar
- * - Bottom navigation with 4 main items:
- *   - Dashboard (Home)
- *   - Posts (List)
- *   - Create Post (Add)
- *   - Profile (User avatar triggers menu)
- * - Fixed position for easy thumb access
- */
 export const MobileNavbar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();

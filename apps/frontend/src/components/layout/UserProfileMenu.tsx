@@ -22,19 +22,8 @@ interface UserProfileMenuProps {
 	trigger?: React.ReactNode;
 	/** Whether to show user info in menu header */
 	showUserInfo?: boolean;
-	/** Session info (optional - will use loader data if not provided) */
-	sessionInfo?: SessionInfo;
 }
 
-/**
- * UserProfileMenu - Dropdown menu with user profile and actions
- *
- * Features:
- * - Displays user avatar and info
- * - Navigation to Dashboard, Profile/Settings
- * - Theme toggle (light/dark mode)
- * - Logout functionality
- */
 export const UserProfileMenu = ({
 	trigger,
 	showUserInfo = true,
