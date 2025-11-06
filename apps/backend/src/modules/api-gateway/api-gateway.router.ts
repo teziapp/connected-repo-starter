@@ -52,7 +52,7 @@ import z from "zod";
 
 declare module "fastify" {
 	interface FastifyRequest {
-		team?: TeamSelectAll;
+		team?: Omit<TeamSelectAll, "apiSecretHash">;
 		subscription?: SubscriptionSelectAll;
 		requestStartTime?: number;
 	}

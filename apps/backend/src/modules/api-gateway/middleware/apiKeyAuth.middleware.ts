@@ -34,7 +34,7 @@ export async function apiKeyAuthHook(
 
 	// Get team by ID with all columns including hidden ones
 	const team = await db.teams
-		.select("*", "apiSecretHash", "rateLimitPerMinute")
+		.select("*", "apiSecretHash")
 		.findBy({ teamId });
 
 	if (!team) {
@@ -57,5 +57,5 @@ export async function apiKeyAuthHook(
 	}
 
 	// Attach team to request object
-	request.team = omitKeys(team, ["rateLimitPerMinute"]);
+	request.team = omitKeys(team, ["apiSecretHash"]);
 }
