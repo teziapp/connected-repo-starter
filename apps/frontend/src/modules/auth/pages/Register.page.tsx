@@ -9,16 +9,15 @@ import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card } from "@connected-repo/ui-mui/layout/Card";
 import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
-import { userCreateInputZod } from "@connected-repo/zod-schemas/user.zod";
+import { UserCreateInput, userCreateInputZod } from "@connected-repo/zod-schemas/user.zod";
 import { trpc } from "@frontend/utils/trpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import type { z } from "zod";
 
-type RegisterFormData = z.infer<typeof userCreateInputZod>;
+type RegisterFormData = UserCreateInput;
 
 const RegisterPage = () => {
 	const navigate = useNavigate();

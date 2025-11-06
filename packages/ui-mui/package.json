@@ -21,8 +21,10 @@
 		"@emotion/styled": "^11.14.1",
 		"@mui/icons-material": "^7.3.4",
 		"@mui/material": "^7.3.4",
+		"@hookform/resolvers": "^5.2.2",
 		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"react-dom": "^19.2.0",
+		"react-hook-form": "^7.66.0"
 	},
 	"devDependencies": {
 		"@connected-repo/typescript-config": "*",
@@ -69,9 +71,11 @@
 			"types": "./src/icons/*.ts",
 			"import": "./dist/icons/*.js",
 			"default": "./dist/icons/*.js"
+		},
+		"./rhf-form/*": {
+			"types": "./src/rhf-form/*.tsx",
+			"import": "./dist/rhf-form/*.js",
+			"default": "./dist/rhf-form/*.js"
 		}
-	},
-	"dependencies": {
-		"@mui/icons-material": "^7.3.4"
 	}
 }

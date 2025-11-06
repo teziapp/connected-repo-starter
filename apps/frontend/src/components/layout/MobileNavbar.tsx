@@ -1,6 +1,4 @@
-import { Avatar } from "@connected-repo/ui-mui/data-display/Avatar";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
-import { AccountCircleIcon } from "@connected-repo/ui-mui/icons/AccountCircleIcon";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { AppBar } from "@connected-repo/ui-mui/navigation/AppBar";
@@ -8,34 +6,12 @@ import { BottomNavigation } from "@connected-repo/ui-mui/navigation/BottomNaviga
 import { BottomNavigationAction } from "@connected-repo/ui-mui/navigation/BottomNavigationAction";
 import { Toolbar } from "@connected-repo/ui-mui/navigation/Toolbar";
 import { navItems } from "@frontend/config/nav.config";
-import type { SessionInfo } from "@frontend/contexts/UserContext";
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { UserProfileMenu } from "./UserProfileMenu";
 
-interface MobileNavbarProps {
-	sessionInfo: SessionInfo;
-}
-
-/**
- * MobileNavbar - Mobile navigation with top bar + bottom navigation
- *
- * Features:
- * - Minimal top bar with logo and user avatar
- * - Bottom navigation with 4 main items:
- *   - Dashboard (Home)
- *   - Posts (List)
- *   - Create Post (Add)
- *   - Profile (User avatar triggers menu)
- * - Fixed position for easy thumb access
- */
-export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
+export const MobileNavbar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-
-	// Get user from session info
-	const user = sessionInfo?.user;
 
 	// Map paths to bottom nav indices
 	const getBottomNavValue = () => {
@@ -105,7 +81,7 @@ export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
 					</Box>
 
 					{/* User Avatar - triggers menu */}
-					<UserProfileMenu showUserInfo sessionInfo={sessionInfo} />
+					<UserProfileMenu />
 				</Toolbar>
 			</AppBar>
 
@@ -157,32 +133,6 @@ export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
 							}}
 						/>
 					))}
-
-					{/* Profile item */}
-					<BottomNavigationAction
-						label="Profile"
-						icon={
-							user?.displayPicture ? (
-								<Avatar
-									src={user.displayPicture}
-									alt={user.name || user.email || "User"}
-									sx={{
-										width: 24,
-										height: 24,
-									}}
-								>
-									{!user.displayPicture && (user?.name?.[0] || user?.email?.[0] || "U")}
-								</Avatar>
-							) : (
-								<AccountCircleIcon />
-							)
-						}
-						sx={{
-							"&:hover": {
-								bgcolor: "action.hover",
-							},
-						}}
-					/>
 				</BottomNavigation>
 			</Paper>
 		</>

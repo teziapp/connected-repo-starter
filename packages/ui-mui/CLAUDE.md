@@ -20,26 +20,51 @@ ui-mui/
 │   ├── feedback/        # MUI feedback re-exports
 │   ├── form/            # MUI form re-exports
 │   ├── layout/          # MUI layout re-exports
+│   ├── rhf-form/        # React Hook Form wrapper components
 │   └── theme/           # Theme configuration
 ├── dist/               # Compiled JavaScript (generated)
 ├── package.json
 └── tsconfig.json
 ```
 
-## Import Pattern
+## Import Patterns
+
+### External Imports (From Other Apps/Packages)
+When importing from this package in other apps or packages, use direct category/component imports:
 
 ```typescript
-// ✅ Correct - Direct category/component imports
+// ✅ Correct - External imports from other apps/packages
 import { Button } from '@connected-repo/ui-mui/form/Button'
 import { TextField } from '@connected-repo/ui-mui/form/TextField'
-import { Card } from '@connected-repo/ui-mui/layout/Card'
+import { RhfFormProvider } from '@connected-repo/ui-mui/rhf-form/FormProvider'
 import { Alert } from '@connected-repo/ui-mui/feedback/Alert'
-import { ContentCard } from '@connected-repo/ui-mui/components/ContentCard'
-import { theme } from '@connected-repo/ui-mui/theme/theme'
 
 // ❌ Wrong - Package root imports are blocked
 import { Button, TextField } from '@connected-repo/ui-mui'
 ```
+
+### Internal Imports (Within ui-mui Package)
+When importing files within this package, **always use relative imports**:
+
+```typescript
+// ✅ Correct - Internal imports within ui-mui package
+// File: src/rhf-form/FormProvider.tsx
+import { NumLockAlert } from "../feedback/NumLockAlert";
+import { FormErrorDisplayer } from "./FormErrorDisplayer";
+
+// File: src/theme/ThemeProvider.tsx
+import { theme } from "./theme.config";
+
+// ❌ Wrong - Don't use package alias for internal imports
+import { NumLockAlert } from "@ui-mui/feedback/NumLockAlert";
+import { theme } from "@ui-mui/theme/theme.config";
+```
+
+**Why relative imports internally?**
+- Prevents circular dependency issues
+- Faster TypeScript compilation
+- Clearer module resolution
+- Standard practice for package development
 
 ## Component Categories
 
@@ -226,6 +251,183 @@ function Actions() {
     </>
   )
 }
+```
+
+### rhf-form/ - React Hook Form Components
+
+React Hook Form wrapper components for Material-UI form elements with consistent styling and error handling:
+
+```typescript
+import { RhfFormProvider } from '@connected-repo/ui-mui/rhf-form/RhfFormProvider'
+import { useRhfForm } from '@connected-repo/ui-mui/rhf-form/useRhfForm'
+import { RhfTextField } from '@connected-repo/ui-mui/rhf-form/RhfTextField'
+import { RhfCheckbox } from '@connected-repo/ui-mui/rhf-form/RhfCheckbox'
+import { RhfSwitch } from '@connected-repo/ui-mui/rhf-form/RhfSwitch'
+import { RhfSelect } from '@connected-repo/ui-mui/rhf-form/RhfSelect'
+import { RhfRadio } from '@connected-repo/ui-mui/rhf-form/RhfRadio'
+import { RhfSubmitButton } from '@connected-repo/ui-mui/rhf-form/RhfSubmitButton'
+import { FormErrorDisplayer } from '@connected-repo/ui-mui/rhf-form/FormErrorDisplayer'
+```
+
+**Base Styling Applied to All RHF Components:**
+- Responsive bottom margin (16px mobile, 20px desktop for fields; 12px mobile, 16px desktop for checkboxes/switches)
+- Full width by default
+- Font size adjusted to prevent iOS zoom (16px mobile, 14px desktop)
+- Error state handling with helper text
+- Consistent spacing and alignment
+
+**RhfTextField** - React Hook Form wrapper for TextField:
+```typescript
+import { RhfTextField } from '@connected-repo/ui-mui/rhf-form/RhfTextField'
+import { useRhfForm } from '@connected-repo/ui-mui/rhf-form/useRhfForm'
+
+function MyForm() {
+  const { formMethods, RhfFormProvider } = useRhfForm({
+    onSubmit: async (data) => {
+      console.log(data)
+    }
+  })
+
+  return (
+    <RhfFormProvider>
+      <RhfTextField
+        name="email"
+        label="Email"
+        type="email"
+        // Custom styling override
+        sx={{ mb: 3 }}
+      />
+      <RhfTextField
+        name="password"
+        label="Password"
+        type="password"
+      />
+    </RhfFormProvider>
+  )
+}
+```
+
+**RhfCheckbox** - React Hook Form wrapper for Checkbox:
+```typescript
+import { RhfCheckbox } from '@connected-repo/ui-mui/rhf-form/RhfCheckbox'
+
+<RhfCheckbox
+  name="terms"
+  label="I agree to the terms and conditions"
+  checkboxProps={{ color: 'primary' }}
+  sx={{ mb: 3 }} // Custom styling override
+/>
+```
+
+**RhfSwitch** - React Hook Form wrapper for Switch:
+```typescript
+import { RhfSwitch } from '@connected-repo/ui-mui/rhf-form/RhfSwitch'
+
+<RhfSwitch
+  name="notifications"
+  label="Enable notifications"
+  switchProps={{ color: 'success' }}
+/>
+```
+
+**RhfSelect** - React Hook Form wrapper for Select with options:
+```typescript
+import { RhfSelect } from '@connected-repo/ui-mui/rhf-form/RhfSelect'
+
+<RhfSelect
+  name="country"
+  label="Country"
+  placeholder="Select a country"
+  options={[
+    { value: 'us', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'ca', label: 'Canada', disabled: true },
+  ]}
+  sx={{ mb: 3 }} // Custom styling override
+/>
+```
+
+**RhfRadio** - React Hook Form wrapper for Radio Group:
+```typescript
+import { RhfRadio } from '@connected-repo/ui-mui/rhf-form/RhfRadio'
+
+<RhfRadio
+  name="gender"
+  label="Gender"
+  options={[
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+  ]}
+  row // Display options horizontally
+/>
+```
+
+**Complete Form Example:**
+```typescript
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRhfForm } from '@connected-repo/ui-mui/rhf-form/useRhfForm'
+import { RhfTextField } from '@connected-repo/ui-mui/rhf-form/RhfTextField'
+import { RhfCheckbox } from '@connected-repo/ui-mui/rhf-form/RhfCheckbox'
+import { RhfSelect } from '@connected-repo/ui-mui/rhf-form/RhfSelect'
+import { RhfSubmitButton } from '@connected-repo/ui-mui/rhf-form/RhfSubmitButton'
+
+const schema = z.object({
+  email: z.string().email('Invalid email address'),
+  country: z.string().min(1, 'Please select a country'),
+  terms: z.boolean().refine(val => val === true, 'You must accept the terms'),
+})
+
+function RegistrationForm() {
+  const { formMethods, RhfFormProvider } = useRhfForm({
+    onSubmit: async (data) => {
+      // Submit form data
+      await api.register(data)
+    },
+    formConfig: {
+      resolver: zodResolver(schema),
+    }
+  })
+
+  return (
+    <RhfFormProvider>
+      <RhfTextField name="email" label="Email" type="email" />
+
+      <RhfSelect
+        name="country"
+        label="Country"
+        options={[
+          { value: 'us', label: 'United States' },
+          { value: 'uk', label: 'United Kingdom' },
+        ]}
+      />
+
+      <RhfCheckbox name="terms" label="I agree to the terms" />
+
+      <RhfSubmitButton
+        notSubmittingText="Register"
+        isSubmittingText="Registering..."
+      />
+    </RhfFormProvider>
+  )
+}
+```
+
+**Customization:**
+All RHF components accept an `sx` prop to override or extend base styles:
+```typescript
+<RhfTextField
+  name="email"
+  label="Email"
+  // Override base margin, add custom styling
+  sx={{
+    mb: 4,
+    '& .MuiInputBase-root': {
+      borderRadius: 3
+    }
+  }}
+/>
 ```
 
 ### theme/ - Theme Configuration
