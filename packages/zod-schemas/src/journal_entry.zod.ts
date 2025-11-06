@@ -32,3 +32,8 @@ export const journalEntryGetByUserZod = z.object({
 	authorUserId: zString,
 });
 export type GetJournalEntriesByUserInput = z.infer<typeof journalEntryGetByUserZod>;
+
+export const journalEntryDeleteZod = z.object({
+	journalEntryId: z.uuid(),
+});
+export type DeleteJournalEntryInput = z.infer<typeof journalEntryDeleteZod>;

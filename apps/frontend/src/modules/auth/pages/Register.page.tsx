@@ -1,6 +1,5 @@
 import { Avatar } from "@connected-repo/ui-mui/data-display/Avatar";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
-import { Alert } from "@connected-repo/ui-mui/feedback/Alert";
 import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
 import { Fade } from "@connected-repo/ui-mui/feedback/Fade";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
@@ -11,9 +10,9 @@ import { RhfSubmitButton } from "@connected-repo/ui-mui/rhf-form/RhfSubmitButton
 import { RhfTextField } from "@connected-repo/ui-mui/rhf-form/RhfTextField";
 import { useRhfForm } from "@connected-repo/ui-mui/rhf-form/useRhfForm";
 import { UserCreateInput, userCreateInputZod } from "@connected-repo/zod-schemas/user.zod";
-import { trpc } from "@frontend/utils/trpc.client";
+import { trpc, trpcFetch } from "@frontend/utils/trpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
@@ -25,17 +24,11 @@ const RegisterPage = () => {
 	// Fetch session info to pre-fill form
 	const { data: sessionInfo, isLoading: isLoadingSession } = useSuspenseQuery(trpc.auth.getSessionInfo.queryOptions());
 
-	// Register mutation
-	const registerMutation = useMutation(trpc.users.create.mutationOptions({
-		onSuccess: () => {
-			navigate("/dashboard");
-		},
-	}));
-
 	// Form setup with Zod validation and RHF
 	const { formMethods, RhfFormProvider } = useRhfForm<RegisterFormData>({
 		onSubmit: async (data) => {
-			await registerMutation.mutateAsync(data);
+			await trpcFetch.users.create.mutate(data);
+			navigate("/dashboard");
 		},
 		formConfig: {
 			resolver: zodResolver(userCreateInputZod),
@@ -166,15 +159,6 @@ const RegisterPage = () => {
 											},
 										}}
 									/>
-
-									{/* Error Alert */}
-									{registerMutation.error && (
-										<Fade in>
-											<Alert severity="error">
-												{registerMutation.error.message || "Failed to register. Please try again."}
-											</Alert>
-										</Fade>
-									)}
 
 									{/* Submit Button */}
 									<RhfSubmitButton

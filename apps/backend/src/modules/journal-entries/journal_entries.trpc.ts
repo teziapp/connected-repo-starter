@@ -2,6 +2,7 @@ import { db } from "@backend/db/db";
 import { protectedProcedure, trpcRouter } from "@backend/trpc";
 import {
 	journalEntryCreateInputZod,
+	journalEntryDeleteZod,
 	journalEntryGetByIdZod,
 	journalEntryGetByUserZod,
 } from "@connected-repo/zod-schemas/journal_entry.zod";
@@ -52,5 +53,20 @@ export const journalEntriesRouterTrpc = trpcRouter({
 				.order({ createdAt: "DESC" });
 
 			return journalEntries;
+		}),
+
+	// Delete journal entry
+	delete: protectedProcedure
+		.input(journalEntryDeleteZod)
+		.mutation(async ({ input: { journalEntryId } }) => {
+			const journalEntry = await db.journalEntries.find(journalEntryId);
+
+			if (!journalEntry) {
+				throw new Error("Journal entry not found");
+			}
+
+			await db.journalEntries.find(journalEntryId).delete();
+
+			return { success: true };
 		}),
 });
