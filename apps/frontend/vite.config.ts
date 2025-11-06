@@ -13,13 +13,13 @@ export default defineConfig({
 		envValidationVitePlugin(),
 		react(),
 		analyzer({
-			analyzerMode: "json",
-			fileName: statsPath,
+			// analyzerMode: "json",
+			// fileName: statsPath,
 			// Use the below when output needed is html
-			// enabled: false,
-			// analyzerMode: "static",
-			// fileName: ".dev/stats.html",
-			// openAnalyzer: true,
+			enabled: true,
+			analyzerMode: "static",
+			fileName: ".dev/stats.html",
+			openAnalyzer: true,
 		})
 	],
 	resolve: {
@@ -34,7 +34,8 @@ export default defineConfig({
 				manualChunks: {
 					// react: ['react', 'react-dom'],
 					// Add other big libs as needed
-					// zod: ['zod', '@connected-repo/zod-schemas'],
+					// mui: ['@mui/material'],
+					// zod: ['zod'], // '@connected-repo/zod-schemas'],
 				},
 				// manualChunks(id) {
 				//   if (id.includes('zod')) {

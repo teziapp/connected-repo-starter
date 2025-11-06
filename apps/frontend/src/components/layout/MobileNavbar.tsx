@@ -1,6 +1,4 @@
-import { Avatar } from "@connected-repo/ui-mui/data-display/Avatar";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
-import { AccountCircleIcon } from "@connected-repo/ui-mui/icons/AccountCircleIcon";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { AppBar } from "@connected-repo/ui-mui/navigation/AppBar";
@@ -9,7 +7,6 @@ import { BottomNavigationAction } from "@connected-repo/ui-mui/navigation/Bottom
 import { Toolbar } from "@connected-repo/ui-mui/navigation/Toolbar";
 import { navItems } from "@frontend/config/nav.config";
 import type { SessionInfo } from "@frontend/contexts/UserContext";
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { UserProfileMenu } from "./UserProfileMenu";
 
@@ -29,13 +26,9 @@ interface MobileNavbarProps {
  *   - Profile (User avatar triggers menu)
  * - Fixed position for easy thumb access
  */
-export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
+export const MobileNavbar = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-
-	// Get user from session info
-	const user = sessionInfo?.user;
 
 	// Map paths to bottom nav indices
 	const getBottomNavValue = () => {
@@ -105,7 +98,7 @@ export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
 					</Box>
 
 					{/* User Avatar - triggers menu */}
-					<UserProfileMenu showUserInfo sessionInfo={sessionInfo} />
+					<UserProfileMenu />
 				</Toolbar>
 			</AppBar>
 
@@ -157,32 +150,6 @@ export const MobileNavbar = ({ sessionInfo }: MobileNavbarProps) => {
 							}}
 						/>
 					))}
-
-					{/* Profile item */}
-					<BottomNavigationAction
-						label="Profile"
-						icon={
-							user?.displayPicture ? (
-								<Avatar
-									src={user.displayPicture}
-									alt={user.name || user.email || "User"}
-									sx={{
-										width: 24,
-										height: 24,
-									}}
-								>
-									{!user.displayPicture && (user?.name?.[0] || user?.email?.[0] || "U")}
-								</Avatar>
-							) : (
-								<AccountCircleIcon />
-							)
-						}
-						sx={{
-							"&:hover": {
-								bgcolor: "action.hover",
-							},
-						}}
-					/>
 				</BottomNavigation>
 			</Paper>
 		</>

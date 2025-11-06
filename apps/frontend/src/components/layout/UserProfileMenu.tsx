@@ -38,18 +38,15 @@ interface UserProfileMenuProps {
 export const UserProfileMenu = ({
 	trigger,
 	showUserInfo = true,
-	sessionInfo: sessionInfoProp,
 }: UserProfileMenuProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const navigate = useNavigate();
 	const open = Boolean(anchorEl);
 
 	// Get session info from prop or loader data
-	const loaderData = useLoaderData() as SessionInfo | undefined;
-	const sessionInfo = sessionInfoProp || loaderData;
+	const sessionInfo = useLoaderData() as SessionInfo | undefined;
 
 	const user = sessionInfo?.user;
-	const hasSession = sessionInfo?.hasSession;
 
 	// Theme toggle
 	const { mode, toggleTheme } = useThemeMode();

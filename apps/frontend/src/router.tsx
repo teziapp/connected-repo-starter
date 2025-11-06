@@ -4,7 +4,7 @@ import { ErrorFallback } from "@frontend/components/error_fallback";
 import { AppLayout } from "@frontend/components/layout/AppLayout";
 import { authLoader } from "@frontend/utils/auth.loader";
 import { lazy } from "react";
-import { createBrowserRouter, Outlet, redirect, type RouteObject } from "react-router";
+import { createBrowserRouter, redirect, type RouteObject } from "react-router";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -35,7 +35,6 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 		path: "/",
 		errorElement: <ErrorFallback />,
 		hydrateFallbackElement: <HydrateFallback />,
-		element: <Outlet />,
 		children: [
 			{
 				index: true,
