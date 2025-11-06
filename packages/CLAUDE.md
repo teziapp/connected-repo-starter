@@ -21,6 +21,27 @@ All packages follow strict architectural guidelines for **optimal build performa
 - Package exports configured via package.json `exports` field
 - Pattern enforced by configuration, not documentation
 
+### 🔗 Internal Package Imports
+- **Within a package**: Use relative imports (`./ComponentName`, `../folder/ComponentName`)
+- **Between packages**: Use package exports (`@connected-repo/package-name/path/Component`)
+- This ensures proper module resolution and prevents circular dependencies
+
+**Example**:
+```typescript
+// ✅ Correct - Internal imports within ui-mui package
+// File: packages/ui-mui/src/rhf-form/FormProvider.tsx
+import { NumLockAlert } from "../feedback/NumLockAlert";
+import { FormErrorDisplayer } from "./FormErrorDisplayer";
+
+// ✅ Correct - External imports from other packages
+// File: apps/frontend/src/components/MyForm.tsx
+import { RhfFormProvider } from '@connected-repo/ui-mui/rhf-form/FormProvider';
+
+// ❌ Wrong - Don't use package alias for internal imports within the same package
+// File: packages/ui-mui/src/rhf-form/FormProvider.tsx
+import { NumLockAlert } from "@ui-mui/feedback/NumLockAlert"; // BAD
+```
+
 ## Available Packages
 
 ### 1. @connected-repo/typescript-config

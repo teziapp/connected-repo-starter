@@ -25,7 +25,7 @@ export const promptSelectAllZod = promptMandatoryZod.extend(promptOptionalZod.sh
 export type PromptSelectAll = z.infer<typeof promptSelectAllZod>;
 
 export const promptGetByIdZod = z.object({
-	promptId: z.uuid(),
+	promptId: z.ulid(),
 });
 export type GetPromptByIdInput = z.infer<typeof promptGetByIdZod>;
 
