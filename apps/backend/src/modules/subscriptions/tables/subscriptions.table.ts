@@ -7,7 +7,6 @@ export class SubscriptionsTable extends BaseTable {
 
   columns = this.setColumns((t) => ({
     subscriptionId: t.ulid().primaryKey(),
-
     
     expiresAt: t.timestampNumber(),
     maxRequests: t.integer(),
