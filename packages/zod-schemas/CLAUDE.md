@@ -73,10 +73,13 @@ zod-schemas/
 └── tsconfig.json
 ```
 
-## Import Pattern
+## Import Patterns
+
+### External Imports (From Other Apps/Packages)
+When importing from this package in backend or frontend, use direct file imports:
 
 ```typescript
-// ✅ Correct - Direct file imports
+// ✅ Correct - External imports from other apps/packages
 // Entity schemas
 import { userCreateInputZod, userGetByIdInputZod } from '@connected-repo/zod-schemas/user.zod'
 import { postCreateInputZod, postSelectAllZod } from '@connected-repo/zod-schemas/post.zod'
@@ -89,6 +92,25 @@ import { NodeEnv } from '@connected-repo/zod-schemas/node_env'
 import { userCreateInputZod } from '@connected-repo/zod-schemas'
 import * as schemas from '@connected-repo/zod-schemas'
 ```
+
+### Internal Imports (Within zod-schemas Package)
+When importing files within this package, **always use relative imports**:
+
+```typescript
+// ✅ Correct - Internal imports within zod-schemas package
+// File: src/user.zod.ts
+import { zString, zTimestamps } from './zod_utils.js';
+import { NodeEnv } from './node_env.js';
+
+// ❌ Wrong - Don't use package alias for internal imports
+import { zString } from '@connected-repo/zod-schemas/zod_utils';
+```
+
+**Why relative imports internally?**
+- Prevents circular dependency issues
+- Faster TypeScript compilation
+- Clearer module resolution
+- Standard practice for package development
 
 ## Available Validators
 
