@@ -65,23 +65,18 @@ export function CreateJournalEntryForm() {
 			resolver: zodResolver(journalEntryCreateInputZod),
 			defaultValues: {
 				prompt: null,
-				content: "",
+				content: undefined,
 			},
 		},
 	});
-
-	// Auto-populate prompt when random prompt loads and in prompted mode
+	
 	useEffect(() => {
-		if (writingMode === "prompted" && randomPrompt?.text) {
-			formMethods.setValue("prompt", randomPrompt.text);
-		}
-	}, [randomPrompt, formMethods, writingMode]);
-
-	// Clear prompt when switching to free mode
-	useEffect(() => {
+		// Clear prompt when switching to free mode
 		if (writingMode === "free") {
 			formMethods.setValue("prompt", null);
-		} else if (writingMode === "prompted" && randomPrompt?.text) {
+		} 
+		// Auto-populate prompt when random prompt loads and in prompted mode
+		else if (writingMode === "prompted" && randomPrompt?.text) {
 			formMethods.setValue("prompt", randomPrompt.text);
 		}
 	}, [writingMode, formMethods, randomPrompt]);

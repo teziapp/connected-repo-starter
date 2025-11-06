@@ -29,11 +29,11 @@ export const promptsRouterTrpc = trpcRouter({
 		// Try up to 3 times to get a random prompt
 		for (let attempt = 0; attempt < 3; attempt++) {
 			// Generate random offset between 0 and count-1
-			const randomOffset = Math.floor(Math.random() * count);
+			const randomIndex = Math.floor(Math.random() * count);
 
 			// Get the first active prompt at this offset
 			const prompt = await db.prompts
-				.where({ isActive: true, promptId: {gte: randomOffset} })
+				.where({ isActive: true, promptId: {gte: randomIndex} })
 				.select("*")
 				.limit(1)
 				.take();
