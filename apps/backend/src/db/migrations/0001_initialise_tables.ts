@@ -81,7 +81,7 @@ change(async (db) => {
 
 change(async (db) => {
   await db.createTable('journal_entries', (t) => ({
-    journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    journalEntryId: t.string(26).primaryKey(),
     prompt: t.string(500).nullable(),
     promptId: t.smallint().foreignKey('prompts', 'promptId', {
       onUpdate: 'RESTRICT',

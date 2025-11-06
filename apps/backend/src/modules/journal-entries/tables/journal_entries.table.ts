@@ -5,7 +5,7 @@ export class JournalEntryTable extends BaseTable {
 	readonly table = "journal_entries";
 
 	columns = this.setColumns((t) => ({
-		journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+		journalEntryId: t.ulid().primaryKey(),
 
 		prompt: t.string(500).nullable(),
 		promptId: t.smallint().foreignKey("prompts", "promptId", {

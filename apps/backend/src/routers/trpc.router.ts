@@ -12,20 +12,10 @@ export const appTrpcRouter = trpcRouter({
 		return "Hello from tRPC";
 	}),
 
-	// Auth routes
 	auth: authRouterTrpc,
-
-	// User routes
-	users: usersRouterTrpc,
-
-	// Prompts routes
-	prompts: promptsRouterTrpc,
-
-	// Journal entries routes
 	journalEntries: journalEntriesRouterTrpc,
-
-	// Prompts routes
 	prompts: promptsRouterTrpc,
+	users: usersRouterTrpc,
 });
 
 export type AppTrpcRouter = typeof appTrpcRouter;
