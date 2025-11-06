@@ -14,7 +14,7 @@ const teamMandatoryZod = z.object({
 });
 
 const teamOptionalZod = z.object({
-  subscriptionAlertWebhookUrl: zString.nullable(),
+  subscriptionAlertWebhookUrl: z.url().nullable(),
   subscriptionAlertWebhookBearerToken: zString.nullable(),
 });
 

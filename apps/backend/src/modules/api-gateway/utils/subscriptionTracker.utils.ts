@@ -121,6 +121,7 @@ export async function checkAndQueueWebhookAt90Percent(subscription: {
 			// Mark subscription as notified
 			const markNotified = db.subscriptions
 				.find(subscription.subscriptionId)
+				.where({ notifiedAt90PercentUse: null })
 				.update({
 					notifiedAt90PercentUse: () => sql`NOW()`,
 				});

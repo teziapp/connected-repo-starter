@@ -24,9 +24,7 @@ export class SessionTable extends BaseTable {
 		t.index([
 			"sessionId", 
 			{ column: "expiresAt", order: "DESC" }, 
-			{ column: "markedInvalidAt", order: "DESC" },
-			"device",
-			"deviceFingerprint"
+			{ column: "markedInvalidAt", order: "DESC" }
 		])
 	]);
 

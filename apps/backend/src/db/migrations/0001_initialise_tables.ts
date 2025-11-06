@@ -58,9 +58,7 @@ change(async (db) => {
           {
             column: 'markedInvalidAt',
             order: 'DESC',
-          },
-          'device',
-          'deviceFingerprint',
+          }
         ]
       ),
   );

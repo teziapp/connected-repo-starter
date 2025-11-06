@@ -60,13 +60,7 @@ export const journalEntriesRouterTrpc = trpcRouter({
 	delete: protectedProcedure
 		.input(journalEntryDeleteZod)
 		.mutation(async ({ input: { journalEntryId }, ctx: {user: {userId	}} }) => {
-			const journalEntry = await db.journalEntries.find(journalEntryId).where({ authorUserId: userId });
-
-			if (!journalEntry) {
-				throw new Error("Journal entry not found");
-			}
-
-			await db.journalEntries.find(journalEntryId).delete();
+			await db.journalEntries.find(journalEntryId).where({ authorUserId: userId }).delete();
 
 			return { success: true };
 		}),
