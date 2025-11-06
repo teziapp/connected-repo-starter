@@ -4,7 +4,7 @@ import { ErrorFallback } from "@frontend/components/error_fallback";
 import { AppLayout } from "@frontend/components/layout/AppLayout";
 import { authLoader } from "@frontend/utils/auth.loader";
 import { lazy } from "react";
-import { createBrowserRouter, Outlet, redirect, type RouteObject } from "react-router";
+import { createBrowserRouter, redirect, type RouteObject } from "react-router";
 
 type NavbarFields = {
 	nb_icon?: string;
@@ -35,7 +35,6 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 		path: "/",
 		errorElement: <ErrorFallback />,
 		hydrateFallbackElement: <HydrateFallback />,
-		element: <Outlet />,
 		children: [
 			{
 				index: true,
@@ -55,12 +54,8 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 						Component: lazy(() => import("@frontend/pages/Dashboard.page")),
 					},
 					{
-						path: "journal-entries",
-						Component: lazy(() => import("@frontend/pages/JournalEntries.page")),
-					},
-					{
-						path: "journal-entries/new",
-						Component: lazy(() => import("@frontend/pages/CreateJournalEntry.page")),
+						path: "journal-entries/*",
+						Component: lazy(() => import("@frontend/modules/journal-entries/journal-entries.router")),
 					},
 					{
 						path: "profile",

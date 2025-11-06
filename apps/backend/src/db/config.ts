@@ -1,4 +1,4 @@
-import { env } from "@backend/configs/env.config";
+import { env, isProd } from "@backend/configs/env.config";
 
 export const dbConfig = {
 	host: env.DB_HOST || "localhost",
@@ -6,5 +6,5 @@ export const dbConfig = {
 	user: env.DB_USER || "postgres",
 	password: env.DB_PASSWORD || "password",
 	database: env.DB_NAME || "connected_repo_db",
-	ssl: env.NODE_ENV === "production",
+	ssl: isProd,
 };

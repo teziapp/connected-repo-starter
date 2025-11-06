@@ -8,7 +8,7 @@ import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 // Create tRPC client factory. We keep the TRPC React wrapper in a separate
 // module so components can import `trpc` for hooks, and main can create the
 // concrete client instance used by the provider.
-const trpcClient = createTRPCClient<AppTrpcRouter>({
+export const trpcFetch = createTRPCClient<AppTrpcRouter>({
   links: [
       httpBatchStreamLink({
           url: `${env.VITE_API_URL}/trpc`,
@@ -28,7 +28,7 @@ const trpcClient = createTRPCClient<AppTrpcRouter>({
 });
 
 export const trpc = createTRPCOptionsProxy<AppTrpcRouter>({
-  client: trpcClient,
+  client: trpcFetch,
   queryClient,
 });
 

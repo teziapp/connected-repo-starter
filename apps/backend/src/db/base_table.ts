@@ -12,10 +12,10 @@ export const BaseTable = createBaseTable({
     apiProductSkuEnum: () => t.enum("api_product_enum", apiProductSkuEnum),
     apiRequestMethodEnum: () => t.enum("api_request_method_enum", API_REQUEST_METHOD_ENUM),
     apiProductRequestStatusEnum: () => t.enum("api_status_enum", API_PRODUCT_REQUEST_STATUS_ENUM),
+    timestampNumber: () => t.timestamp().asNumber(),
     ulid: () => t.string(26).default(() => ulid()),
     webhookStatusEnum: () => t.enum("webhook_status_enum", WEBHOOK_STATUS_ENUM),
 
-    timestampNumber: () => t.timestamp().asNumber(),
 		timestamps: () => ({
       createdAt: t.timestamps().createdAt.asNumber(),
       updatedAt: t.timestamps().updatedAt.asNumber(),

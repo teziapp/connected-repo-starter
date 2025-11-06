@@ -4,7 +4,7 @@ export class TeamMembersTable extends BaseTable {
   readonly table = "team_members";
 
   columns = this.setColumns((t) => ({
-    teamMemberId: t.uuid().primaryKey(),
+    teamMemberId: t.ulid().primaryKey(),
     teamId: t.uuid().foreignKey("teams", "teamId", {
       onDelete: "CASCADE",
       onUpdate: "RESTRICT",

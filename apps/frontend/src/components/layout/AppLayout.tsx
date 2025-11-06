@@ -1,8 +1,8 @@
 import { Box } from "@connected-repo/ui-mui/layout/Box";
+import type { SessionInfo } from "@frontend/contexts/UserContext";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Outlet, useLoaderData } from "react-router";
-import type { SessionInfo } from "@frontend/contexts/UserContext";
 import { DesktopNavbar } from "./DesktopNavbar";
 import { MobileNavbar } from "./MobileNavbar";
 
@@ -32,7 +32,7 @@ export const AppLayout = () => {
 				bgcolor: "background.default",
 			}}
 		>
-			{isMobile ? <MobileNavbar sessionInfo={sessionInfo} /> : <DesktopNavbar />}
+			{isMobile ? <MobileNavbar /> : <DesktopNavbar />}
 
 			{/* Main content area */}
 			<Box

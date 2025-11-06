@@ -19,7 +19,7 @@ change(async (db) => {
   }));
 
   await db.createTable('prompts', (t) => ({
-    promptId: t.string(26).primaryKey(),
+    promptId: t.smallint().identity().primaryKey(),
     text: t.string(500),
     category: t.string(100).nullable(),
     tags: t.array(t.string()).nullable(),
@@ -81,11 +81,12 @@ change(async (db) => {
 
 change(async (db) => {
   await db.createTable('journal_entries', (t) => ({
-    journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
-    promptId: t.string(26).foreignKey('prompts', 'promptId', {
+    journalEntryId: t.string(26).primaryKey(),
+    prompt: t.string(500).nullable(),
+    promptId: t.smallint().foreignKey('prompts', 'promptId', {
       onUpdate: 'RESTRICT',
       onDelete: 'RESTRICT',
-    }),
+    }).nullable(),
     content: t.text(),
     authorUserId: t.uuid().foreignKey('users', 'userId', {
       onUpdate: 'RESTRICT',
@@ -102,6 +103,7 @@ change(async (db) => {
       expiresAt: t.timestamp(),
       maxRequests: t.integer(),
       apiProductSku: t.enum('api_product_enum'),
+      apiProductQuantity: t.smallint(),
       requestsConsumed: t.integer(),
       teamId: t.uuid(),
       teamUserReferenceId: t.string(),

@@ -1,10 +1,10 @@
 import { BaseTable } from "@backend/db/base_table";
 
-export class PromptTable extends BaseTable {
+export class PromptsTable extends BaseTable {
 	readonly table = "prompts";
 
 	columns = this.setColumns((t) => ({
-		promptId: t.ulid().primaryKey(),
+		promptId: t.smallint().identity().primaryKey(),
 
 		text: t.string(500),
 		category: t.string(100).nullable(),

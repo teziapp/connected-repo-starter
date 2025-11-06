@@ -1,8 +1,8 @@
 import { dbConfig } from "@backend/db/config";
 import { SessionTable } from "@backend/modules/auth/tables/session.auth.table";
 import { JournalEntryTable } from "@backend/modules/journal-entries/tables/journal_entries.table";
-import { PromptTable } from "@backend/modules/journal-entries/tables/prompts.table";
 import { ApiProductRequestLogsTable } from "@backend/modules/logs/tables/api_product_request_logs.table";
+import { PromptsTable } from "@backend/modules/prompts/tables/prompts.table";
 import { SubscriptionsTable } from "@backend/modules/subscriptions/tables/subscriptions.table";
 import { WebhookCallQueueTable } from "@backend/modules/subscriptions/tables/webhookCallQueue.table";
 import { TeamTable } from "@backend/modules/teams/tables/teams.table";
@@ -18,8 +18,8 @@ export const db = orchidORM(
 	},
 	{
 		users: UserTable,
-		prompts: PromptTable,
 		journalEntries: JournalEntryTable,
+		prompts: PromptsTable,
 		sessions: SessionTable,
 		subscriptions: SubscriptionsTable,
 		teams: TeamTable,
