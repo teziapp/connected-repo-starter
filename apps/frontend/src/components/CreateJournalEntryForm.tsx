@@ -13,13 +13,12 @@ import { RhfSubmitButton } from "@connected-repo/ui-mui/rhf-form/RhfSubmitButton
 import { RhfTextField } from "@connected-repo/ui-mui/rhf-form/RhfTextField";
 import { useRhfForm } from "@connected-repo/ui-mui/rhf-form/useRhfForm";
 import { JournalEntryCreateInput, journalEntryCreateInputZod } from "@connected-repo/zod-schemas/journal_entry.zod";
-import { queryClient } from "@frontend/utils/queryClient";
-import { trpc } from "@frontend/utils/trpc.client";
+import { trpc, trpcFetch } from "@frontend/utils/trpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 type WritingMode = "prompted" | "free";
@@ -36,20 +35,6 @@ export function CreateJournalEntryForm() {
 		refetch: refetchPrompt,
 	} = useQuery(trpc.prompts.getRandomActive.queryOptions());
 
-	// Mutation with query invalidation
-	const createJournalEntryMutation = useMutation(trpc.journalEntries.create.mutationOptions({
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: trpc.journalEntries.getAll.queryKey() });
-			formMethods.reset();
-			setSuccess("Journal entry created successfully!");
-			setTimeout(() => setSuccess(""), 3000);
-			// Get a new prompt after successful submission if in prompted mode
-			if (writingMode === "prompted") {
-				refetchPrompt();
-			}
-		},
-	}));
-
 	// Form setup with Zod validation and RHF
 	const { formMethods, RhfFormProvider } = useRhfForm<JournalEntryCreateInput>({
 		onSubmit: async (data) => {
@@ -59,7 +44,14 @@ export function CreateJournalEntryForm() {
 				prompt: writingMode === "free" ? null : data.prompt,
 				promptId: writingMode === "free"? null : randomPrompt?.promptId ?? null
 			};
-			await createJournalEntryMutation.mutateAsync(submitData);
+			await trpcFetch.journalEntries.create.mutate(submitData);
+			formMethods.reset();
+			setSuccess("Journal entry created successfully!");
+			setTimeout(() => setSuccess(""), 3000);
+			// Get a new prompt after successful submission if in prompted mode
+			if (writingMode === "prompted") {
+				refetchPrompt();
+			}
 		},
 		formConfig: {
 			resolver: zodResolver(journalEntryCreateInputZod),

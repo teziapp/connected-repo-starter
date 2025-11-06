@@ -54,12 +54,8 @@ export const routerObjectWithNavbar: ReactRouterWithNavbar[] = [
 						Component: lazy(() => import("@frontend/pages/Dashboard.page")),
 					},
 					{
-						path: "journal-entries",
-						Component: lazy(() => import("@frontend/pages/JournalEntries.page")),
-					},
-					{
-						path: "journal-entries/new",
-						Component: lazy(() => import("@frontend/pages/CreateJournalEntry.page")),
+						path: "journal-entries/*",
+						Component: lazy(() => import("@frontend/modules/journal-entries/journal-entries.router")),
 					},
 					{
 						path: "profile",
