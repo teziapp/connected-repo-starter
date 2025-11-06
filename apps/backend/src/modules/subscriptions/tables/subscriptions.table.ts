@@ -1,13 +1,12 @@
 import { BaseTable } from "@backend/db/base_table";
 import { WebhookCallQueueTable } from "@backend/modules/subscriptions/tables/webhookCallQueue.table";
 import { UserTable } from "@backend/modules/users/users/users.table";
-import { ulid } from "ulid";
 
 export class SubscriptionsTable extends BaseTable {
   readonly table = "subscriptions";
 
   columns = this.setColumns((t) => ({
-    subscriptionId: t.string().primaryKey().default(() => ulid()),
+    subscriptionId: t.ulid().primaryKey(),
 
     
     expiresAt: t.timestampNumber(),

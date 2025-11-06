@@ -24,7 +24,7 @@ export async function saveJournalEntryHandler(
 		});
 	}
 
-	const { prompt, content } = request.body;
+	const { prompt, promptId, content } = request.body;
 	const { teamId } = request.team;
 	const { teamUserReferenceId } = request.subscription;
 
@@ -32,6 +32,7 @@ export async function saveJournalEntryHandler(
 		// Create journal entry in database
 		const journalEntry = await db.journalEntries.create({
 			authorUserId: teamUserReferenceId,
+			promptId,
 			prompt,
 			content,
 		});
