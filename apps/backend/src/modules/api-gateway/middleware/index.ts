@@ -5,15 +5,17 @@
  *
  * Middleware chain order (typical usage):
  * 1. apiKeyAuthHook - Authenticates request via API key
- * 2. whitelistCheckHook - Validates domain/IP whitelist
- * 3. teamRateLimitHook - Enforces team rate limits
- * 4. subscriptionCheckHook(productSku) - Validates subscription
- * 5. requestLoggerHooks - Logs request/response
+ * 2. corsValidationHook - Validates CORS origin against team allowedDomains
+ * 3. whitelistCheckHook - Validates domain/IP whitelist
+ * 4. teamRateLimitHook - Enforces team rate limits
+ * 5. subscriptionCheckHook(productSku) - Validates subscription
+ * 6. requestLoggerHooks - Logs request/response
  *
  * @example
  * ```typescript
  * import {
  *   apiKeyAuthHook,
+ *   corsValidationHook,
  *   whitelistCheckHook,
  *   teamRateLimitHook,
  *   subscriptionCheckHook,
@@ -23,6 +25,7 @@
  * fastify.post('/api/v1/journal_entry_create', {
  *   preHandler: [
  *     apiKeyAuthHook,
+ *     corsValidationHook,
  *     whitelistCheckHook,
  *     teamRateLimitHook,
  *     subscriptionCheckHook('journal_entry_create'),
@@ -34,6 +37,7 @@
  */
 
 export { apiKeyAuthHook } from "./apiKeyAuth.middleware";
+export { corsValidationHook } from "./corsValidation.middleware";
 export {
   requestLoggerHooks, requestLoggerOnRequest,
   requestLoggerOnResponse

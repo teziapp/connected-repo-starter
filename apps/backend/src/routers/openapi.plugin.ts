@@ -51,6 +51,21 @@ export const openapiPlugin = async (app: FastifyInstance) => {
 					description: "Development server",
 				},
 			],
+			components: {
+				securitySchemes: {
+					ApiKeyAuth: {
+						type: "apiKey",
+						in: "header",
+						name: "x-api-key",
+					},
+					TeamIdHeader: {
+						type: "apiKey",
+						in: "header",
+						name: "x-team-id",
+					},
+				},
+			},
+			security: [{ ApiKeyAuth: [], TeamIdHeader: [] }],
 		},
 		transform: fastifyZodOpenApiTransform,
 		transformObject: fastifyZodOpenApiTransformObject,

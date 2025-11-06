@@ -1,26 +1,47 @@
+/**
+ * Webhook Queue Utilities
+ *
+ * This module handles sending webhooks with Bearer token authentication.
+ *
+ * ## Webhook Authentication Guide for Consumers
+ *
+ * All outgoing webhooks include an `Authorization` header with a Bearer token:
+ * - `Authorization: Bearer <your-token>`
+ */
+
 import { sql } from "@backend/db/base_table";
 import { db } from "@backend/db/db";
 import type { SubscriptionAlertWebhookPayload } from "@connected-repo/zod-schemas/webhook_call_queue.zod";
 import axios, { type AxiosError } from "axios";
+import { WEBHOOK_BATCH_PROCESSING_LIMIT } from "../constants/apiGateway.constants";
 
 /**
  * Send a webhook via HTTP POST using axios
  * @param url - The webhook URL
  * @param payload - The payload to send
+ * @param bearerToken - The bearer token for authentication (optional)
  * @param timeoutMs - Request timeout in milliseconds (default: 3000)
  * @returns Response status and data
  */
 export async function sendWebhook(
 	url: string,
 	payload: SubscriptionAlertWebhookPayload,
+	bearerToken?: string,
 	timeoutMs = 3000,
 ): Promise<{ success: boolean; status?: number; error?: string }> {
 	try {
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json",
+			"User-Agent": "API-Gateway-Webhook/1.0",
+		};
+
+		// Add Authorization header if bearer token is provided
+		if (bearerToken) {
+			headers.Authorization = `Bearer ${bearerToken}`;
+		}
+
 		const response = await axios.post(url, payload, {
-			headers: {
-				"Content-Type": "application/json",
-				"User-Agent": "API-Gateway-Webhook/1.0",
-			},
+			headers,
 			timeout: timeoutMs,
 			validateStatus: (status) => status >= 200 && status < 300,
 		});
@@ -77,13 +98,13 @@ function calculateBackoff(attempt: number): number {
 export async function processWebhookQueue() {
 	// Get pending webhooks that are ready to be processed
 	const pendingWebhooks = await db.webhookCallQueues
-		.where({ 
+		.where({
 			status: "Pending",
 			scheduledFor: { lt: sql`NOW()` },
-			attempts: { lt: sql`max_attempts` },
+			attempts: { lt: sql`"max_attempts"` }, //https://orchid-orm.netlify.app/guide/where.html#column-operators
 		})
 		.order({ scheduledFor: "ASC" })
-		.limit(50); // Process in batches
+		.limit(WEBHOOK_BATCH_PROCESSING_LIMIT); // Process in batches
 
 	const results = {
 		processed: 0,
@@ -95,10 +116,16 @@ export async function processWebhookQueue() {
 	for (const webhook of pendingWebhooks) {
 		results.processed++;
 
-		// Send webhook
+		// Fetch team webhook bearer token (optional)
+		const team = await db.teams
+			.select("subscriptionAlertWebhookBearerToken")
+			.find(webhook.teamId);
+
+		// Send webhook with bearer token (if configured)
 		const result = await sendWebhook(
 			webhook.webhookUrl,
 			webhook.payload as SubscriptionAlertWebhookPayload,
+			team?.subscriptionAlertWebhookBearerToken || undefined,
 		);
 
 		// Increment attempt count
