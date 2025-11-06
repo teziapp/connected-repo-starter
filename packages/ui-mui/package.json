@@ -22,6 +22,7 @@
 		"@mui/icons-material": "^7.3.4",
 		"@mui/material": "^7.3.4",
 		"@hookform/resolvers": "^5.2.2",
+		"material-react-table": "3.2.1",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"react-hook-form": "^7.66.0"
@@ -37,45 +38,50 @@
 			"import": "./dist/components/*.js",
 			"default": "./dist/components/*.js"
 		},
-		"./theme/*": {
-			"types": "./src/theme/*.tsx",
-			"import": "./dist/theme/*.js",
-			"default": "./dist/theme/*.js"
-		},
-		"./form/*": {
-			"types": "./src/form/*.tsx",
-			"import": "./dist/form/*.js",
-			"default": "./dist/form/*.js"
-		},
-		"./layout/*": {
-			"types": "./src/layout/*.tsx",
-			"import": "./dist/layout/*.js",
-			"default": "./dist/layout/*.js"
+		"./data-display/*": {
+			"types": "./src/data-display/*.tsx",
+			"import": "./dist/data-display/*.js",
+			"default": "./dist/data-display/*.js"
 		},
 		"./feedback/*": {
 			"types": "./src/feedback/*.tsx",
 			"import": "./dist/feedback/*.js",
 			"default": "./dist/feedback/*.js"
 		},
-		"./data-display/*": {
-			"types": "./src/data-display/*.tsx",
-			"import": "./dist/data-display/*.js",
-			"default": "./dist/data-display/*.js"
-		},
-		"./navigation/*": {
-			"types": "./src/navigation/*.ts",
-			"import": "./dist/navigation/*.js",
-			"default": "./dist/navigation/*.js"
+		"./form/*": {
+			"types": "./src/form/*.tsx",
+			"import": "./dist/form/*.js",
+			"default": "./dist/form/*.js"
 		},
 		"./icons/*": {
 			"types": "./src/icons/*.ts",
 			"import": "./dist/icons/*.js",
 			"default": "./dist/icons/*.js"
 		},
+		"./layout/*": {
+			"types": "./src/layout/*.tsx",
+			"import": "./dist/layout/*.js",
+			"default": "./dist/layout/*.js"
+		},
+		"./mrt/*": {
+			"types": "./src/mrt/*.tsx",
+			"import": "./dist/mrt/*.js",
+			"default": "./dist/mrt/*.js"
+		},
+		"./navigation/*": {
+			"types": "./src/navigation/*.ts",
+			"import": "./dist/navigation/*.js",
+			"default": "./dist/navigation/*.js"
+		},
 		"./rhf-form/*": {
 			"types": "./src/rhf-form/*.tsx",
 			"import": "./dist/rhf-form/*.js",
 			"default": "./dist/rhf-form/*.js"
+		},
+		"./theme/*": {
+			"types": "./src/theme/*.tsx",
+			"import": "./dist/theme/*.js",
+			"default": "./dist/theme/*.js"
 		}
 	}
 }
