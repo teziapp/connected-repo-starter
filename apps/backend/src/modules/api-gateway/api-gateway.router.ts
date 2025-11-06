@@ -77,8 +77,9 @@ const errorResponseZod = z.object({
 // All routes defined below will automatically appear in OpenAPI spec
 // Use .withTypeProvider<FastifyZodOpenApiTypeProvider>() for type safety
 export const apiGatewayRouter = async (app: FastifyInstance) => {
-	app.addHook("preHandler", apiKeyAuthHook);
+	// Handle OPTIONS preflight requests BEFORE auth chain
 	app.addHook("preHandler", corsValidationHook);
+	app.addHook("preHandler", apiKeyAuthHook);
 	app.addHook("preHandler", ipWhitelistCheckHook);
 	app.addHook("preHandler", teamRateLimitHook);
 	/**

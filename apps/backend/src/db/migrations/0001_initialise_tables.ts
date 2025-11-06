@@ -85,8 +85,8 @@ change(async (db) => {
     prompt: t.string(500).nullable(),
     promptId: t.smallint().foreignKey('prompts', 'promptId', {
       onUpdate: 'RESTRICT',
-      onDelete: 'RESTRICT',
-    }).nullable(),
+      onDelete: 'SET NULL',
+    }),
     content: t.text(),
     authorUserId: t.uuid().foreignKey('users', 'userId', {
       onUpdate: 'RESTRICT',

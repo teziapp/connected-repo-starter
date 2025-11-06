@@ -9,7 +9,7 @@ export class JournalEntryTable extends BaseTable {
 
 		prompt: t.string(500).nullable(),
 		promptId: t.smallint().foreignKey("prompts", "promptId", {
-			onDelete: "RESTRICT",
+			onDelete: "SET NULL",
 			onUpdate: "RESTRICT",
 		}).nullable(),
 		content: t.text(),

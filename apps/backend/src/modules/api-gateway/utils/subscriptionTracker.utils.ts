@@ -1,3 +1,4 @@
+import { logger } from "@backend/app";
 import { sql } from "@backend/db/base_table";
 import { db } from "@backend/db/db";
 import type { ApiProductSku } from "@connected-repo/zod-schemas/enums.zod";
@@ -49,7 +50,11 @@ export async function incrementSubscriptionUsage(subscriptionId: string) {
 	}
 
 	// Check if usage threshold reached and webhook not already sent
-	await checkAndQueueWebhookAt90Percent(updatedSubscription);
+	await checkAndQueueWebhookAt90Percent(updatedSubscription)
+		.catch(error => {
+			// Not throwing error as it might fail due to race-conditions in marking notified.
+			logger.error("Error checking and queueing webhook at 90% usage:", error);
+		});
 
 	return updatedSubscription;
 }
@@ -82,12 +87,11 @@ export async function checkAndQueueWebhookAt90Percent(subscription: {
 
 		if (!team?.subscriptionAlertWebhookUrl) {
 			// No webhook URL configured, mark as notified to prevent repeated checks
-			await db.subscriptions
+			return db.subscriptions
 				.find(subscription.subscriptionId)
 				.update({
 					notifiedAt90PercentUse: () => sql`NOW()`,
 				});
-			return;
 		}
 
 		const payload = subscriptionAlertWebhookPayloadZod.parse({
@@ -101,23 +105,27 @@ export async function checkAndQueueWebhookAt90Percent(subscription: {
 				timestamp: Date.now(),
 			})
 
-		// Queue webhook
-		await db.webhookCallQueues.create({
-			teamId: subscription.teamId,
-			subscriptionId: subscription.subscriptionId,
-			webhookUrl: team.subscriptionAlertWebhookUrl,
-			status: "Pending",
-			attempts: 0,
-			maxAttempts: WEBHOOK_MAX_RETRY_ATTEMPTS,
-			scheduledFor: () => sql`NOW()`,
-			payload,
-		});
-
-		// Mark subscription as notified
-		await db.subscriptions
-			.find(subscription.subscriptionId)
-			.update({
-				notifiedAt90PercentUse: () => sql`NOW()`,
+		return db.$transaction(async () => {
+			// Queue webhook
+			const createWebhook = db.webhookCallQueues.create({
+				teamId: subscription.teamId,
+				subscriptionId: subscription.subscriptionId,
+				webhookUrl: team.subscriptionAlertWebhookUrl,
+				status: "Pending",
+				attempts: 0,
+				maxAttempts: WEBHOOK_MAX_RETRY_ATTEMPTS,
+				scheduledFor: () => sql`NOW()`,
+				payload,
 			});
+
+			// Mark subscription as notified
+			const markNotified = db.subscriptions
+				.find(subscription.subscriptionId)
+				.update({
+					notifiedAt90PercentUse: () => sql`NOW()`,
+				});
+
+			return await Promise.all([createWebhook, markNotified]);
+		})
 	}
 }
