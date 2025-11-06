@@ -81,6 +81,8 @@ import { Radio, type RadioProps } from '@connected-repo/ui-mui/form/Radio'
 import { Switch, type SwitchProps } from '@connected-repo/ui-mui/form/Switch'
 import { FormControl, type FormControlProps } from '@connected-repo/ui-mui/form/FormControl'
 import { MenuItem, type MenuItemProps } from '@connected-repo/ui-mui/form/MenuItem'
+import { ToggleButton, type ToggleButtonProps } from '@connected-repo/ui-mui/form/ToggleButton'
+import { ToggleButtonGroup, type ToggleButtonGroupProps } from '@connected-repo/ui-mui/form/ToggleButtonGroup'
 ```
 
 **Usage Example**:

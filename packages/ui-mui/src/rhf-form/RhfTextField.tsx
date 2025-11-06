@@ -30,6 +30,7 @@ export const RhfTextField = ({ name, sx, ...props }: RhfTextFieldProps) => {
             // Custom styling override
             ...sx,
           }}
+          value={field.value ?? ""}
         />
       )}
     />

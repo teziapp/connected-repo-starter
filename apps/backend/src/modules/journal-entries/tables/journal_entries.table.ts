@@ -7,11 +7,11 @@ export class JournalEntryTable extends BaseTable {
 	columns = this.setColumns((t) => ({
 		journalEntryId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
 
-		promptId: t.ulid().foreignKey("prompts", "promptId", {
+		prompt: t.string(500).nullable(),
+		promptId: t.smallint().foreignKey("prompts", "promptId", {
 			onDelete: "RESTRICT",
 			onUpdate: "RESTRICT",
-		}),
-		prompt: t.string(500),
+		}).nullable(),
 		content: t.text(),
 		authorUserId: t.uuid().foreignKey("users", "userId", {
 			onDelete: "CASCADE",
