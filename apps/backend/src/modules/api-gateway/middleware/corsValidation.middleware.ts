@@ -35,7 +35,7 @@ export async function corsValidationHook(
 	}
 
 	// Extract origin from headers
-	const origin = request.headers.origin;
+	const origin = request.headers.origin || request.headers.referer;
 
 	// For non-browser requests (no origin header), allow through
 	// (these are typically server-to-server calls)

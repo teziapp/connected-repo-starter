@@ -29,10 +29,10 @@ import { saveJournalEntryHandler } from "@backend/modules/api-gateway/handlers/s
 import {
 	apiKeyAuthHook,
 	corsValidationHook,
+	ipWhitelistCheckHook,
 	requestLoggerHooks,
 	subscriptionCheckHook,
-	teamRateLimitHook,
-	whitelistCheckHook
+	teamRateLimitHook
 } from "@backend/modules/api-gateway/middleware";
 import { apiProductRequestLogSelectAllZod } from "@connected-repo/zod-schemas/api_request_log.zod";
 import { apiProductRequestStatusZod } from "@connected-repo/zod-schemas/enums.zod";
@@ -79,7 +79,7 @@ const errorResponseZod = z.object({
 export const apiGatewayRouter = async (app: FastifyInstance) => {
 	app.addHook("preHandler", apiKeyAuthHook);
 	app.addHook("preHandler", corsValidationHook);
-	app.addHook("preHandler", whitelistCheckHook);
+	app.addHook("preHandler", ipWhitelistCheckHook);
 	app.addHook("preHandler", teamRateLimitHook);
 	/**
 	 * POST /api/v1/journal_entry_create

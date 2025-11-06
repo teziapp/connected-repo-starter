@@ -103,6 +103,7 @@ change(async (db) => {
       expiresAt: t.timestamp(),
       maxRequests: t.integer(),
       apiProductSku: t.enum('api_product_enum'),
+      apiProductQuantity: t.smallint(),
       requestsConsumed: t.integer(),
       teamId: t.uuid(),
       teamUserReferenceId: t.string(),

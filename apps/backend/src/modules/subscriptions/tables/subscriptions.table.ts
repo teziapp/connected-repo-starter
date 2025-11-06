@@ -7,11 +7,11 @@ export class SubscriptionsTable extends BaseTable {
 
   columns = this.setColumns((t) => ({
     subscriptionId: t.ulid().primaryKey(),
-
     
     expiresAt: t.timestampNumber(),
     maxRequests: t.integer(),
     apiProductSku: t.apiProductSkuEnum(),
+    apiProductQuantity: t.smallint(),
     requestsConsumed: t.integer(),
     teamId: t.uuid(),
     teamUserReferenceId: t.string(),
