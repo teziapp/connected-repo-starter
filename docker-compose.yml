@@ -3,16 +3,34 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: connected_repo_db
+    container_name: connected_repo_orpc_db
     restart: unless-stopped
+    # 1. Load secrets from backend environment file
+    env_file:
+      - apps/backend/.env
     environment:
-      POSTGRES_DB: connected_repo_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    # 2. Bind only to localhost (if you need external access, use a VPN or firewall)
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # 3. Prevent the DB from eating the host alive
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
+    # 4. Allow dependent services to wait until DB is actually ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
