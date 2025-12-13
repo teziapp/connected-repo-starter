@@ -12,7 +12,7 @@ import { IconButton } from "@connected-repo/ui-mui/navigation/IconButton";
 import { Menu } from "@connected-repo/ui-mui/navigation/Menu";
 import { useThemeMode } from "@connected-repo/ui-mui/theme/ThemeContext";
 import type { SessionInfo } from "@frontend/contexts/UserContext";
-import { trpc } from "@frontend/utils/trpc.client";
+import { orpc } from "@frontend/utils/orpc.client";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
@@ -42,7 +42,7 @@ export const UserProfileMenu = ({
 	const isDarkMode = mode === "dark";
 
 	// Logout mutation
-	const logoutMutation = useMutation(trpc.auth.logout.mutationOptions({
+	const logoutMutation = useMutation(orpc.auth.logout.mutationOptions({
 		onSuccess: () => {
 			// Redirect to login after successful logout
 			navigate("/auth/login");

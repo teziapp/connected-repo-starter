@@ -1,29 +1,19 @@
 import { dbConfig } from "@backend/db/config";
-import { SessionTable } from "@backend/modules/auth/tables/session.auth.table";
-import { JournalEntryTable } from "@backend/modules/journal-entries/tables/journal_entries.table";
-import { ApiProductRequestLogsTable } from "@backend/modules/logs/tables/api_product_request_logs.table";
-import { PromptsTable } from "@backend/modules/prompts/tables/prompts.table";
-import { SubscriptionsTable } from "@backend/modules/subscriptions/tables/subscriptions.table";
-import { WebhookCallQueueTable } from "@backend/modules/subscriptions/tables/webhookCallQueue.table";
-import { TeamTable } from "@backend/modules/teams/tables/teams.table";
-import { UserTable } from "@backend/modules/users/users/users.table";
 import { orchidORM } from "orchid-orm/node-postgres";
 
 const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}?ssl=${dbConfig.ssl ? "require" : "false"}`;
 
+// Phase 1: Minimal database setup
+// Tables will be added as modules are migrated in later phases
 export const db = orchidORM(
 	{
 		databaseURL,
 		// log: true,
 	},
 	{
-		users: UserTable,
-		journalEntries: JournalEntryTable,
-		prompts: PromptsTable,
-		sessions: SessionTable,
-		subscriptions: SubscriptionsTable,
-		teams: TeamTable,
-		apiProductRequestLogs: ApiProductRequestLogsTable,
-		webhookCallQueues: WebhookCallQueueTable
+		// Tables will be registered here as modules are migrated
+		// Phase 2: sessions
+		// Phase 3: users, journalEntries, prompts
+		// Phase 5: teams, subscriptions, apiProductRequestLogs, webhookCallQueues
 	},
 );

@@ -4,11 +4,11 @@ import { List, ListItem } from "@connected-repo/ui-mui/data-display/List";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
-import { trpc } from "@frontend/utils/trpc.client";
+import { orpc } from "@frontend/utils/orpc.client";
 import { useQuery } from "@tanstack/react-query";
 
 export function UserList() {
-	const { data: users, isLoading, error } = useQuery(trpc.users.getAll.queryOptions());
+	const { data: users, isLoading, error } = useQuery(orpc.users.getAll.queryOptions());
 
 	if (isLoading) return <LoadingSpinner text="Loading users..." />;
 

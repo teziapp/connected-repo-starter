@@ -5,8 +5,8 @@ import { SuccessAlert } from "@connected-repo/ui-mui/components/SuccessAlert";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { TextField } from "@connected-repo/ui-mui/form/TextField";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
+import { orpc } from "@frontend/utils/orpc.client";
 import { queryClient } from "@frontend/utils/queryClient";
-import { trpc } from "@frontend/utils/trpc.client";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -16,9 +16,9 @@ export function CreateUserForm() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	const createUserMutation = useMutation(trpc.users.create.mutationOptions({
+	const createUserMutation = useMutation(orpc.users.create.mutationOptions({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: trpc.users.getAll.queryKey() });
+			queryClient.invalidateQueries({ queryKey: orpc.users.getAll.queryKey() });
 			setName("");
 			setEmail("");
 			setSuccess("User created successfully!");

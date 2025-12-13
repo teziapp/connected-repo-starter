@@ -1,4 +1,4 @@
-import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { ErrorFallback } from "@frontend/components/error_fallback";
 import { AppLayout } from "@frontend/components/layout/AppLayout";
@@ -26,7 +26,7 @@ const HydrateFallback = () => (
 			bgcolor: "background.default",
 		}}
 	>
-		<CircularProgress size={48} />
+		<LoadingSpinner size={48} />
 	</Box>
 );
 

@@ -1,6 +1,6 @@
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
 import { Avatar } from "@connected-repo/ui-mui/data-display/Avatar";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
-import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
 import { Fade } from "@connected-repo/ui-mui/feedback/Fade";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card } from "@connected-repo/ui-mui/layout/Card";
@@ -10,7 +10,7 @@ import { RhfSubmitButton } from "@connected-repo/ui-mui/rhf-form/RhfSubmitButton
 import { RhfTextField } from "@connected-repo/ui-mui/rhf-form/RhfTextField";
 import { useRhfForm } from "@connected-repo/ui-mui/rhf-form/useRhfForm";
 import { UserCreateInput, userCreateInputZod } from "@connected-repo/zod-schemas/user.zod";
-import { trpc, trpcFetch } from "@frontend/utils/trpc.client";
+import { orpc, orpcFetch } from "@frontend/utils/orpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -22,12 +22,12 @@ const RegisterPage = () => {
 	const navigate = useNavigate();
 
 	// Fetch session info to pre-fill form
-	const { data: sessionInfo, isLoading: isLoadingSession } = useSuspenseQuery(trpc.auth.getSessionInfo.queryOptions());
+	const { data: sessionInfo, isLoading: isLoadingSession } = useSuspenseQuery(orpc.auth.getSessionInfo.queryOptions());
 
 	// Form setup with Zod validation and RHF
 	const { formMethods, RhfFormProvider } = useRhfForm<RegisterFormData>({
 		onSubmit: async (data) => {
-			await trpcFetch.users.create.mutate(data);
+			await orpcFetch.users.create.mutate(data);
 			navigate("/dashboard");
 		},
 		formConfig: {
@@ -68,7 +68,7 @@ const RegisterPage = () => {
 					minHeight: "100vh",
 				}}
 			>
-				<CircularProgress />
+				<LoadingSpinner />
 			</Box>
 		);
 	}

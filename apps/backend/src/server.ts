@@ -1,98 +1,157 @@
-/*
- * Copyright (c) 2025 Tezi Communnications LLP, India
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- */
-import "dotenv/config";
+import { env, isDev, isProd, isStaging, isTest } from '@backend/configs/env.config'
+import { router } from '@backend/router'
+import { LoggingHandlerPlugin } from '@orpc/experimental-pino'
+import { onError, ORPCError, ValidationError } from '@orpc/server'
+import { RPCHandler } from '@orpc/server/node'
+import { CORSPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins'
+import { createServer } from 'node:http'
+import pino from 'pino'
+import { ZodError } from 'zod'
+import { $ZodIssue, flattenError, prettifyError } from 'zod/v4/core'
 
-import { app, logger } from "@backend/app";
-import { env, isDev, isProd, isStaging, isTest } from "@backend/configs/env.config";
-import cors from "@fastify/cors";
-import helmet from "@fastify/helmet";
-
-// Extend allowed origins with Capacitor/Ionic local origins
 const allowedOrigins = [...(env.ALLOWED_ORIGINS?.split(",") || [])];
+const logger = pino();
 
 logger.info({ isDev, isProd, isStaging, isTest }, "Environment:");
 logger.info(allowedOrigins, "Allowed Origins:");
 logger.info(env.ALLOWED_ORIGINS, "ALLOWED_ORIGINS env:");
 
-export const build = async () => {
-	const server = app;
+const handler = new RPCHandler(router, {
+  plugins: [
+    // CORS configuration with credentials support
+    new CORSPlugin({
+      origin: [...allowedOrigins],
+      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      credentials: true,
+    }),
+    // FIXME: Using rate-limit throws an error. Try later at the end.
+    // Rate limiting at handler level
+    // new RatelimitHandlerPlugin(),
+    // Structured logging with Pino
+    new LoggingHandlerPlugin({
+      logger,
+      logRequestResponse: !isProd, // Only log in dev/staging
+      logRequestAbort: true,
+    }),
+    // CSRF protection (disabled in development for easier testing)
+    ...(isProd || isStaging ? [new SimpleCsrfProtectionHandlerPlugin()] : []),
+    // Strict GET method plugin (queries must use GET)
+    new StrictGetMethodPlugin(),
+  ],
+  interceptors: [
+    // Server-side error logging
+    onError((error) => {
+      logger.error(error, 'Server error');
+    }),
+  ],
+  clientInterceptors: [
+    // Client-side error transformation
+    onError((error) => {
+      // Handle Zod validation errors for input
+      if (
+        error instanceof ORPCError
+        && error.code === 'BAD_REQUEST'
+        && error.cause instanceof ValidationError
+      ) {
+        const zodError = new ZodError(error.cause.issues as $ZodIssue[])
 
-	// Global CORS configuration
-	// Note: /api/* routes use team-specific CORS validation (see api-gateway.router.ts)
-	// This global CORS applies to other routes like /trpc, /oauth2, /, /health
-	//
-	// IMPORTANT: We allow all origins at the CORS plugin level for /api/* routes,
-	// and let the corsValidationHook middleware (which runs after routing) handle
-	// team-specific validation. This prevents the global CORS from rejecting requests
-	// before they reach the team-specific validation.
-	await server.register(cors, {
-		origin: true, // Accept all origins - route-specific middleware will validate
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		credentials: true,
-	});
+        throw new ORPCError('INPUT_VALIDATION_FAILED', {
+          status: 422,
+          message: prettifyError(zodError),
+          data: flattenError(zodError),
+          cause: error.cause,
+        })
+      }
 
-	// Add validation hook for non-/api routes to enforce ALLOWED_ORIGINS
-	// /api/* routes are validated by team-specific corsValidationHook
-	server.addHook("onRequest", async (request, reply) => {
-		// Skip CORS validation for /api/* routes - they use team-specific validation
-		if (request.url.startsWith("/api/")) {
-			return;
-		}
-
-		// For other routes, validate against ALLOWED_ORIGINS (in production)
-		if (!isDev) {
-			const origin = request.headers.origin;
-
-			// If there's an origin header, validate it
-			if (origin && !allowedOrigins.includes(origin)) {
-				reply.code(403).send({
-					statusCode: 403,
-					error: "Forbidden",
-					message: "Origin not allowed by CORS policy",
-				});
-			}
-		}
-	});
-
-	// Helmet for security headers
-	server.register(helmet, {
-		contentSecurityPolicy: {
-			directives: {
-				defaultSrc: ["'self'"],
-				connectSrc: ["'self'"], // Allow tRPC/API requests
-				scriptSrc: ["'self'"],
-				imgSrc: ["'self'"],
-			},
-		},
-		xFrameOptions: { action: "sameorigin" },
-		referrerPolicy: { policy: "origin" },
-	});
-
-	return server;
-};
+      // Handle Zod validation errors for output
+      if (
+        error instanceof ORPCError
+        && error.code === 'INTERNAL_SERVER_ERROR'
+        && error.cause instanceof ValidationError
+      ) {
+        throw new ORPCError('OUTPUT_VALIDATION_FAILED', {
+          cause: error.cause,
+        })
+      }
+    }),
+  ],
+})
 
 const start = async () => {
-	try {
-		const server = await build();
-		await server.listen({ port: 3000, host: "0.0.0.0" });
-		if (process.send) {
-			process.send("ready"); // ✅ Let PM2 know the app is ready
-		}
-		logger.info({ url: "http://localhost:3000" }, "Server running");
-	} catch (err) {
-		logger.error("Server failed to start");
-		logger.error(err);
-		process.exit(1);
-	}
+  try {
+    const server = createServer(async (req, res) => {
+      const result = await handler.handle(req, res, {
+        context: { headers: req.headers }
+      })
+
+      if (!result.matched) {
+        res.statusCode = 404
+        res.end('No procedure matched')
+      }
+    })
+
+    // Configure server to close idle connections
+    server.keepAliveTimeout = 5000; // 5 seconds
+    server.headersTimeout = 6000; // 6 seconds (must be higher than keepAliveTimeout)
+
+    server.listen(
+      3000,
+      '127.0.0.1',
+      () => {
+        if (process.send) {
+          process.send("ready"); // ✅ Let PM2 know the app is ready
+        }
+        logger.info({ url: env.VITE_API_URL }, "Server running");
+      }
+    );
+
+    // Graceful shutdown handling
+    const gracefulShutdown = (signal: string) => {
+      logger.info({ signal }, 'Received shutdown signal, closing server gracefully...');
+
+      // Stop accepting new connections
+      server.close(() => {
+        logger.info('Server closed successfully');
+        process.exit(0);
+      });
+
+      // Destroy all active connections after a short delay
+      setTimeout(() => {
+        logger.info('Destroying active connections...');
+        server.closeAllConnections();
+      }, 100);
+
+      // Force shutdown after 5 seconds (reduced from 10)
+      setTimeout(() => {
+        logger.error('Forcefully shutting down after timeout');
+        process.exit(1);
+      }, 5000);
+    };
+
+    // Handle various termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGHUP', () => gracefulShutdown('SIGHUP'));
+
+    // Handle uncaught errors
+    process.on('uncaughtException', (error) => {
+      logger.error({ error }, 'Uncaught exception');
+      gracefulShutdown('uncaughtException');
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      logger.error({ reason, promise }, 'Unhandled rejection');
+      gracefulShutdown('unhandledRejection');
+    });
+
+  } catch (err) {
+    logger.error("Server failed to start");
+    logger.error(err);
+    process.exit(1);
+  }
 };
 
-// Only auto-start in non-test environments
-if (!isTest) {
-	start();
+if(!isTest) {
+  start();
 }
+

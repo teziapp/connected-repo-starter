@@ -1,7 +1,7 @@
 # Development Plan - Scheduled Prompt & Journal App
 
 **Project:** Connected Repo Starter - Journal MVP
-**Repository:** teziapp/connected-repo-starter
+**Repository:** teziapp/connected-repo-starter-oRPC
 **Created:** 2025-10-27
 
 ---

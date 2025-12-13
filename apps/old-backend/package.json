@@ -1,8 +1,8 @@
 {
-	"name": "@connected-repo/backend",
+	"name": "@connected-repo/old-backend",
 	"version": "1.0.0",
 	"main": "server.ts",
-	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + oRPC + Reactjs with opentelemetry setup",
+	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + tRPC + Reactjs with opentelemetry setup",
 	"repository": "git@github.com:teziapp/connected-repo-starter-oRPC.git",
 	"author": "Balkrishna Agarwal <krishna@teziapp.com>",
 	"license": "AGPL-3.0-only",
@@ -12,27 +12,33 @@
 		"clean": "rm -rf node_modules && rm -rf dist",
 		"build": "tsc && tsc-alias",
 		"db": "tsx src/db/db_script.ts",
-		"dev": "tsx watch --clear-screen=false src/server.ts",
-		"dev:inspect": "tsx watch --inspect src/server.ts",
+		"dev": "tsx watch src/server.ts",
 		"start": "node dist/server.js"
 	},
 	"dependencies": {
 		"@connected-repo/zod-schemas": "*",
-		"@orpc/experimental-pino": "^1.12.1",
-		"@orpc/experimental-ratelimit": "^1.12.1",
-		"@orpc/server": "^1.12.1",
+		"@fastify/cookie": "^11.0.2",
+		"@fastify/cors": "^11.1.0",
+		"@fastify/helmet": "^13.0.2",
+		"@fastify/oauth2": "^8.1.2",
+		"@fastify/rate-limit": "^10.3.0",
+		"@fastify/session": "^11.1.0",
+		"@fastify/swagger": "^9.5.2",
+		"@fastify/swagger-ui": "^5.2.3",
 		"axios": "^1.13.1",
+		"fastify": "^5.6.1",
+		"fastify-zod-openapi": "^5.5.0",
 		"orchid-orm": "^1.57.6",
-		"pg": "^8.16.3",
-		"pino": "^10.1.0",
 		"rate-limiter-flexible": "^8.1.0",
-		"ua-parser-js": "^2.0.6"
+		"ua-parser-js": "^2.0.6",
+		"pg": "^8.16.3"
 	},
 	"devDependencies": {
 		"@connected-repo/typescript-config": "*",
 		"@types/node": "^22.18.12",
 		"@types/pg": "^8.15.5",
 		"dotenv": "^17.2.3",
+		"pino-pretty": "^13.1.2",
 		"tsx": "^4.19.2"
 	}
 }

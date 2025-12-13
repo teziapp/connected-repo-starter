@@ -1,14 +1,14 @@
-import type { IncomingHttpHeaders } from "node:http";
+import type { FastifyRequest } from "fastify";
 import { createHash } from "node:crypto";
 import { UAParser } from "ua-parser-js";
 
 /**
- * Extract IP address from request headers
+ * Extract IP address from request
  * Handles proxied requests by checking X-Forwarded-For header
  */
-export function getClientIpAddress(headers: IncomingHttpHeaders): string {
+export function getClientIpAddress(request: FastifyRequest): string {
 	// Check X-Forwarded-For header (set by proxies/load balancers)
-	const forwardedFor = headers["x-forwarded-for"];
+	const forwardedFor = request.headers["x-forwarded-for"];
 	if (forwardedFor) {
 		// X-Forwarded-For can contain multiple IPs, get the first one (client IP)
 		const ips = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
@@ -19,13 +19,13 @@ export function getClientIpAddress(headers: IncomingHttpHeaders): string {
 	}
 
 	// Check X-Real-IP header
-	const realIp = Array.isArray(headers["x-real-ip"]) ? headers["x-real-ip"][0] : headers["x-real-ip"];
+	const realIp = Array.isArray(request.headers["x-real-ip"]) ? request.headers["x-real-ip"][0] : request.headers["x-real-ip"];
 	if (realIp && typeof realIp === "string") {
 		return realIp;
 	}
 
-	// Fall back to unknown
-	return "unknown";
+	// Fall back to socket IP
+	return request.ip || "unknown";
 }
 
 /**
@@ -62,14 +62,14 @@ export function parseUserAgent(userAgentString: string) {
  * Generate a device fingerprint based on request headers, optimized for robustness.
  * Creates a stable hash of core browser/device characteristics.
  */
-export function generateDeviceFingerprint(headers: IncomingHttpHeaders): string {
+export function generateDeviceFingerprint(request: FastifyRequest): string {
     // Normalize User-Agent: convert to lowercase for case-insensitivity
-    const userAgent = ((headers["user-agent"] as string) || "").toLowerCase();
+    const userAgent = (request.headers["user-agent"] || "").toLowerCase();
     const parsed = parseUserAgent(userAgent);
 
     // Normalize Accept-Language: Only use the primary language code (e.g., 'en' from 'en-US,en;q=0.9')
-		const acceptLanguage = (headers["accept-language"] as string) || "";
-    const primaryLanguage = acceptLanguage
+		const acceptLanguage = request.headers["accept-language"] || "";
+    const primaryLanguage = acceptLanguage 
 			? acceptLanguage!.split(',')[0] // Get the first (primary) part: 'en-US'
         ?.substring(0, 2) // Get the two-letter code: 'en'
         .toLowerCase() || ""
@@ -80,15 +80,15 @@ export function generateDeviceFingerprint(headers: IncomingHttpHeaders): string 
         parsed.browser.name?.toLowerCase() || "",
         parsed.os.name?.toLowerCase() || "",
         parsed.device.type?.toLowerCase() || "",
-
+        
         // Stabilized Headers
-        primaryLanguage,
-
+        primaryLanguage, 
+        
         // Client Hints (Generally Stable for a given browser/OS)
-        (Array.isArray(headers["sec-ch-ua"]) ? headers["sec-ch-ua"][0] || "" : headers["sec-ch-ua"] || "").toLowerCase(),
-        (Array.isArray(headers["sec-ch-ua-mobile"]) ? headers["sec-ch-ua-mobile"][0] || "" : headers["sec-ch-ua-mobile"] || "").toLowerCase(),
-        (Array.isArray(headers["sec-ch-ua-platform"]) ? headers["sec-ch-ua-platform"][0] || "" : headers["sec-ch-ua-platform"] || "").toLowerCase(),
-
+        (Array.isArray(request.headers["sec-ch-ua"]) ? request.headers["sec-ch-ua"][0] || "" : request.headers["sec-ch-ua"] || "").toLowerCase(),
+        (Array.isArray(request.headers["sec-ch-ua-mobile"]) ? request.headers["sec-ch-ua-mobile"][0] || "" : request.headers["sec-ch-ua-mobile"] || "").toLowerCase(),
+        (Array.isArray(request.headers["sec-ch-ua-platform"]) ? request.headers["sec-ch-ua-platform"][0] || "" : request.headers["sec-ch-ua-platform"] || "").toLowerCase(),
+        
         // Removed: 'accept-encoding' and 'accept' as they are highly request/context-dependent.
     ];
 

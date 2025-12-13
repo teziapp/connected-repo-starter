@@ -13,7 +13,7 @@ import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
 import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Divider } from "@connected-repo/ui-mui/layout/Divider";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
-import { trpc } from "@frontend/utils/trpc.client";
+import { orpc } from "@frontend/utils/orpc.client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -26,10 +26,10 @@ export default function JournalEntryDetailPage() {
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 
 	const { data: journalEntry, isLoading, error } = useQuery(
-		trpc.journalEntries.getById.queryOptions({ journalEntryId: entryId || "" })
+		orpc.journalEntries.getById.queryOptions({ journalEntryId: entryId || "" })
 	);
 
-	const deleteMutation = useMutation(trpc.journalEntries.delete.mutationOptions());
+	const deleteMutation = useMutation(orpc.journalEntries.delete.mutationOptions());
 
 	const handleDeleteClick = () => {
 		setDeleteDialogOpen(true);
