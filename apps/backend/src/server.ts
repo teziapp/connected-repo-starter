@@ -1,9 +1,11 @@
 import { env, isDev, isProd, isStaging, isTest } from '@backend/configs/env.config'
+import { auth } from '@backend/modules/auth/auth.config'
 import { router } from '@backend/router'
 import { LoggingHandlerPlugin } from '@orpc/experimental-pino'
 import { onError, ORPCError, ValidationError } from '@orpc/server'
 import { RPCHandler } from '@orpc/server/node'
 import { CORSPlugin, RequestHeadersPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins'
+import { toNodeHandler } from 'better-auth/node'
 import { createServer } from 'node:http'
 import pino from 'pino'
 import { ZodError } from 'zod'
@@ -81,7 +83,16 @@ const handler = new RPCHandler(router, {
 
 const start = async () => {
   try {
+    // Create better-auth Node.js handler
+    const authHandler = toNodeHandler(auth)
+
     const server = createServer(async (req, res) => {
+      // Handle better-auth routes first (/api/auth/*)
+      if (req.url?.startsWith('/api/auth')) {
+        return authHandler(req, res)
+      }
+
+      // Handle oRPC routes
       const result = await handler.handle(req, res, {
         context: {}
       })

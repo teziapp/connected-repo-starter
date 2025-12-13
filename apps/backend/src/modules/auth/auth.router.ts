@@ -1,47 +1,65 @@
 import { publicProcedure } from '@backend/procedures/public.procedure';
 import { auth } from './auth.config';
 
-export const authRouter = {
-	getSessionInfo: publicProcedure.handler(async ({ context }: any) => {
-		// Convert headers to Headers object
-		const headers = new Headers();
-		if (context.reqHeaders) {
-			context.reqHeaders.forEach((value: string, key: string) => {
-				headers.set(key, value);
-			});
+// Helper to convert headers to Web Headers
+function convertHeaders(headers: Headers | Record<string, string | string[] | undefined> | undefined): Headers {
+	const webHeaders = new Headers();
+
+	if (!headers) {
+		return webHeaders;
+	}
+
+	if (headers instanceof Headers) {
+		return headers;
+	}
+
+	for (const [key, value] of Object.entries(headers)) {
+		if (value) {
+			if (Array.isArray(value)) {
+				webHeaders.set(key, value.join(', '));
+			} else {
+				webHeaders.set(key, value);
+			}
 		}
+	}
 
-		const session = await auth.api.getSession({ headers });
+	return webHeaders;
+}
 
-		if (session?.user) {
-			return {
-				hasSession: true,
-				user: {
-					email: session.user.email,
-					name: session.user.name,
-					displayPicture: session.user.image,
-				},
-				isRegistered: true, // better-auth handles user registration
-			};
-		}
+export const getSessionInfo = publicProcedure.handler(async ({ context }) => {
+	// Convert headers to Web Headers
+	const headers = convertHeaders(context.reqHeaders);
 
+	const session = await auth.api.getSession({ headers });
+
+	if (session?.user) {
 		return {
-			hasSession: false,
-			user: null,
-			isRegistered: false,
+			hasSession: true,
+			user: {
+				email: session.user.email,
+				name: session.user.name,
+				displayPicture: session.user.image,
+			},
+			isRegistered: true, // better-auth handles user registration
 		};
-	}),
+	}
 
-	logout: publicProcedure.handler(async ({ context }: any) => {
-		// Convert headers to Headers object
-		const headers = new Headers();
-		if (context.reqHeaders) {
-			context.reqHeaders.forEach((value: string, key: string) => {
-				headers.set(key, value);
-			});
-		}
+	return {
+		hasSession: false,
+		user: null,
+		isRegistered: false,
+	};
+});
 
-		await auth.api.signOut({ headers });
-		return { success: true };
-	}),
+export const logout = publicProcedure.handler(async ({ context }) => {
+	// Convert headers to Web Headers
+	const headers = convertHeaders(context.reqHeaders);
+
+	await auth.api.signOut({ headers });
+	return { success: true };
+});
+
+export const authRouter = {
+	getSessionInfo,
+	logout,
 };

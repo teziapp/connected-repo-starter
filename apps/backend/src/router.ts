@@ -1,5 +1,8 @@
 import { authRouter } from '@backend/modules/auth/auth.router'
 import { oauthRouter } from '@backend/modules/auth/oauth/oauth.router'
+import { journalEntriesRouter } from '@backend/modules/journal-entries/journal-entries.router'
+import { promptsRouter } from '@backend/modules/prompts/prompts.router'
+import { usersRouter } from '@backend/modules/users/users.router'
 import { protectedProcedure } from '@backend/procedures/protected.procedure'
 import { publicProcedure } from '@backend/procedures/public.procedure'
 import { InferRouterInputs, InferRouterOutputs, RouterClient } from '@orpc/server'
@@ -78,7 +81,10 @@ export const router = {
 	// Phase 2: auth endpoints
 	auth: authRouter,
 	oauth: oauthRouter,
-	// Phase 3: users, journalEntries, prompts will be added here
+	// Phase 3: Core modules
+	users: usersRouter,
+	journalEntries: journalEntriesRouter,
+	prompts: promptsRouter,
 	// Phase 5: teams, subscriptions will be added here
 };
 
