@@ -32,6 +32,7 @@ change(async (db) => {
     'session',
     (t) => ({
       sessionId: t.string().primaryKey(),
+      token: t.string().unique(),
       userId: t.uuid().nullable(),
       email: t.string(),
       name: t.string().nullable(),
@@ -58,9 +59,43 @@ change(async (db) => {
           {
             column: 'markedInvalidAt',
             order: 'DESC',
-          }
+          },
         ]
       ),
+  );
+
+  await db.createTable(
+    'account',
+    (t) => ({
+      accountId: t.string(),
+      userId: t.uuid(),
+      providerId: t.string(),
+      accessToken: t.text().nullable(),
+      refreshToken: t.text().nullable(),
+      accessTokenExpiresAt: t.timestamp().nullable(),
+      refreshTokenExpiresAt: t.timestamp().nullable(),
+      scope: t.text().nullable(),
+      idToken: t.text().nullable(),
+      password: t.text().nullable(),
+      createdAt: t.timestamps().createdAt,
+      updatedAt: t.timestamps().updatedAt,
+    }),
+    (t) => [
+      t.primaryKey(['accountId', 'providerId']),
+      t.index(['userId']),
+    ],
+  );
+
+  await db.createTable(
+    'verification',
+    (t) => ({
+      identifier: t.string(),
+      value: t.text(),
+      expiresAt: t.timestamp(),
+      createdAt: t.timestamps().createdAt,
+      updatedAt: t.timestamps().updatedAt,
+    }),
+    (t) => t.primaryKey(['identifier', 'value']),
   );
 
   await db.createTable('teams', (t) => ({
@@ -84,7 +119,7 @@ change(async (db) => {
     promptId: t.smallint().foreignKey('prompts', 'promptId', {
       onUpdate: 'RESTRICT',
       onDelete: 'SET NULL',
-    }),
+    }).nullable(),
     content: t.text(),
     authorUserId: t.uuid().foreignKey('users', 'userId', {
       onUpdate: 'RESTRICT',

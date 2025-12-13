@@ -13,7 +13,7 @@ export function JournalEntryList() {
 	if (isLoading) return <LoadingSpinner text="Loading journal entries..." />;
 
 	if (error) {
-		const errorMessage = error.data?.userFriendlyMessage || error.message;
+		const errorMessage = `${error.name} - ${error.message}`;
 		return <ErrorAlert message={`Error loading journal entries: ${errorMessage}`} />;
 	}
 

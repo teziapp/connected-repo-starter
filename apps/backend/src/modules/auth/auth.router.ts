@@ -1,4 +1,6 @@
+import { env } from '@backend/configs/env.config';
 import { publicProcedure } from '@backend/procedures/public.procedure';
+import { z } from 'zod';
 import { auth } from './auth.config';
 
 // Helper to convert headers to Web Headers
@@ -60,6 +62,6 @@ export const logout = publicProcedure.handler(async ({ context }) => {
 });
 
 export const authRouter = {
-	getSessionInfo,
-	logout,
+  getSessionInfo,
+  logout,
 };

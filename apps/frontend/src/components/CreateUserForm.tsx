@@ -26,11 +26,8 @@ export function CreateUserForm() {
 			setTimeout(() => setSuccess(""), 3000);
 		},
 		onError: (error) => {
-			// Use the user-friendly message from our centralized error handling
-			const errorMessage = error.data?.userFriendlyMessage || error.message;
-			const actionRequired = error.data?.actionRequired;
 
-			setError(actionRequired ? `${errorMessage} - ${actionRequired}` : errorMessage);
+			setError(`${error.name} - ${error.message}`);
 			setSuccess("");
 		},
 	}));

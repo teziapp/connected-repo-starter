@@ -27,7 +27,7 @@ const RegisterPage = () => {
 	// Form setup with Zod validation and RHF
 	const { formMethods, RhfFormProvider } = useRhfForm<RegisterFormData>({
 		onSubmit: async (data) => {
-			await orpcFetch.users.create.mutate(data);
+			await orpcFetch.users.create(data);
 			navigate("/dashboard");
 		},
 		formConfig: {

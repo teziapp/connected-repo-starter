@@ -44,7 +44,7 @@ export function CreateJournalEntryForm() {
 				prompt: writingMode === "free" ? null : data.prompt,
 				promptId: writingMode === "free"? null : randomPrompt?.promptId ?? null
 			};
-			await orpcFetch.journalEntries.create.mutate(submitData);
+			await orpcFetch.journalEntries.create(submitData);
 			formMethods.reset();
 			setSuccess("Journal entry created successfully!");
 			setTimeout(() => setSuccess(""), 3000);

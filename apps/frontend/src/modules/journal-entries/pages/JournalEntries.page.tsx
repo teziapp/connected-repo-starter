@@ -56,7 +56,7 @@ export default function JournalEntriesPage() {
 	if (isLoading) return <LoadingSpinner text="Loading journal entries..." />;
 
 	if (error) {
-		const errorMessage = error.data?.userFriendlyMessage || error.message;
+		const errorMessage = `${error.name} - ${error.message}`;
 		return (
 			<Container maxWidth="lg" sx={{ py: 4 }}>
 				<ErrorAlert message={`Error loading journal entries: ${errorMessage}`} />

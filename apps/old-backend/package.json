@@ -10,9 +10,7 @@
 	"scripts": {
 		"check-types": "tsc --noEmit",
 		"clean": "rm -rf node_modules && rm -rf dist",
-		"build": "tsc && tsc-alias",
 		"db": "tsx src/db/db_script.ts",
-		"dev": "tsx watch src/server.ts",
 		"start": "node dist/server.js"
 	},
 	"dependencies": {

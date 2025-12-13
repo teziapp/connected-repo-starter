@@ -26,7 +26,7 @@ export default function JournalEntryDetailPage() {
 	const [deleteError, setDeleteError] = useState<string | null>(null);
 
 	const { data: journalEntry, isLoading, error } = useQuery(
-		orpc.journalEntries.getById.queryOptions({ journalEntryId: entryId || "" })
+		orpc.journalEntries.getById.queryOptions({ input: { journalEntryId: entryId || "" }})
 	);
 
 	const deleteMutation = useMutation(orpc.journalEntries.delete.mutationOptions());
@@ -70,7 +70,7 @@ export default function JournalEntryDetailPage() {
 	if (isLoading) return <LoadingSpinner text="Loading journal entry..." />;
 
 	if (error) {
-		const errorMessage = error.data?.userFriendlyMessage || error.message;
+		const errorMessage = `${error.name} - ${error.message}`;
 		return (
 			<Container maxWidth="lg" sx={{ py: 4 }}>
 				<ErrorAlert message={`Error loading journal entry: ${errorMessage}`} />

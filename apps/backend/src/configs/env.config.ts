@@ -17,6 +17,7 @@ const envSchema = z.object({
 	WEBAPP_URL: z.url(),
 	VITE_API_URL: z.url(),
 	INTERNAL_API_SECRET: zString.min(32, "Internal API secret must be at least 32 characters").optional(),
+	BETTER_AUTH_SECRET: zString.min(32, "Better Auth secret must be at least 32 characters"),
 });
 
 // ----------------------------------------

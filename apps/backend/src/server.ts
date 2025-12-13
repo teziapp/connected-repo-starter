@@ -1,4 +1,4 @@
-import { env, isDev, isProd, isStaging, isTest } from '@backend/configs/env.config'
+import { env, isDev, isProd, isStaging, isTest } from '@backend/configs/env.config';
 import { auth } from '@backend/modules/auth/auth.config'
 import { router } from '@backend/router'
 import { LoggingHandlerPlugin } from '@orpc/experimental-pino'
@@ -87,21 +87,33 @@ const start = async () => {
     const authHandler = toNodeHandler(auth)
 
     const server = createServer(async (req, res) => {
-      // Handle better-auth routes first (/api/auth/*)
-      if (req.url?.startsWith('/api/auth')) {
-        return authHandler(req, res)
-      }
+       // Handle better-auth routes first (/api/auth/*)
+       if (req.url?.startsWith('/api/auth')) {
+         // Add CORS headers for auth routes
+         res.setHeader('Access-Control-Allow-Origin', env.WEBAPP_URL)
+         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+         res.setHeader('Access-Control-Allow-Credentials', 'true')
 
-      // Handle oRPC routes
-      const result = await handler.handle(req, res, {
-        context: {}
-      })
+         if (req.method === 'OPTIONS') {
+           res.statusCode = 200
+           res.end()
+           return
+         }
 
-      if (!result.matched) {
-        res.statusCode = 404
-        res.end('No procedure matched')
-      }
-    })
+         return authHandler(req, res)
+       }
+
+       // Handle oRPC routes
+       const result = await handler.handle(req, res, {
+         context: {}
+       })
+
+       if (!result.matched) {
+         res.statusCode = 404
+         res.end('No procedure matched')
+       }
+     })
 
     // Configure server to close idle connections
     server.keepAliveTimeout = 5000; // 5 seconds

@@ -28,9 +28,14 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 				// Override getFieldName to handle field mapping for sessions
 				const customGetFieldName = ({ model, field }: { model: string; field: string }) => {
 					// Map better-auth field names to our database field names
+					if (field === "id") {
+						if (model === "user") return "userId";
+						if (model === "session") return "sessionId";
+						if (model === "account") return "accountId";
+						if (model === "verification") return "id";
+					}
 					if (model === "session") {
 						const fieldMapping: Record<string, string> = {
-							id: "sessionId",
 							// token is already named correctly
 							// userId is already named correctly
 							// expiresAt is already named correctly
@@ -49,7 +54,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 				const whereObj: Record<string, any> = {};
 
 				for (const w of where) {
-					if (!w) continue;
+					if (!w || w.value === undefined) continue;
 
 					const field = customGetFieldName({ model, field: w.field });
 
@@ -92,7 +97,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 							whereObj[field] = { gte: w.value };
 							break;
 						case "ne":
-							whereObj[field] = { ne: w.value };
+							whereObj.NOT[field] = w.value;
 							break;
 						default:
 							whereObj[field] = w.value;
@@ -105,6 +110,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 
 			return {
 				async create({ model, data: values }) {
+					console.log(`Creating record in model: ${model} with values:`, values);
 					if(!(model === "session" || model === "user" || model === "account" || model === "verification")) {
 						throw new BetterAuthError(`Unknown model: ${model}`);
 					}
@@ -127,11 +133,73 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 						values.token = crypto.randomUUID();
 					}
 
-					const result = await table.create(values) as unknown as typeof values;
+					// For sessions, populate user info
+					if (model === "session" && values.userId) {
+						const user = await orchidDB.users.findBy({ userId: values.userId });
+						if (user) {
+							values.email = user.email;
+							values.name = user.name;
+							values.displayPicture = user.displayPicture;
+						}
+					}
+
+					// Map id to the correct field for creation
+					if (model === "user" && values.id !== undefined) {
+						values.userId = values.id;
+						delete values.id;
+					} else if (model === "session" && values.id !== undefined) {
+						values.sessionId = values.id;
+						delete values.id;
+					} else if (model === "account" && values.id !== undefined) {
+						values.accountId = values.id;
+						delete values.id;
+					}
+
+					// Don't set userId for user creation if undefined, let default generate it
+					if (model === "user" && values.userId === undefined) {
+						delete values.userId;
+					}
+
+					const result = await table.create(values);
+					console.log("Created record:", result);
+
+					// Map back to better-auth expected format
+					if (model === "user") {
+						const userResult = {
+							id: result.userId,
+							email: result.email,
+							name: result.name,
+							image: result.displayPicture,
+							createdAt: result.createdAt,
+							updatedAt: result.updatedAt,
+						};
+						console.log('Returning user:', userResult);
+						return userResult;
+					} else if (model === "session") {
+						return {
+							id: result.sessionId,
+							...result,
+						};
+					} else if (model === "account") {
+						console.log('Creating account with userId:', values.userId);
+						const accountResult = {
+							id: result.accountId,
+							...result,
+						};
+						console.log('Returning account:', accountResult);
+						return accountResult;
+					} else if (model === "verification") {
+						return {
+							id: result.id,
+							...result,
+						};
+					}
+
 					return result;
 				},
 
 				async findOne({ model, where }) {
+					console.log('Finding one record in model:', model, 'with where:', where);
 					const tableMap: Record<string, any> = {
 						user: orchidDB.users,
 						session: orchidDB.sessions,
@@ -151,7 +219,38 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 						whereClause.markedInvalidAt = null;
 					}
 
-					const result = await table.findOptional(whereClause);
+					console.log('Finding record in model:', model, 'with where:', whereClause);
+					const result = await table.where(whereClause).takeOptional();
+					console.log('Found record:', result);
+
+					if (result) {
+						if (model === "user") {
+							return {
+								id: result.userId,
+								email: result.email,
+								name: result.name,
+								image: result.displayPicture,
+								createdAt: result.createdAt,
+								updatedAt: result.updatedAt,
+							};
+						} else if (model === "session") {
+							return {
+								id: result.sessionId,
+								...result,
+							};
+						} else if (model === "account") {
+							return {
+								id: result.accountId,
+								...result,
+							};
+						} else if (model === "verification") {
+							return {
+								id: result.id,
+								...result,
+							};
+						}
+					}
+
 					return result || null;
 				},
 
@@ -241,7 +340,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 					}
 
 					const whereClause = convertWhereClause(where, model);
-					const result = await table.findBy(whereClause).update(values);
+					const result = await table.where(whereClause).update(values);
 					return result;
 				},
 
@@ -286,12 +385,12 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 
 					if (model === "session") {
 						// Soft delete: set markedInvalidAt instead of hard delete
-						await table.findBy(whereClause).update({
+						await table.where(whereClause).update({
 							markedInvalidAt: new Date(),
 						});
 					} else {
 						// Hard delete for other models
-						await table.findBy(whereClause).delete();
+						await table.where(whereClause).delete();
 					}
 					return;
 				},

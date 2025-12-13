@@ -15,6 +15,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"better-auth": "^1.4.6",
 		"@connected-repo/ui-mui": "*",
 		"@connected-repo/zod-schemas": "*",
 		"@emotion/react": "^11.14.0",

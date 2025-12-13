@@ -13,7 +13,7 @@ export function UserList() {
 	if (isLoading) return <LoadingSpinner text="Loading users..." />;
 
 	if (error) {
-		const errorMessage = error.data?.userFriendlyMessage || error.message;
+		const errorMessage = `${error.name} - ${error.message}`;
 		return <ErrorAlert message={`Error loading users: ${errorMessage}`} />;
 	}
 

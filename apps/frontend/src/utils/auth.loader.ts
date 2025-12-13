@@ -1,4 +1,5 @@
 import { userContext } from "@frontend/contexts/UserContext";
+import { authClient } from "@frontend/utils/auth.client";
 import { orpc } from "@frontend/utils/orpc.client";
 import { queryClient } from "@frontend/utils/queryClient";
 import type { LoaderFunctionArgs } from "react-router";
@@ -10,20 +11,22 @@ import { redirect } from "react-router";
  */
 export async function authLoader({ context }: LoaderFunctionArgs) {
 	try {
-		// Fetch session info from backend
-		const sessionInfo = await queryClient.fetchQuery(
-			orpc.auth.getSessionInfo.queryOptions()
-		);
+		// Fetch session from better-auth client
+		const { data: session, error } = await authClient.getSession();
 
-		// No session - redirect to login
-		if (!sessionInfo.hasSession) {
+		if (error || !session) {
 			throw redirect("/auth/login");
 		}
 
-		// Session exists but not registered - redirect to register
-		if (!sessionInfo.isRegistered) {
-			throw redirect("/auth/register");
-		}
+		const sessionInfo = {
+			hasSession: true,
+			user: {
+				email: session.user.email,
+				name: session.user.name,
+				displayPicture: session.user.image,
+			},
+			isRegistered: true, // better-auth handles registration
+		};
 
 		// Set user context in React Router context
 		context.set(userContext, sessionInfo);
@@ -43,18 +46,15 @@ export async function authLoader({ context }: LoaderFunctionArgs) {
  */
 export async function guestLoader() {
 	try {
-		// Fetch session info from backend
-		const sessionInfo = await queryClient.fetchQuery(
-			orpc.auth.getSessionInfo.queryOptions()
-		);
+		// Fetch session from better-auth client
+		const { data: session, error } = await authClient.getSession();
 
-		// Already registered - redirect to dashboard
-		if (sessionInfo.hasSession && sessionInfo.isRegistered) {
+		if (!error && session) {
 			return redirect("/dashboard");
 		}
 
-		// Not registered or no session - allow access to page
-		return sessionInfo;
+		// No session - allow access to page
+		return null;
 	} catch (error) {
 		console.error("Guest loader error:", error);
 		return null;
