@@ -3,12 +3,16 @@ import { db } from "@backend/db/db";
 export async function seedPrompts() {
 	console.log("Seeding prompts...");
 
+	// Clear existing prompts
+	await db.prompts.where({}).delete();
+
 	const prompts = [
 		// Reflection & Gratitude
 		{
 			text: "What three things brought you joy today, no matter how small?",
 			category: "gratitude",
 			tags: ["reflection", "positivity", "daily"],
+			isActive: true,
 		},
 		{
 			text: "Who made a positive impact on your day, and how?",
@@ -189,8 +193,9 @@ export async function seedPrompts() {
 		},
 	];
 
-	// Insert prompts
-	await db.prompts.createMany(prompts);
+	// Insert prompts with isActive: true
+	const promptsWithActive = prompts.map(prompt => ({ ...prompt, isActive: true }));
+	await db.prompts.createMany(promptsWithActive);
 
 	console.log(`✓ Seeded ${prompts.length} journal prompts`);
 }
