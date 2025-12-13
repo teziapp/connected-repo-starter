@@ -11,6 +11,7 @@ import { orchidORM } from "orchid-orm/node-postgres";
 
 const databaseURL = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}?ssl=${dbConfig.ssl ? "require" : "false"}`;
 
+// Phase 0 Complete: All database tables registered
 export const db = orchidORM(
 	{
 		databaseURL,
@@ -24,6 +25,6 @@ export const db = orchidORM(
 		subscriptions: SubscriptionsTable,
 		teams: TeamTable,
 		apiProductRequestLogs: ApiProductRequestLogsTable,
-		webhookCallQueues: WebhookCallQueueTable
+		webhookCallQueues: WebhookCallQueueTable,
 	},
 );

@@ -4,11 +4,11 @@ import { List, ListItem } from "@connected-repo/ui-mui/data-display/List";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
 import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Card, CardContent } from "@connected-repo/ui-mui/layout/Card";
-import { trpc } from "@frontend/utils/trpc.client";
+import { orpc } from "@frontend/utils/orpc.client";
 import { useQuery } from "@tanstack/react-query";
 
 export function JournalEntryList() {
-	const { data: journalEntries, isLoading, error } = useQuery(trpc.journalEntries.getAll.queryOptions());
+	const { data: journalEntries, isLoading, error } = useQuery(orpc.journalEntries.getAll.queryOptions());
 
 	if (isLoading) return <LoadingSpinner text="Loading journal entries..." />;
 

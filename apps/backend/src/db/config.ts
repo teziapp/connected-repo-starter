@@ -1,10 +1,10 @@
 import { env, isProd } from "@backend/configs/env.config";
 
 export const dbConfig = {
-	host: env.DB_HOST || "localhost",
-	port: Number(env.DB_PORT) || 5432,
-	user: env.DB_USER || "postgres",
-	password: env.DB_PASSWORD || "password",
-	database: env.DB_NAME || "connected_repo_db",
+	host: env.DB_HOST,
+	port: Number(env.DB_PORT),
+	user: env.DB_USER,
+	password: env.DB_PASSWORD,
+	database: env.DB_NAME,
 	ssl: isProd,
 };

@@ -365,7 +365,7 @@ export const productGetByIdZod = z.object({
 Then:
 1. Add to backend table: `apps/backend/src/db/tables/product.table.ts`
 2. Register in `apps/backend/src/db/db.ts`
-3. Import in `router.trpc.ts`
+3. Import in `router.ts` (oRPC router)
 4. Run `yarn build` in packages/zod-schemas
 
 ## Adding New Validators

@@ -1,8 +1,8 @@
-import { queryClient } from "@frontend/utils/queryClient";
-import { trpc } from "@frontend/utils/trpc.client";
-import { redirect } from "react-router";
-import type { LoaderFunctionArgs } from "react-router";
 import { userContext } from "@frontend/contexts/UserContext";
+import { orpc } from "@frontend/utils/orpc.client";
+import { queryClient } from "@frontend/utils/queryClient";
+import type { LoaderFunctionArgs } from "react-router";
+import { redirect } from "react-router";
 
 /**
  * Auth loader for protected routes
@@ -12,7 +12,7 @@ export async function authLoader({ context }: LoaderFunctionArgs) {
 	try {
 		// Fetch session info from backend
 		const sessionInfo = await queryClient.fetchQuery(
-			trpc.auth.getSessionInfo.queryOptions()
+			orpc.auth.getSessionInfo.queryOptions()
 		);
 
 		// No session - redirect to login
@@ -45,7 +45,7 @@ export async function guestLoader() {
 	try {
 		// Fetch session info from backend
 		const sessionInfo = await queryClient.fetchQuery(
-			trpc.auth.getSessionInfo.queryOptions()
+			orpc.auth.getSessionInfo.queryOptions()
 		);
 
 		// Already registered - redirect to dashboard

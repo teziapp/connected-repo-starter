@@ -4,7 +4,7 @@
 	"description": "Common Zod Schemas to be used everywhere",
 	"type": "module",
 	"sideEffects": false,
-	"repository": "git@github.com:teziapp/connected-repo-starter.git",
+	"repository": "git@github.com:teziapp/connected-repo-starter-oRPC.git",
 	"author": "Balkrishna Agarwal",
 	"license": "AGPL-3.0-only",
 	"private": true,

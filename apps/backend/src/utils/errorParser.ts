@@ -1,4 +1,4 @@
-import { TRPCError } from "@trpc/server";
+import { ORPCError } from "@orpc/server";
 import { ZodError } from "zod";
 
 export interface CustomError {
@@ -10,7 +10,11 @@ export interface CustomError {
 	actionRequired?: string;
 }
 
-export function trpcErrorParser(error: TRPCError): CustomError {
+/**
+ * Parse database and ORPC errors into user-friendly error responses
+ * @param error - The error to parse (ORPCError or generic Error)
+ */
+export function orpcErrorParser(error: Error): CustomError {
 	// Handle Zod validation errors
 	if (error.cause instanceof ZodError) {
 		const zodError = error.cause.flatten();
@@ -76,8 +80,9 @@ export function trpcErrorParser(error: TRPCError): CustomError {
 		}
 	}
 
-	// Handle standard tRPC errors
-	switch (error.code) {
+	// Handle standard ORPC errors
+	const errorCode = error instanceof ORPCError ? error.code : "INTERNAL_SERVER_ERROR";
+	switch (errorCode) {
 		case "BAD_REQUEST":
 			return {
 				message: error.message,
