@@ -3,7 +3,7 @@ import { router } from '@backend/router'
 import { LoggingHandlerPlugin } from '@orpc/experimental-pino'
 import { onError, ORPCError, ValidationError } from '@orpc/server'
 import { RPCHandler } from '@orpc/server/node'
-import { CORSPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins'
+import { CORSPlugin, RequestHeadersPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins'
 import { createServer } from 'node:http'
 import pino from 'pino'
 import { ZodError } from 'zod'
@@ -18,6 +18,8 @@ logger.info(env.ALLOWED_ORIGINS, "ALLOWED_ORIGINS env:");
 
 const handler = new RPCHandler(router, {
   plugins: [
+    // Request headers plugin for accessing headers in context
+    new RequestHeadersPlugin(),
     // CORS configuration with credentials support
     new CORSPlugin({
       origin: [...allowedOrigins],
@@ -81,7 +83,7 @@ const start = async () => {
   try {
     const server = createServer(async (req, res) => {
       const result = await handler.handle(req, res, {
-        context: { headers: req.headers }
+        context: {}
       })
 
       if (!result.matched) {

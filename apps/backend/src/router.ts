@@ -1,5 +1,6 @@
 import { protectedProcedure } from '@backend/procedures/protected.procedure'
 import { publicProcedure } from '@backend/procedures/public.procedure'
+import { authRouter } from '@backend/modules/auth/auth.router'
 import { InferRouterInputs, InferRouterOutputs, RouterClient } from '@orpc/server'
 import * as z from 'zod'
 
@@ -73,7 +74,8 @@ export const router = {
 	planet: {
 		list: listPlanet,
 	},
-	// Phase 2: auth endpoints will be added here
+	// Phase 2: auth endpoints
+	auth: authRouter,
 	// Phase 3: users, journalEntries, prompts will be added here
 	// Phase 5: teams, subscriptions will be added here
 };

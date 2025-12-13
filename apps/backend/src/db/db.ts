@@ -1,5 +1,7 @@
 import { dbConfig } from "@backend/db/config";
+import { AccountTable } from "@backend/modules/auth/tables/account.auth.table";
 import { SessionTable } from "@backend/modules/auth/tables/session.auth.table";
+import { VerificationTable } from "@backend/modules/auth/tables/verification.auth.table";
 import { JournalEntryTable } from "@backend/modules/journal-entries/tables/journal_entries.table";
 import { ApiProductRequestLogsTable } from "@backend/modules/logs/tables/api_product_request_logs.table";
 import { PromptsTable } from "@backend/modules/prompts/tables/prompts.table";
@@ -22,6 +24,8 @@ export const db = orchidORM(
 		journalEntries: JournalEntryTable,
 		prompts: PromptsTable,
 		sessions: SessionTable,
+		accounts: AccountTable,
+		verifications: VerificationTable,
 		subscriptions: SubscriptionsTable,
 		teams: TeamTable,
 		apiProductRequestLogs: ApiProductRequestLogsTable,
