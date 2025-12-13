@@ -20,6 +20,41 @@ export const auth = betterAuth({
 			enabled: true,
 			maxAge: 5 * 60, // 5 minutes
 		},
+		additionalFields: {
+			email: {
+				type: "string",
+				required: false,
+			},
+			name: {
+				type: "string",
+				required: false,
+			},
+			displayPicture: {
+				type: "string",
+				required: false,
+			},
+			browser: {
+				type: "string",
+				required: false,
+			},
+			os: {
+				type: "string",
+				required: false,
+			},
+			device: {
+				type: "string",
+				required: false,
+			},
+			deviceFingerprint: {
+				type: "string",
+				required: false,
+			},
+			markedInvalidAt: {
+				type: "date",
+				required: false,
+				input: false, // Don't allow user input for soft delete timestamp
+			},
+		},
 	},
 	user: {
 		changeEmail: {

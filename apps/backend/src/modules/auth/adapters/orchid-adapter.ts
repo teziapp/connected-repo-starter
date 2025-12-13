@@ -22,9 +22,27 @@ export interface OrchidAdapterConfig {
 export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig = {}) => {
 	let lazyOptions: BetterAuthOptions | null = null;
 
-	const createCustomAdapter =
-		(orchidDB: typeof db): AdapterFactoryCustomizeAdapterCreator =>
-		({ getFieldName, options }) => {
+		const createCustomAdapter =
+			(): AdapterFactoryCustomizeAdapterCreator =>
+			({ getFieldName }) => {
+				// Override getFieldName to handle field mapping for sessions
+				const customGetFieldName = ({ model, field }: { model: string; field: string }) => {
+					// Map better-auth field names to our database field names
+					if (model === "session") {
+						const fieldMapping: Record<string, string> = {
+							id: "sessionId",
+							// token is already named correctly
+							// userId is already named correctly
+							// expiresAt is already named correctly
+							// ipAddress is already named correctly
+							// userAgent is already named correctly
+							// createdAt is already named correctly
+							// updatedAt is already named correctly
+						};
+						return fieldMapping[field] || field;
+					}
+					return getFieldName({ model, field });
+				};
 			function convertWhereClause(where: Where[], model: string) {
 				if (!where || where.length === 0) return {};
 
@@ -33,7 +51,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 				for (const w of where) {
 					if (!w) continue;
 
-					const field = getFieldName({ model, field: w.field });
+					const field = customGetFieldName({ model, field: w.field });
 
 					switch (w.operator) {
 						case "in":
@@ -87,8 +105,11 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 
 			return {
 				async create({ model, data: values }) {
+					if(!(model === "session" || model === "user" || model === "account" || model === "verification")) {
+						throw new BetterAuthError(`Unknown model: ${model}`);
+					}
 					// Map model names to table names
-					const tableMap: Record<string, any> = {
+					const tableMap = {
 						user: orchidDB.users,
 						session: orchidDB.sessions,
 						account: orchidDB.accounts,
@@ -100,7 +121,13 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 						throw new BetterAuthError(`Unknown model: ${model}`);
 					}
 
-					const result = await table.create(values);
+					// Auto-generate token for sessions if not provided
+					if (model === "session" && !values.token) {
+						// @ts-ignore - dynamic tables selected by model
+						values.token = crypto.randomUUID();
+					}
+
+					const result = await table.create(values) as unknown as typeof values;
 					return result;
 				},
 
@@ -118,6 +145,12 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 					}
 
 					const whereClause = convertWhereClause(where, model);
+
+					// For sessions, exclude soft-deleted records
+					if (model === "session") {
+						whereClause.markedInvalidAt = null;
+					}
+
 					const result = await table.findOptional(whereClause);
 					return result || null;
 				},
@@ -142,8 +175,13 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 						query = query.where(whereClause);
 					}
 
+					// For sessions, exclude soft-deleted records
+					if (model === "session") {
+						query = query.where({ markedInvalidAt: null });
+					}
+
 					if (sortBy?.field) {
-						const field = getFieldName({ model, field: sortBy.field });
+						const field = customGetFieldName({ model, field: sortBy.field });
 						const direction = sortBy.direction === "desc" ? "DESC" : "ASC";
 						query = query.order({ [field]: direction });
 					}
@@ -178,6 +216,11 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 					if (where && where.length > 0) {
 						const whereClause = convertWhereClause(where, model);
 						query = query.where(whereClause);
+					}
+
+					// For sessions, exclude soft-deleted records
+					if (model === "session") {
+						query = query.where({ markedInvalidAt: null });
 					}
 
 					const result = await query;
@@ -240,7 +283,16 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 					}
 
 					const whereClause = convertWhereClause(where, model);
-					await table.findBy(whereClause).delete();
+
+					if (model === "session") {
+						// Soft delete: set markedInvalidAt instead of hard delete
+						await table.findBy(whereClause).update({
+							markedInvalidAt: new Date(),
+						});
+					} else {
+						// Hard delete for other models
+						await table.findBy(whereClause).delete();
+					}
 					return;
 				},
 
@@ -264,8 +316,17 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 						query = query.where(whereClause);
 					}
 
-					const result = await query.delete();
-					return result;
+					if (model === "session") {
+						// Soft delete: set markedInvalidAt instead of hard delete
+						const result = await query.update({
+							markedInvalidAt: new Date(),
+						});
+						return result;
+					} else {
+						// Hard delete for other models
+						const result = await query.delete();
+						return result;
+					}
 				},
 
 				options: config,
@@ -284,7 +345,7 @@ export const orchidAdapter = (orchidDB: typeof db, config: OrchidAdapterConfig =
 			supportsArrays: true,
 			transaction: false, // Orchid ORM doesn't have built-in transactions in the same way
 		},
-		adapter: createCustomAdapter(orchidDB),
+		adapter: createCustomAdapter(),
 	};
 
 	const adapter = createAdapterFactory(adapterOptions);

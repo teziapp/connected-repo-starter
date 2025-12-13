@@ -3,8 +3,20 @@ import { RequestHeadersPluginContext } from "@orpc/server/plugins";
 import type { Session, User } from "better-auth";
 import z from "zod";
 
+// Extended session type with additional fields
+export interface ExtendedSession extends Session {
+	email?: string;
+	name?: string;
+	displayPicture?: string;
+	browser?: string;
+	os?: string;
+	device?: string;
+	deviceFingerprint?: string;
+	markedInvalidAt?: Date;
+}
+
 export interface ORPCContext extends RequestHeadersPluginContext {
-	session?: Session | null;
+	session?: ExtendedSession | null;
 	user?: User | null;
 }
 

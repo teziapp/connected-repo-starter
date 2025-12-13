@@ -6,6 +6,7 @@ export class SessionTable extends BaseTable {
 
 	columns = this.setColumns((t) => ({
 		sessionId: t.string().primaryKey(),
+		token: t.string().unique(),
 		userId: t.uuid().nullable(),
 		email: t.string(),
 		name: t.string().nullable(),
