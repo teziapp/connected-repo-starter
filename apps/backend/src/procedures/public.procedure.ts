@@ -5,14 +5,14 @@ import z from "zod";
 
 // Extended session type with additional fields
 export interface ExtendedSession extends Session {
-	email?: string;
-	name?: string;
-	displayPicture?: string;
-	browser?: string;
-	os?: string;
-	device?: string;
-	deviceFingerprint?: string;
-	markedInvalidAt?: Date;
+	email?: string | null;
+	name?: string | null;
+	displayPicture?: string | null;
+	browser?: string | null;
+	os?: string | null;
+	device?: string | null;
+	deviceFingerprint?: string | null;
+	markedInvalidAt?: Date | null;
 }
 
 export interface ORPCContext extends RequestHeadersPluginContext {
