@@ -8,7 +8,7 @@ This is a React 19 frontend application built with:
 - **React**: 19.2.0 with modern features (Suspense, Transitions, Server Components patterns)
 - **Build Tool**: Vite 7 with SWC for fast compilation
 - **Router**: React Router 7
-- **Data Fetching**: TanStack Query + tRPC Client
+- **Data Fetching**: TanStack Query + oRPC Client
 - **Forms**: React Hook Form for form state management and validation
 - **State Management**: Zustand for global/central state
 - **UI Library**: Material-UI via `@connected-repo/ui-mui` package
@@ -85,7 +85,7 @@ src/
 │   └── auth/
 │       ├── pages/      # Auth-specific pages
 │       └── auth.router.tsx  # Module routes
-├── utils/              # Utilities (tRPC client, query client)
+├── utils/              # Utilities (oRPC client, query client)
 ├── configs/            # Configuration files
 ├── router.tsx          # Main application router
 ├── App.tsx             # Root component
@@ -188,7 +188,7 @@ lightweight, simple, and works seamlessly with React 19.
 - Complex state that doesn't belong in URL params or server cache
 
 **When NOT to use Zustand:**
-- Server state (use tRPC + TanStack Query instead)
+- Server state (use oRPC + TanStack Query instead)
 - Form state (use React Hook Form instead)
 - URL state (use React Router state/params instead)
 - Component-local state (use React useState/useReducer instead)
@@ -200,15 +200,15 @@ lightweight, simple, and works seamlessly with React 19.
 3. **Keep actions in the store** - Don't put business logic in components
 4. **Use middleware wisely** - `persist` for state that should survive refreshes, `immer` for complex nested updates
 5. **Type everything** - Always define TypeScript interfaces for your stores
-6. **Don't mix with server state** - Use tRPC/TanStack Query for server data, Zustand for UI state
+6. **Don't mix with server state** - Use oRPC/TanStack Query for server data, Zustand for UI state
 7. **Avoid deep nesting** - Keep state flat when possible for better performance
 8. **Use slices** for large stores to maintain organization
 
-## tRPC Client Usage
+## oRPC Client Usage
 
 ### Type-Safe API Calls
 
-The frontend automatically gets types from the backend router (`apps/backend/src/router.trpc.ts`).
+The frontend automatically gets types from the backend router (`apps/backend/src/router.ts`).
 
 ### Error Handling
 
@@ -232,29 +232,31 @@ Use error boundaries for component-level error handling:
 
 ### Understanding Backend Modular Structure
 
-The backend router (`apps/backend/src/router.trpc.ts`) uses nested routers for organization
+The backend router (`apps/backend/src/router.ts`) uses nested routers (plain objects) for organization
 
 ### When Adding New Features
 
 **1. Backend creates modular router:**
 ```typescript
-// apps/backend/src/router.trpc.ts
-export const appTrpcRouter = trpcRouter({
+// apps/backend/src/router.ts
+export const router = {
   // Existing routers...
 
   // New feature module
-  dashboard: trpcRouter({
-    getMetrics: protectedProcedure.query(...),
-    getAnalytics: protectedProcedure.query(...),
-  }),
-});
+  dashboard: {
+    getMetrics: protectedProcedure.handler(...),
+    getAnalytics: protectedProcedure.handler(...),
+  },
+};
+
+export type BackendRouter = RouterClient<typeof router>;
 ```
 
 **2. Frontend automatically gets types and creates matching module:**
 ```
 modules/dashboard/
 ├── pages/
-│   └── DashboardHome.page.tsx  # Uses trpc.dashboard.getMetrics.useQuery()
+│   └── DashboardHome.page.tsx  # Uses orpc.dashboard.getMetrics.useQuery()
 └── dashboard.router.tsx         # Lazy-loaded routes
 ```
 
@@ -1001,7 +1003,7 @@ function ResponsiveComponent() {
 ## Key Takeaways
 
 1. **React 19**: Use modern patterns (use, useTransition, Suspense), minimize useEffect
-2. **Type Safety**: Never use `any` or `as unknown` - leverage tRPC's automatic typing
+2. **Type Safety**: Never use `any` or `as unknown` - leverage oRPC's automatic typing
 3. **Modular Structure**: Keep modules independent, no cross-module imports
 4. **Code Splitting**: Lazy load pages and heavy components
 5. **UI Components**: Create reusable components in `@connected-repo/ui-mui` package
@@ -1016,6 +1018,6 @@ function ResponsiveComponent() {
 
 - [React 19 Documentation](https://react.dev)
 - [TanStack Query Documentation](https://tanstack.com/query)
-- [tRPC Documentation](https://trpc.io)
+- [oRPC Documentation](https://orpc.dev)
 - [Vite Documentation](https://vite.dev)
 - [Material-UI Documentation](https://mui.com)

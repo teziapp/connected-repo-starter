@@ -8,15 +8,15 @@
  */
 import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
 import { ThemeContextProvider } from "@connected-repo/ui-mui/theme/ThemeContext";
+import { ErrorFallback } from "@frontend/components/error_fallback";
+import { router } from "@frontend/router";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
-import { ErrorFallback } from "@frontend/components/error_fallback";
-import { router } from "@frontend/router";
 
 // App focuses on rendering the router tree and error boundaries. Providers
-// (QueryClient + tRPC client) are created and mounted at the root in
-// `main.tsx` following the tRPC + TanStack React Query recommended setup.
+// (QueryClient + oRPC client) are created and mounted at the root in
+// `main.tsx` following the oRPC + TanStack React Query recommended setup.
 function App() {
 	return (
 		<ThemeContextProvider>
