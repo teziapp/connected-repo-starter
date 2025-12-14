@@ -11,9 +11,6 @@ export const createCustomAdapterOrchid = (db: any): AdapterFactoryCustomizeAdapt
     create: async ({ model, data, select }) => {
       const modelName = validateModel(model);
       const validatedSelect = validateSelect(modelName, select);
-      if(model === "sessions") {
-        console.log({data});
-      };
       const result = await db[modelName]
         .create(data)
         .select(validatedSelect.join(", "));
@@ -36,7 +33,6 @@ export const createCustomAdapterOrchid = (db: any): AdapterFactoryCustomizeAdapt
       return await query.delete();
     },
     findOne: async ({ model, where, select, join }) => {
-      console.log(join?.users?.on);
       const modelName = validateModel(model);
       const validatedSelect = validateSelect(modelName, select);
       let query = applyBetterAuthWhere(db[modelName], where);
@@ -49,14 +45,13 @@ export const createCustomAdapterOrchid = (db: any): AdapterFactoryCustomizeAdapt
       if (selectFields.length > 0) {
         const selectArgs = [validatedSelect.join(", "), ...selectFields];
         const finalQuery = joinedQuery.select(...selectArgs);
-        return await finalQuery.takeOptional().log();
+        return await finalQuery.takeOptional();
       }
       
       const finalQuery = joinedQuery.select(validatedSelect.join(", "));
-      return await finalQuery.takeOptional().log();
+      return await finalQuery.takeOptional();
     },
     findMany: async ({ model, where, sortBy, limit, offset, join }) => {
-      console.log(join?.users?.on);
       const modelName = validateModel(model);
       let query = applyBetterAuthWhere(db[modelName], where);
       
@@ -67,7 +62,7 @@ export const createCustomAdapterOrchid = (db: any): AdapterFactoryCustomizeAdapt
       }
 
       if (limit !== undefined) {
-        query = query.limit(limit).log();
+        query = query.limit(limit);
       }
 
       if (offset !== undefined) {

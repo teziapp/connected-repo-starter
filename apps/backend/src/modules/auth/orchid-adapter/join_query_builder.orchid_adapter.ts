@@ -62,7 +62,6 @@ export function applyJoins(
     }
 
     const { on, limit, relation } = config;
-    console.log({on, limit, relation});
     
     // 'on.from' is the column in the main table
     // 'on.to' is the column in the joined table

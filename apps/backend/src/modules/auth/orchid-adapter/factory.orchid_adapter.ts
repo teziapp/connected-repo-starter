@@ -1,7 +1,8 @@
 import type { BetterAuthOptions } from "@better-auth/core";
 import type {
 	DBAdapter,
-	DBAdapterDebugLogOption
+	DBAdapterDebugLogOption,
+	DBTransactionAdapter
 } from "@better-auth/core/db/adapter";
 import { createAdapterFactory } from "@better-auth/core/db/adapter";
 import { createCustomAdapterOrchid } from "./custom_adapter.orchid_adapter";
@@ -18,9 +19,10 @@ interface OrchidAdapterConfig {
 }
 
 export const orchidAdapter = (db: { [key: string]: any }, config: OrchidAdapterConfig = {
-  debugLogs: true,
+  debugLogs: false,
   usePlural: false,
 }) => {
+	let lazyOptions: BetterAuthOptions | null = null;
   const adapterOptions = {
     adapter: createCustomAdapterOrchid(db),
     config: {
@@ -31,12 +33,22 @@ export const orchidAdapter = (db: { [key: string]: any }, config: OrchidAdapterC
 			supportsUUIDs: true,
 			supportsJSON: true,
 			supportsArrays: true,
-			// transaction: orchidDBTransactionAdapter,
+			transaction: false as false | (<R>(cb: (trx: DBTransactionAdapter<BetterAuthOptions>) => Promise<R>) => Promise<R>),
 			disableIdGeneration: true,
     },
   };
+
+	adapterOptions.config.transaction = (cb) => db.$transaction(() => {
+		const adapter = createAdapterFactory({
+			config: adapterOptions.config,
+			adapter: createCustomAdapterOrchid(db),
+		})(lazyOptions!);
+		return cb(adapter);
+	});
+
   const adapter = createAdapterFactory(adapterOptions);
   return (options: BetterAuthOptions): DBAdapter<BetterAuthOptions> => {
+		lazyOptions = options;
     return adapter(options);
   };
 };
