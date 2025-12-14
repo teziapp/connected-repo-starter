@@ -25,7 +25,7 @@ export function UserList() {
 			{users && users.length > 0 ? (
 				<List sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
 					{users.map((user) => (
-						<ListItem key={user.userId} sx={{ p: 0 }}>
+						<ListItem key={user.id} sx={{ p: 0 }}>
 							<Card sx={{ width: "100%", border: "1px solid", borderColor: "divider" }}>
 								<CardContent>
 									<Typography variant="h6" component="h3" gutterBottom>

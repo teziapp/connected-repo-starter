@@ -1,7 +1,7 @@
 import { BaseTable } from "@backend/db/base_table";
 
 export class VerificationTable extends BaseTable {
-	readonly table = "verification";
+	readonly table = "verifications";
 
 	columns = this.setColumns((t) => ({
 		identifier: t.string(),

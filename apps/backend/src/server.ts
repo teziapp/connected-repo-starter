@@ -1,15 +1,15 @@
 import { env, isDev, isProd, isStaging, isTest } from '@backend/configs/env.config';
-import { auth } from '@backend/modules/auth/auth.config'
-import { router } from '@backend/router'
-import { LoggingHandlerPlugin } from '@orpc/experimental-pino'
-import { onError, ORPCError, ValidationError } from '@orpc/server'
-import { RPCHandler } from '@orpc/server/node'
-import { CORSPlugin, RequestHeadersPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins'
-import { toNodeHandler } from 'better-auth/node'
-import { createServer } from 'node:http'
-import pino from 'pino'
-import { ZodError } from 'zod'
-import { $ZodIssue, flattenError, prettifyError } from 'zod/v4/core'
+import { auth } from '@backend/modules/auth/auth.config';
+import { router } from '@backend/routers/user_app/user_app.router';
+import { LoggingHandlerPlugin } from '@orpc/experimental-pino';
+import { onError, ORPCError, ValidationError } from '@orpc/server';
+import { RPCHandler } from '@orpc/server/node';
+import { CORSPlugin, RequestHeadersPlugin, SimpleCsrfProtectionHandlerPlugin, StrictGetMethodPlugin } from '@orpc/server/plugins';
+import { toNodeHandler } from 'better-auth/node';
+import { createServer } from 'node:http';
+import pino from 'pino';
+import { ZodError } from 'zod';
+import { $ZodIssue, flattenError, prettifyError } from 'zod/v4/core';
 
 const allowedOrigins = [...(env.ALLOWED_ORIGINS?.split(",") || [])];
 const logger = pino();

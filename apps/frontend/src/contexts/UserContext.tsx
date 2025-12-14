@@ -1,14 +1,9 @@
+import { UserSelectAll } from "@connected-repo/zod-schemas/user.zod";
 import { createContext, useOutletContext } from "react-router";
-
-export interface User {
-	email: string;
-	name: string | null;
-	displayPicture: string | null;
-}
 
 export interface SessionInfo {
 	hasSession: boolean;
-	user: User | null;
+	user: UserSelectAll | null;
 	isRegistered: boolean;
 }
 

@@ -31,7 +31,7 @@ change(async (db) => {
   await db.createTable(
     'session',
     (t) => ({
-      sessionId: t.string().primaryKey(),
+      id: t.string().primaryKey(),
       userId: t.uuid().nullable(),
       email: t.string(),
       name: t.string().nullable(),
@@ -50,7 +50,7 @@ change(async (db) => {
     (t) => 
       t.index(
         [
-          'sessionId',
+          'id',
           {
             column: 'expiresAt',
             order: 'DESC',

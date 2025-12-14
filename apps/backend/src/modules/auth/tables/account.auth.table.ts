@@ -1,12 +1,14 @@
-import { BaseTable, sql } from "@backend/db/base_table";
-import { UserTable } from "@backend/modules/users/users/users.table";
+import { BaseTable } from "@backend/db/base_table";
+import { UserTable } from "@backend/modules/users/tables/users.table";
+import { ulid } from "ulid";
 
 export class AccountTable extends BaseTable {
-	readonly table = "account";
+	readonly table = "accounts";
 
 	columns = this.setColumns((t) => ({
-		accountId: t.string(),
+		id: t.string().default(() => ulid()).primaryKey(),
 		userId: t.uuid(),
+		accountId: t.string(), // The ID of the account as provided by the SSO or equal to userId for credential accounts
 		providerId: t.string(),
 		accessToken: t.text().nullable(),
 		refreshToken: t.text().nullable(),
@@ -18,14 +20,13 @@ export class AccountTable extends BaseTable {
 		...t.timestamps(),
 	}),
 	(t) => [
-		t.primaryKey(["accountId", "providerId"]),
 		t.index(["userId"]),
 	]);
 
 	relations = {
 		user: this.belongsTo(() => UserTable, {
 			columns: ["userId"],
-			references: ["userId"],
+			references: ["id"],
 			foreignKey: false
 		}),
 	};

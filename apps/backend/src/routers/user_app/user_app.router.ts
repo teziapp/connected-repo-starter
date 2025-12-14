@@ -1,9 +1,8 @@
-import { authRouter } from '@backend/modules/auth/auth.router'
 import { journalEntriesRouter } from '@backend/modules/journal-entries/journal-entries.router'
 import { promptsRouter } from '@backend/modules/prompts/prompts.router'
-import { usersRouter } from '@backend/modules/users/users.router'
 import { protectedProcedure } from '@backend/procedures/protected.procedure'
 import { publicProcedure } from '@backend/procedures/public.procedure'
+import { usersRouter } from '@backend/routers/user_app/users.user_app.router'
 import { InferRouterInputs, InferRouterOutputs, RouterClient } from '@orpc/server'
 import * as z from 'zod'
 
@@ -77,8 +76,6 @@ export const router = {
 	planet: {
 		list: listPlanet,
 	},
-	// Phase 2: auth endpoints
-	auth: authRouter,
 	// Phase 3: Core modules
 	users: usersRouter,
 	journalEntries: journalEntriesRouter,
@@ -86,6 +83,6 @@ export const router = {
 	// Phase 5: teams, subscriptions will be added here
 };
 
-export type BackendRouter = RouterClient<typeof router>;
-export type BackendRouterInputs = InferRouterInputs<typeof router>
-export type BackendRouterOutputs = InferRouterOutputs<typeof router>;
+export type UserAppRouter = RouterClient<typeof router>;
+export type UserAppRouterInputs = InferRouterInputs<typeof router>
+export type UserAppRouterOutputs = InferRouterOutputs<typeof router>;

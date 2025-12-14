@@ -10,10 +10,11 @@ change(async (db) => {
   await db.createEnum('public.webhook_status_enum', ['Pending', 'Sent', 'Failed']);
 
   await db.createTable('users', (t) => ({
-    userId: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
+    id: t.uuid().primaryKey().default(t.sql`gen_random_uuid()`),
     email: t.string().unique(),
-    name: t.string().nullable(),
-    displayPicture: t.string().nullable(),
+    emailVerified: t.boolean().default(false),
+    name: t.string(),
+    image: t.string().nullable(),
     createdAt: t.timestamps().createdAt,
     updatedAt: t.timestamps().updatedAt,
   }));
@@ -29,20 +30,20 @@ change(async (db) => {
   }));
 
   await db.createTable(
-    'session',
+    'sessions',
     (t) => ({
-      sessionId: t.string().primaryKey(),
-      token: t.string().unique(),
+      id: t.string().primaryKey(),
+      token: t.string(),
       userId: t.uuid().nullable(),
       email: t.string(),
-      name: t.string().nullable(),
-      displayPicture: t.string().nullable(),
+      name: t.string(),
+      image: t.string().nullable(),
       ipAddress: t.string().nullable(),
       userAgent: t.text().nullable(),
       browser: t.string().nullable(),
       os: t.string().nullable(),
       device: t.string().nullable(),
-      deviceFingerprint: t.string().nullable(),
+      deviceFingerprint: t.string(),
       markedInvalidAt: t.timestamp().nullable(),
       expiresAt: t.timestamp(),
       createdAt: t.timestamps().createdAt,
@@ -51,7 +52,7 @@ change(async (db) => {
     (t) => 
       t.index(
         [
-          'sessionId',
+          'id',
           {
             column: 'expiresAt',
             order: 'DESC',
@@ -65,9 +66,9 @@ change(async (db) => {
   );
 
   await db.createTable(
-    'account',
+    'accounts',
     (t) => ({
-      accountId: t.string(),
+      id: t.string(),
       userId: t.uuid(),
       providerId: t.string(),
       accessToken: t.text().nullable(),
@@ -81,13 +82,13 @@ change(async (db) => {
       updatedAt: t.timestamps().updatedAt,
     }),
     (t) => [
-      t.primaryKey(['accountId', 'providerId']),
+      t.primaryKey(['id', 'providerId']),
       t.index(['userId']),
     ],
   );
 
   await db.createTable(
-    'verification',
+    'verifications',
     (t) => ({
       identifier: t.string(),
       value: t.text(),
@@ -121,7 +122,7 @@ change(async (db) => {
       onDelete: 'SET NULL',
     }).nullable(),
     content: t.text(),
-    authorUserId: t.uuid().foreignKey('users', 'userId', {
+    authorUserId: t.uuid().foreignKey('users', 'id', {
       onUpdate: 'RESTRICT',
       onDelete: 'CASCADE',
     }),

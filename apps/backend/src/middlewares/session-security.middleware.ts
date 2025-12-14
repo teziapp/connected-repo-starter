@@ -1,6 +1,6 @@
-import { ORPCContext } from '@backend/procedures/public.procedure';
+import { AuthenticatedContext } from '@backend/procedures/protected.procedure';
+import { generateDeviceFingerprint, getClientIpAddress } from '@backend/utils/client-info.utils';
 import { MiddlewareNextFn, ORPCError } from '@orpc/server';
-import { generateDeviceFingerprint } from '@backend/utils/client-info.utils';
 
 export interface SessionSecurityResult {
 	isValid: boolean;
@@ -13,13 +13,8 @@ export interface SessionSecurityResult {
  * Session security middleware - validates device fingerprint and IP address
  */
 export const sessionSecurityMiddleware = (securityLevel: 'low' | 'moderate' | 'strict' = 'moderate') =>
-	async ({ context, next }: { context: ORPCContext; next: MiddlewareNextFn<unknown> }) => {
+	async ({ context, next }: { context: AuthenticatedContext; next: MiddlewareNextFn<unknown> }) => {
 		const session = context.session;
-
-		// Skip validation if no session
-		if (!session) {
-			return next({ context });
-		}
 
 		const result: SessionSecurityResult = {
 			isValid: true,
@@ -28,14 +23,13 @@ export const sessionSecurityMiddleware = (securityLevel: 'low' | 'moderate' | 's
 			action: 'allow',
 		};
 
+		const reqHeaders = context.reqHeaders ?? new Headers();
+		
 		// Extract current client information
-		const incomingHeaders = context.reqHeaders ? Object.fromEntries(context.reqHeaders.entries()) : {};
-		const currentFingerprint = generateDeviceFingerprint(incomingHeaders);
+		const currentFingerprint = generateDeviceFingerprint(reqHeaders);
 
 		// Get current IP
-		const currentIP = incomingHeaders['x-forwarded-for'] ||
-			incomingHeaders['x-real-ip'] ||
-			'unknown';
+		const currentIP = getClientIpAddress(reqHeaders);
 
 		// Check device fingerprint match
 		if (session.deviceFingerprint && session.deviceFingerprint !== currentFingerprint) {

@@ -1,29 +1,32 @@
+import { ActiveSessionSelectAll } from "@backend/modules/auth/tables/session.auth.table";
+import { UserSelectAll } from "@connected-repo/zod-schemas/user.zod";
 import { os } from "@orpc/server";
 import { RequestHeadersPluginContext } from "@orpc/server/plugins";
-import type { Session, User } from "better-auth";
 import z from "zod";
 
-// Extended session type with additional fields
-export interface ExtendedSession extends Session {
-	email?: string | null;
-	name?: string | null;
-	displayPicture?: string | null;
-	browser?: string | null;
-	os?: string | null;
-	device?: string | null;
-	deviceFingerprint?: string | null;
-	markedInvalidAt?: Date | null;
+export interface ORPCContext extends RequestHeadersPluginContext {
+	session?: ActiveSessionSelectAll;
+	user?: UserSelectAll;
 }
 
-export interface ORPCContext extends RequestHeadersPluginContext {
-	session?: ExtendedSession | null;
-	user?: User | null;
+export interface ORPCContextWithHeaders extends ORPCContext {
+	reqHeaders: Headers;
 }
 
 export const baseOrpc = os.$context<ORPCContext>()
 
 // Public procedure with context
 export const publicProcedure = baseOrpc
+	.use(({ context, next }) => {
+		const reqHeaders = context.reqHeaders ?? new Headers();
+		// You can add any public middleware logic here if needed
+		return next({ 
+			context: {
+				...context, 
+				reqHeaders
+			} 
+		});
+	})
 	.errors({
 		INPUT_VALIDATION_FAILED: {
 			status: 422,

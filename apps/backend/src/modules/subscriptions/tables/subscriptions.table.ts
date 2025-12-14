@@ -1,6 +1,6 @@
 import { BaseTable } from "@backend/db/base_table";
 import { WebhookCallQueueTable } from "@backend/modules/subscriptions/tables/webhookCallQueue.table";
-import { UserTable } from "@backend/modules/users/users/users.table";
+import { UserTable } from "@backend/modules/users/tables/users.table";
 
 export class SubscriptionsTable extends BaseTable {
   readonly table = "subscriptions";
@@ -34,7 +34,7 @@ export class SubscriptionsTable extends BaseTable {
     }),
     user: this.belongsTo(() => UserTable, {
       columns: ["teamUserReferenceId"],
-      references: ["userId"],
+      references: ["id"],
       foreignKey: false // Disable foreign key constraint so that detail is not lost from subscriptions.
     }),
   }

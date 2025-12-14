@@ -1,15 +1,13 @@
 import { authMiddleware } from "@backend/modules/auth/auth.middleware";
-import { ORPCContext, publicProcedure, ExtendedSession } from "@backend/procedures/public.procedure";
-import type { User } from "better-auth";
+import { ActiveSessionSelectAll } from "@backend/modules/auth/tables/session.auth.table";
+import { ORPCContextWithHeaders, publicProcedure } from "@backend/procedures/public.procedure";
+import { UserSelectAll } from "@connected-repo/zod-schemas/user.zod";
 
-// Context for authenticated procedures
-export interface AuthenticatedContext extends ORPCContext {
-	session?: ExtendedSession;
-	user?: User;
+export interface AuthenticatedContext extends ORPCContextWithHeaders {
+  session: ActiveSessionSelectAll;
+  user: UserSelectAll;
 }
-
 
 // Protected procedure - requires authentication
 export const protectedProcedure = publicProcedure
-  .$context<AuthenticatedContext>()
   .use(authMiddleware);

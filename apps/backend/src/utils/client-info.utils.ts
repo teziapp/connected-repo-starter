@@ -1,100 +1,77 @@
-import type { IncomingHttpHeaders } from "node:http";
+import { createHash } from "node:crypto";
+import { UAParser } from "ua-parser-js";
 
 /**
- * Extract browser, OS, and device information from request headers
+ * Extract IP address from request headers
+ * Handles proxied requests by checking X-Forwarded-For header
  */
-export function extractClientInfo(headers: IncomingHttpHeaders) {
-	const userAgent = headers["user-agent"] || "";
-	const secChUa = headers["sec-ch-ua"] as string | undefined;
-	const secChUaMobile = headers["sec-ch-ua-mobile"] as string | undefined;
-	const secChUaPlatform = headers["sec-ch-ua-platform"] as string | undefined;
-
-	// Parse User-Agent for basic info
-	const browser = parseBrowser(userAgent);
-	const os = parseOS(userAgent);
-	const device = parseDevice(userAgent, secChUaMobile);
-
-	return {
-		browser,
-		os,
-		device,
-	};
-}
-
-/**
- * Generate a device fingerprint from request headers
- */
-export function generateDeviceFingerprint(headers: IncomingHttpHeaders): string {
-	const userAgent = headers["user-agent"] || "";
-	const acceptLanguage = headers["accept-language"] || "";
-	const secChUa = headers["sec-ch-ua"] as string | undefined;
-	const secChUaMobile = headers["sec-ch-ua-mobile"] as string | undefined;
-	const secChUaPlatform = headers["sec-ch-ua-platform"] as string | undefined;
-
-	// Create a stable hash of device characteristics
-	const components = [
-		userAgent.toLowerCase(),
-		acceptLanguage.split(',')[0]?.toLowerCase() || "", // Primary language only
-		(secChUa || "").toLowerCase(),
-		(secChUaMobile || "").toLowerCase(),
-		(secChUaPlatform || "").toLowerCase(),
-	];
-
-	// Simple hash function for fingerprinting
-	let hash = 0;
-	for (const component of components) {
-		for (let i = 0; i < component.length; i++) {
-			const char = component.charCodeAt(i);
-			hash = ((hash << 5) - hash) + char;
-			hash = hash & hash; // Convert to 32-bit integer
+export function getClientIpAddress(headers: Headers) {
+	// Check X-Forwarded-For header (set by proxies/load balancers)
+	const forwardedFor = headers.get("x-forwarded-for");
+	if (forwardedFor) {
+		// X-Forwarded-For can contain multiple IPs, get the first one (client IP)
+		const ips = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
+		const ip = typeof ips === "string" ? ips.split(",")[0]?.trim() : ips;
+		if (ip) {
+			return ip;
 		}
 	}
 
-	return Math.abs(hash).toString(36);
+	const xRealIp = headers.get("x-real-ip");
+
+	// Check X-Real-IP header
+	const realIp = Array.isArray(xRealIp) ? xRealIp[0] : xRealIp;
+	if (realIp && typeof realIp === "string") {
+		return realIp;
+	}
+
+	// Fall back to unknown
+	return "unknown";
 }
 
 /**
- * Parse browser from User-Agent string
+ * Generate a device fingerprint based on request headers, optimized for robustness.
+ * Creates a stable hash of core browser/device characteristics.
  */
-function parseBrowser(userAgent: string): string {
-	const ua = userAgent.toLowerCase();
+export function generateDeviceFingerprint(headers: Headers): string {
+    // Normalize User-Agent: convert to lowercase for case-insensitivity
+    const userAgent = headers.get("user-agent");
+		const uaParser = new UAParser(userAgent || "");
 
-	if (ua.includes('chrome') && !ua.includes('edg')) return 'Chrome';
-	if (ua.includes('firefox')) return 'Firefox';
-	if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari';
-	if (ua.includes('edg')) return 'Edge';
-	if (ua.includes('opera')) return 'Opera';
+    // Normalize Accept-Language: Only use the primary language code (e.g., 'en' from 'en-US,en;q=0.9')
+		const acceptLanguage = headers.get("accept-language");
+    const primaryLanguage = acceptLanguage
+			? acceptLanguage!.split(',')[0] // Get the first (primary) part: 'en-US'
+        ?.substring(0, 2) // Get the two-letter code: 'en'
+        .toLowerCase() || ""
+			: "";
 
-	return 'Unknown';
-}
+		const secChUa = headers.get("sec-ch-ua");
+		const secChUaMobile = headers.get("sec-ch-ua-mobile");
+		const secChUaPlatform = headers.get("sec-ch-ua-platform");
 
-/**
- * Parse OS from User-Agent string
- */
-function parseOS(userAgent: string): string {
-	const ua = userAgent.toLowerCase();
+		// Combine normalized components for fingerprinting
+    const components = [
+        // Core Parsed Components (Highly Stable)
+        uaParser.getBrowser().name?.toString().toLowerCase(),
+        uaParser.getOS().name?.toString().toLowerCase() || "",
+        uaParser.getDevice().toString().toLowerCase() || "",
 
-	if (ua.includes('windows')) return 'Windows';
-	if (ua.includes('macintosh') || ua.includes('mac os x')) return 'macOS';
-	if (ua.includes('linux')) return 'Linux';
-	if (ua.includes('android')) return 'Android';
-	if (ua.includes('ios') || ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
+        // Stabilized Headers
+        primaryLanguage,
 
-	return 'Unknown';
-}
+        // Client Hints (Generally Stable for a given browser/OS)
+        (Array.isArray(secChUa) ? secChUa[0] : secChUa || "").toLowerCase(),
+        (Array.isArray(secChUaMobile) ? secChUaMobile[0] : secChUaMobile || "").toLowerCase(),
+        (Array.isArray(secChUaPlatform) ? secChUaPlatform[0] : secChUaPlatform || "").toLowerCase(),
 
-/**
- * Parse device type from User-Agent and Client Hints
- */
-function parseDevice(userAgent: string, secChUaMobile?: string): string {
-	const ua = userAgent.toLowerCase();
+        // Removed: 'accept-encoding' and 'accept' as they are highly request/context-dependent.
+    ];
 
-	// Check Client Hints first (more reliable)
-	if (secChUaMobile === '?1') return 'Mobile';
+    // Create a hash of the combined, normalized components
+    const fingerprintString = components.join("|");
+    const hash = createHash("sha256").update(fingerprintString).digest("hex");
 
-	// Fallback to User-Agent parsing
-	if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) return 'Mobile';
-	if (ua.includes('tablet') || ua.includes('ipad')) return 'Tablet';
-
-	return 'Desktop';
+    // Return first 32 characters for storage efficiency
+    return hash.substring(0, 32);
 }

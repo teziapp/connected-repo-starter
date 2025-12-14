@@ -1,22 +1,11 @@
 import { env, isDev, isProd } from "@backend/configs/env.config";
 import { db } from "@backend/db/db";
 import { betterAuth } from "better-auth";
-import { orchidAdapter } from "./adapters/orchid-adapter";
+import { orchidAdapter } from "./orchid-adapter/factory.orchid_adapter";
 
 export const auth = betterAuth({
-	database: orchidAdapter(db),
-	baseURL: env.VITE_API_URL,
-	basePath: "/api/auth",
-	secret: env.BETTER_AUTH_SECRET,
-	trustedOrigins: [env.WEBAPP_URL],
-	emailAndPassword: {
-		enabled: false,
-	},
-	socialProviders: {
-		google: {
-			clientId: env.GOOGLE_CLIENT_ID,
-			clientSecret: env.GOOGLE_CLIENT_SECRET,
-		},
+	account: {
+		modelName: "accounts",
 	},
 	advanced: {
 		cookies: {
@@ -27,6 +16,10 @@ export const auth = betterAuth({
 				}
 			}
 		},
+		database: {
+			// Setting generateId to false allows your database handle all ID generation
+			generateId: false,
+		},
 		...(isProd && {
       crossSubDomainCookies: {
         enabled: true,
@@ -34,12 +27,19 @@ export const auth = betterAuth({
       },
     }),
 	},
+	baseURL: env.VITE_API_URL,
+	basePath: "/api/auth",
+	database: orchidAdapter(db),
 	// Increase timeout for OAuth token exchange
 	defaultCookieAttributes: {
 		httpOnly: true,
 		secure: isProd,
 		path: "/",
 	},
+	emailAndPassword: {
+		enabled: false,
+	},
+	secret: env.BETTER_AUTH_SECRET,
 	session: {
 		expiresIn: 60 * 60 * 24 * 30, // 30 days
 		updateAge: 60 * 60 * 24, // 24 hours
@@ -47,45 +47,53 @@ export const auth = betterAuth({
 			enabled: true,
 			maxAge: 5 * 60, // 5 minutes
 		},
+		modelName: "sessions",
 		additionalFields: {
-			email: {
-				type: "string",
-				required: false,
-			},
-			name: {
-				type: "string",
-				required: false,
-			},
-			displayPicture: {
-				type: "string",
-				required: false,
-			},
 			browser: {
 				type: "string",
 				required: false,
+				input: false,
 			},
 			os: {
 				type: "string",
 				required: false,
+				input: false,
 			},
 			device: {
 				type: "string",
 				required: false,
+				input: false,
 			},
 			deviceFingerprint: {
 				type: "string",
 				required: false,
+				input: false,
 			},
 			markedInvalidAt: {
 				type: "date",
 				required: false,
+				defaultValue: null,
 				input: false, // Don't allow user input for soft delete timestamp
 			},
 		},
 	},
+	socialProviders: {
+		google: {
+			clientId: env.GOOGLE_CLIENT_ID,
+			clientSecret: env.GOOGLE_CLIENT_SECRET,
+		},
+	},
+	trustedOrigins: [env.WEBAPP_URL],
 	user: {
 		changeEmail: {
 			enabled: false, // Disable email changes for simplicity
 		},
+		modelName: "users",
 	},
+	verification: {
+		modelName: "verifications",
+	},
+	experimental: {
+		joins: true,
+	}
 });

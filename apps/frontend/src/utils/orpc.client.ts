@@ -3,7 +3,7 @@ import { createORPCClient, onError } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import { SimpleCsrfProtectionLinkPlugin } from '@orpc/client/plugins';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
-import type { BackendRouter } from "../../../backend/src/router";
+import type { UserAppRouter } from "../../../backend/src/routers/user_app/user_app.router";
 
 interface ClientContext {
   something?: string
@@ -33,7 +33,7 @@ const link = new RPCLink<ClientContext>({
   ]
 })
 
-export const orpcFetch: BackendRouter = createORPCClient(link);
+export const orpcFetch: UserAppRouter = createORPCClient(link);
 
 export const orpc = createTanstackQueryUtils(orpcFetch);
 
