@@ -100,19 +100,20 @@ import { zString, zPrice, zGSTIN, zTimestamps } from '@connected-repo/zod-schema
 import { NodeEnv } from '@connected-repo/zod-schemas/node_env'
 ```
 
-📖 **See [zod-schemas/CLAUDE.md](./zod-schemas/CLAUDE.md) for detailed validator documentation**
+📖 **See [zod-schemas/AGENTS.md](./zod-schemas/AGENTS.md) for detailed validator documentation**
 
 ### 3. @connected-repo/ui-mui
-Material-UI component library with direct exports.
+Material-UI component library with direct exports and RHF components.
 
 **Import Pattern**:
 ```typescript
 import { Button } from '@connected-repo/ui-mui/form/Button'
 import { Card } from '@connected-repo/ui-mui/layout/Card'
 import { Alert } from '@connected-repo/ui-mui/feedback/Alert'
+import { RhfTextField } from '@connected-repo/ui-mui/rhf-form/RhfTextField'
 ```
 
-📖 **See [ui-mui/CLAUDE.md](./ui-mui/CLAUDE.md) for component catalog and usage**
+📖 **See [ui-mui/AGENTS.md](./ui-mui/AGENTS.md) for component catalog and usage**
 
 ## Quick Reference
 
@@ -187,4 +188,4 @@ import { Button } from '@repo/ui/form/Button'
 
 ---
 
-📖 For detailed package documentation, see individual package CLAUDE.md files.
+📖 For detailed package documentation, see individual package AGENTS.md files.

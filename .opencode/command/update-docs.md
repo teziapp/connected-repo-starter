@@ -1,4 +1,4 @@
-Update the instructions, architecture information, coding guidelines & practices followed as per recent changes (See last 5 commits specifically) in all AGENTS.md files, & @README.md.
+Update the instructions, architecture information, coding guidelines & practices followed as per recent changes (ask-user-input to know how many recent commits need to be checked.) in all AGENTS.md files, & @README.md.
 
 Dont mention recent changes seperately just update files as per present code. Remove any old out-dated information.
 

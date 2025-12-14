@@ -13,6 +13,7 @@ This is a React 19 frontend application built with:
 - **State Management**: Zustand for global/central state
 - **UI Library**: Material-UI via `@connected-repo/ui-mui` package
 - **Validation**: Zod schemas from `@connected-repo/zod-schemas`
+- **Authentication**: Better Auth integration
 
 ## React 19 Best Practices
 
@@ -209,6 +210,12 @@ lightweight, simple, and works seamlessly with React 19.
 ### Type-Safe API Calls
 
 The frontend automatically gets types from the backend router (`apps/backend/src/router.ts`).
+
+### Authentication Integration
+
+- Better Auth client for Google OAuth
+- Session management with secure state handling
+- Automatic token refresh and session validation
 
 ### Error Handling
 

@@ -7,6 +7,7 @@
 - **Type Check**: `yarn check-types` (all workspaces)
 - **Database**: `cd apps/backend && yarn db g <name>` (generate migration), `yarn db up` (apply migrations)
 - **Tests**: No test suite configured - when adding tests, add scripts to app `package.json` and configure in `turbo.json`
+- **Auth**: Better Auth integration with Google OAuth with transaction support using orchid-adapter
 
 ## Code Style (Biome + TypeScript Strict)
 - **Formatting**: Tabs (NOT spaces), 100 char line width, double quotes, auto-organize imports
@@ -42,3 +43,4 @@
 - Import backend router type: `import type { BackendRouter } from '../../backend/src/router'`
 - Use oRPC hooks: `orpc.<endpoint>.useQuery()`, `orpc.<endpoint>.useMutation()`
 - Import UI from `@connected-repo/ui-mui/<category>/<Component>` (direct file imports)
+- Authentication via Better Auth client

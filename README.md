@@ -8,18 +8,18 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 - **Runtime**: Node.js 22+
 - **Framework**: [Fastify](https://fastify.dev/) - Fast and low overhead web framework
 - **API Layer**:
-  - [tRPC](https://trpc.io/) - End-to-end typesafe APIs for internal/frontend communication
+  - [oRPC](https://orpc.dev/) - End-to-end typesafe APIs for internal/frontend communication
   - REST/OpenAPI - External product APIs with automatic Swagger documentation
 - **Database**: PostgreSQL with [Orchid ORM](https://orchid-orm.netlify.app/)
 - **API Gateway**: API key authentication, rate limiting, CORS validation, IP whitelisting, subscription management
 - **Observability**: OpenTelemetry integration
-- **Security**: Helmet, CORS, Rate Limiting, OAuth2 (Google)
+- **Security**: Helmet, CORS, Rate Limiting, Better Auth (Google OAuth)
 - **Deployment**: Docker support with automated migrations
 
 ### Frontend
 - **Framework**: [React 19](https://react.dev/) with [Vite](https://vitejs.dev/)
 - **Routing**: React Router
-- **Data Fetching**: [TanStack Query](https://tanstack.com/query) + tRPC Client
+- **Data Fetching**: [TanStack Query](https://tanstack.com/query) + oRPC Client
 - **Type Safety**: Direct TypeScript imports from backend
 
 ### Tooling
@@ -150,11 +150,11 @@ yarn start
 
 ### Dual API Architecture
 
-**tRPC for Internal APIs:**
+**oRPC for Internal APIs:**
 - Type-safe APIs for frontend-backend communication
 - Zero code generation - types flow automatically
-- Routes: `/trpc/*`
-- Example: `trpc.journalEntry.create.useMutation()`
+- Routes: `/orpc/*`
+- Example: `orpc.journalEntry.create.useMutation()`
 
 **REST/OpenAPI for External APIs:**
 - Automatic Swagger documentation at `/api/documentation`
@@ -192,7 +192,7 @@ yarn start
 
 The monorepo achieves full type safety without code generation:
 
-1. Backend exports router type from `router.trpc.ts`
+1. Backend exports router type from `router.ts`
 2. Frontend imports this type directly via TypeScript workspace references
 3. Shared Zod schemas in `packages/zod-schemas/`:
    - Entity schemas: `<entity>CreateInputZod`, `<entity>UpdateInputZod`, `<entity>SelectAllZod`
@@ -201,9 +201,9 @@ The monorepo achieves full type safety without code generation:
 4. All API calls have autocomplete and compile-time type checking
 
 ```typescript
-// tRPC usage (internal)
-const { data } = trpc.journalEntry.getAll.useQuery();
-const create = trpc.journalEntry.create.useMutation();
+// oRPC usage (internal)
+const { data } = orpc.journalEntry.getAll.useQuery();
+const create = orpc.journalEntry.create.useMutation();
 
 // OpenAPI usage (external)
 // See interactive docs at /api/documentation
@@ -211,7 +211,7 @@ const create = trpc.journalEntry.create.useMutation();
 
 ### Database Layer & Shared Validation
 
-- **ORM**: Orchid ORM with automatic snake_case conversion
+- **ORM**: Orchid ORM with automatic snake_case conversion and transaction support
 - **Type Safety**: Zod schemas for input validation across backend and frontend
 - **Timestamps**: Epoch milliseconds (number) not Date objects
 - **Naming**: Descriptive IDs (`userId`, `teamId`) and FKs (`authorUserId`)
@@ -223,7 +223,7 @@ Key tables: users, sessions, teams, team_members, journal_entries, subscriptions
 ### Error Handling
 
 Multi-layer error handling system:
-- **tRPC Layer**: Transforms errors into structured responses
+- **oRPC Layer**: Transforms errors into structured responses
 - **Error Parser**: Converts database/validation errors to user-friendly messages
 - **Fastify Handler**: Catches unhandled errors
 
@@ -235,6 +235,11 @@ Multi-layer error handling system:
 - Helmet security headers
 - 404 route protection (stricter rate limiting)
 - Environment-based configuration
+
+**Authentication:**
+- Better Auth integration with Google OAuth
+- Session management with secure cookies
+- Device security and session tracking
 
 **API Gateway:**
 - API key authentication (scrypt hashed) via x-api-key + x-team-id headers
@@ -249,7 +254,7 @@ Multi-layer error handling system:
 ### Observability
 
 - OpenTelemetry integration for tracing
-- Custom spans for tRPC errors
+- Custom spans for oRPC errors
 
 ## Adding New Features
 
@@ -263,13 +268,13 @@ Multi-layer error handling system:
 3. Register table in `apps/backend/src/db/db.ts`
 4. Run `yarn run db g <migration_name>` then `yarn run db up`
 
-### New tRPC Endpoint (Internal API)
+### New oRPC Endpoint (Internal API)
 
 1. Import schema from `@connected-repo/zod-schemas/<entity>.zod`
-2. Create procedure in `apps/backend/src/modules/<feature>/<feature>.trpc.ts`
-3. Register in `apps/backend/src/routers/trpc.router.ts`
+2. Create procedure in `apps/backend/src/modules/<feature>/<feature>.orpc.ts`
+3. Register in `apps/backend/src/router.ts`
 4. Use `protectedProcedure` for operations requiring auth
-5. Frontend auto-gets types via tRPC router type import
+5. Frontend auto-gets types via oRPC router type import
 
 ### New API Product Endpoint (External OpenAPI)
 
@@ -285,7 +290,7 @@ Multi-layer error handling system:
 
 1. Create component in `apps/frontend/src/pages/` or `modules/<feature>/pages/`
 2. Add route in `apps/frontend/src/router.tsx` with lazy loading
-3. Use tRPC hooks for data fetching
+3. Use oRPC hooks for data fetching
 
 ## Turborepo
 
@@ -303,13 +308,11 @@ Learn more:
 
 ## Documentation
 
-- [CLAUDE.md](./CLAUDE.md) - Comprehensive architecture and development guide
-- [apps/backend/CLAUDE.md](./apps/backend/CLAUDE.md) - Backend-specific guidance
-- [apps/backend/DEPLOYMENT.md](./apps/backend/DEPLOYMENT.md) - Deployment guide with Docker
-- [apps/backend/src/modules/api-gateway/WEBHOOK_CRON_SETUP.md](./apps/backend/src/modules/api-gateway/WEBHOOK_CRON_SETUP.md) - Webhook processor setup
-- [apps/frontend/CLAUDE.md](./apps/frontend/CLAUDE.md) - Frontend React patterns and best practices
-- [packages/CLAUDE.md](./packages/CLAUDE.md) - Package architecture overview
-- [packages/zod-schemas/CLAUDE.md](./packages/zod-schemas/CLAUDE.md) - Zod schema documentation
+- [AGENTS.md](./AGENTS.md) - Agent guidelines for coding agents
+- [apps/frontend/AGENTS.md](./apps/frontend/AGENTS.md) - Frontend React patterns and best practices
+- [packages/ui-mui/AGENTS.md](./packages/ui-mui/AGENTS.md) - UI component library documentation
+- [packages/zod-schemas/AGENTS.md](./packages/zod-schemas/AGENTS.md) - Zod schema documentation
+- [packages/AGENTS.md](./packages/AGENTS.md) - Package architecture overview
 
 ## API Documentation
 
@@ -318,10 +321,10 @@ Learn more:
 - OpenAPI Spec: http://localhost:3000/api/documentation/json
 
 **Endpoints:**
-- tRPC APIs: http://localhost:3000/trpc
+- oRPC APIs: http://localhost:3000/orpc
 - REST APIs: http://localhost:3000/api/v1/*
 - Health Check: http://localhost:3000/health
-- OAuth2: http://localhost:3000/oauth2/google
+- Better Auth: http://localhost:3000/api/auth/*
 - Internal APIs: http://localhost:3000/internal/* (secured by bearer token)
 
 ## License

@@ -9,6 +9,7 @@ This package provides:
 - Custom composite components built on MUI primitives
 - Shared theme configuration
 - Zero barrel exports for maximum bundle efficiency
+- React Hook Form wrapper components for seamless form integration
 
 ## Package Structure
 
