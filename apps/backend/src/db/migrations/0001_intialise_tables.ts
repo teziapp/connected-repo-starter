@@ -35,15 +35,12 @@ change(async (db) => {
       id: t.string().primaryKey(),
       token: t.string(),
       userId: t.uuid().nullable(),
-      email: t.string(),
-      name: t.string(),
-      image: t.string().nullable(),
       ipAddress: t.string().nullable(),
       userAgent: t.text().nullable(),
       browser: t.string().nullable(),
       os: t.string().nullable(),
       device: t.string().nullable(),
-      deviceFingerprint: t.string(),
+      deviceFingerprint: t.string().nullable(),
       markedInvalidAt: t.timestamp().nullable(),
       expiresAt: t.timestamp(),
       createdAt: t.timestamps().createdAt,
@@ -68,8 +65,9 @@ change(async (db) => {
   await db.createTable(
     'accounts',
     (t) => ({
-      id: t.string(),
+      id: t.string().primaryKey(),
       userId: t.uuid(),
+      accountId: t.string(),
       providerId: t.string(),
       accessToken: t.text().nullable(),
       refreshToken: t.text().nullable(),
@@ -81,10 +79,7 @@ change(async (db) => {
       createdAt: t.timestamps().createdAt,
       updatedAt: t.timestamps().updatedAt,
     }),
-    (t) => [
-      t.primaryKey(['id', 'providerId']),
-      t.index(['userId']),
-    ],
+    (t) => t.index(['userId']),
   );
 
   await db.createTable(
