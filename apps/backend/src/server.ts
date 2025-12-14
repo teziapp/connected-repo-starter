@@ -89,19 +89,22 @@ const start = async () => {
     const server = createServer(async (req, res) => {
        // Handle better-auth routes first (/api/auth/*)
        if (req.url?.startsWith('/api/auth')) {
-         // Add CORS headers for auth routes
-         res.setHeader('Access-Control-Allow-Origin', env.WEBAPP_URL)
-         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-         res.setHeader('Access-Control-Allow-Credentials', 'true')
-
-         if (req.method === 'OPTIONS') {
-           res.statusCode = 200
-           res.end()
-           return
+         // Handle CORS for auth routes separately, following oRPC CORSPlugin best practices
+         const origin = req.headers.origin;
+         if (origin && allowedOrigins.includes(origin)) {
+           res.setHeader('Access-Control-Allow-Origin', origin);
+           res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+           res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+           res.setHeader('Access-Control-Allow-Credentials', 'true');
          }
 
-         return authHandler(req, res)
+         if (req.method === 'OPTIONS') {
+           res.statusCode = 200;
+           res.end();
+           return;
+         }
+
+         return authHandler(req, res);
        }
 
        // Handle oRPC routes

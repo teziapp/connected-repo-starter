@@ -90,7 +90,7 @@ export const createCustomAdapterOrchid = (db: any): AdapterFactoryCustomizeAdapt
       const query = applyBetterAuthWhere(db[modelName], where);
       if( model === "sessions") {
         return await query.update({
-          markInvalidatedAt: sql`CURRENT_TIMESTAMP`
+          markedInvalidAt: sql`CURRENT_TIMESTAMP`
         })
       }
       return await query.delete();
