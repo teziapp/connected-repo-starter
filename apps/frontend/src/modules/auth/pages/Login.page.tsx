@@ -7,10 +7,9 @@ import { Box } from "@connected-repo/ui-mui/layout/Box";
 import { Container } from "@connected-repo/ui-mui/layout/Container";
 import { Paper } from "@connected-repo/ui-mui/layout/Paper";
 import { Stack } from "@connected-repo/ui-mui/layout/Stack";
+import { authClient } from "@frontend/utils/auth.client";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const LoginPage = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -18,11 +17,26 @@ export const LoginPage = () => {
 	const [searchParams] = useSearchParams();
 	const error = searchParams.get("error");
 
-	const handleGoogleLogin = () => {
-		setIsLoading(true);
-		// Redirect to backend OAuth endpoint
-		window.location.href = `${API_URL}/oauth2/google`;
-	};
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+
+    try {
+      const data = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: window.location.origin,
+      }, {
+				throw: true,
+			});
+      console.log('OAuth initiation response:', data);
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('OAuth initiation failed:', error);
+      setIsLoading(false);
+    }
+  };
 
 	return (
 		<Box

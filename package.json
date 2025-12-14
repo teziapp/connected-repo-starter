@@ -1,8 +1,8 @@
 {
 	"name": "connected-repo",
 	"version": "1.0.0",
-	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + tRPC + Reactjs with opentelemetry setup",
-	"repository": "git@github.com:teziapp/connected-repo-starter.git",
+	"description": "Starter Monorepo using Turbo of Nodejs + Fastify + OrchidORM + oRPC + Reactjs with opentelemetry setup",
+	"repository": "git@github.com:teziapp/connected-repo-starter-oRPC.git",
 	"author": "Balkrishna Agarwal <krishna@teziapp.com>",
 	"license": "AGPL-3.0-only",
 	"private": true,
@@ -17,7 +17,7 @@
 		"check-types": "turbo run check-types"
 	},
 	"dependencies": {
-		"@trpc/server": "^11.7.0",
+		"@orpc/server": "^1.12.1",
 		"ulid": "^3.0.1",
 		"zod": "^4.1.12"
 	},

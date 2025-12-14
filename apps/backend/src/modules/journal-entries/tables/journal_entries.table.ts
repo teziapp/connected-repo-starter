@@ -1,5 +1,5 @@
 import { BaseTable } from "@backend/db/base_table";
-import { UserTable } from "@backend/modules/users/users/users.table";
+import { UserTable } from "@backend/modules/users/tables/users.table";
 
 export class JournalEntryTable extends BaseTable {
 	readonly table = "journal_entries";
@@ -13,7 +13,7 @@ export class JournalEntryTable extends BaseTable {
 			onUpdate: "RESTRICT",
 		}).nullable(),
 		content: t.text(),
-		authorUserId: t.uuid().foreignKey("users", "userId", {
+		authorUserId: t.uuid().foreignKey("users", "id", {
 			onDelete: "CASCADE",
 			onUpdate: "RESTRICT",
 		}),
@@ -24,7 +24,7 @@ export class JournalEntryTable extends BaseTable {
 	relations = {
 		author: this.belongsTo(() => UserTable, {
 			columns: ["authorUserId"],
-			references: ["userId"],
+			references: ["id"],
 		})
 	};
 }

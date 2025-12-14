@@ -12,8 +12,7 @@ import { IconButton } from "@connected-repo/ui-mui/navigation/IconButton";
 import { Menu } from "@connected-repo/ui-mui/navigation/Menu";
 import { useThemeMode } from "@connected-repo/ui-mui/theme/ThemeContext";
 import type { SessionInfo } from "@frontend/contexts/UserContext";
-import { trpc } from "@frontend/utils/trpc.client";
-import { useMutation } from "@tanstack/react-query";
+import { authClient } from "@frontend/utils/auth.client";
 import { useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 
@@ -41,22 +40,18 @@ export const UserProfileMenu = ({
 	const { mode, toggleTheme } = useThemeMode();
 	const isDarkMode = mode === "dark";
 
-	// Logout mutation
-	const logoutMutation = useMutation(trpc.auth.logout.mutationOptions({
-		onSuccess: () => {
-			// Redirect to login after successful logout
-			navigate("/auth/login");
-		},
-		onError: (error) => {
-			console.error("Logout failed:", error);
-			// Still redirect to login even if mutation fails
-			navigate("/auth/login");
-		},
-	}));
-
 	const handleLogout = () => {
 		handleClose();
-		logoutMutation.mutate();
+		authClient.signOut()
+			.then(() => {
+				// Redirect to login after successful logout
+				navigate("/auth/login");
+			})
+			.catch((error) => {
+				console.error("Logout failed:", error);
+				// Still redirect to login even if mutation fails
+				navigate("/auth/login");
+			});
 	};
 
 	const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -91,7 +86,7 @@ export const UserProfileMenu = ({
 			aria-label="User menu"
 		>
 			<Avatar
-				src={user?.displayPicture || undefined}
+				src={user?.image || undefined}
 				alt={user?.name || user?.email || "User"}
 				sx={{
 					width: 40,
@@ -101,7 +96,7 @@ export const UserProfileMenu = ({
 					transition: "all 0.2s ease-in-out",
 				}}
 			>
-				{!user?.displayPicture && (user?.name?.[0] || user?.email?.[0] || "U")}
+				{!user?.image && (user?.name?.[0] || user?.email?.[0] || "U")}
 			</Avatar>
 		</IconButton>
 	);

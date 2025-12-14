@@ -85,16 +85,11 @@ A production-ready Turborepo monorepo for building full-stack TypeScript applica
 
 1. Clone the repository:
 ```bash
-git clone git@github.com:teziapp/connected-repo-starter.git
-cd connected-repo-starter
+git clone git@github.com:teziapp/connected-repo-starter-oRPC.git
+cd connected-repo-starter-oRPC
 ```
 
-2. Install dependencies:
-```bash
-yarn install
-```
-
-3. Set up environment variables:
+2. Set up environment variables:
 ```bash
 # Copy environment examples
 cp .env.example .env
@@ -102,7 +97,13 @@ cp apps/backend/.env.example apps/backend/.env
 cp apps/frontend/.env.example apps/frontend/.env
 ```
 
-4. Configure your database connection in `apps/backend/.env`
+3. Configure your database connection in `apps/backend/.env`
+
+4. Install dependencies & build packages:
+```bash
+yarn install
+yarn build
+```
 
 5. Create a PostgreSQL database, run migrations & seed data:
 ```bash

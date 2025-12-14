@@ -1,7 +1,7 @@
 import { ContentCard } from "@connected-repo/ui-mui/components/ContentCard";
+import { LoadingSpinner } from "@connected-repo/ui-mui/components/LoadingSpinner";
 import { SuccessAlert } from "@connected-repo/ui-mui/components/SuccessAlert";
 import { Typography } from "@connected-repo/ui-mui/data-display/Typography";
-import { CircularProgress } from "@connected-repo/ui-mui/feedback/CircularProgress";
 import { Collapse } from "@connected-repo/ui-mui/feedback/Collapse";
 import { ToggleButton } from "@connected-repo/ui-mui/form/ToggleButton";
 import { ToggleButtonGroup } from "@connected-repo/ui-mui/form/ToggleButtonGroup";
@@ -13,7 +13,7 @@ import { RhfSubmitButton } from "@connected-repo/ui-mui/rhf-form/RhfSubmitButton
 import { RhfTextField } from "@connected-repo/ui-mui/rhf-form/RhfTextField";
 import { useRhfForm } from "@connected-repo/ui-mui/rhf-form/useRhfForm";
 import { JournalEntryCreateInput, journalEntryCreateInputZod } from "@connected-repo/zod-schemas/journal_entry.zod";
-import { trpc, trpcFetch } from "@frontend/utils/trpc.client";
+import { orpc, orpcFetch } from "@frontend/utils/orpc.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import EditNoteIcon from "@mui/icons-material/EditNote";
@@ -33,7 +33,7 @@ export function CreateJournalEntryForm() {
 		isLoading: promptLoading,
 		error: promptError,
 		refetch: refetchPrompt,
-	} = useQuery(trpc.prompts.getRandomActive.queryOptions());
+	} = useQuery(orpc.prompts.getRandomActive.queryOptions());
 
 	// Form setup with Zod validation and RHF
 	const { formMethods, RhfFormProvider } = useRhfForm<JournalEntryCreateInput>({
@@ -44,7 +44,7 @@ export function CreateJournalEntryForm() {
 				prompt: writingMode === "free" ? null : data.prompt,
 				promptId: writingMode === "free"? null : randomPrompt?.promptId ?? null
 			};
-			await trpcFetch.journalEntries.create.mutate(submitData);
+			await orpcFetch.journalEntries.create(submitData);
 			formMethods.reset();
 			setSuccess("Journal entry created successfully!");
 			setTimeout(() => setSuccess(""), 3000);
@@ -242,7 +242,7 @@ export function CreateJournalEntryForm() {
 									py: 3,
 								}}
 							>
-								<CircularProgress size={24} />
+								<LoadingSpinner size={24} />
 							</Box>
 						) : promptError ? (
 							<Typography

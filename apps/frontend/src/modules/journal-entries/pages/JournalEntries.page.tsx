@@ -11,7 +11,7 @@ import { Pagination } from "@connected-repo/ui-mui/navigation/Pagination";
 import { JournalEntriesEmptyState } from "@frontend/components/JournalEntriesEmptyState";
 import { JournalEntryCardView } from "@frontend/components/JournalEntryCardView";
 import { JournalEntryTableView } from "@frontend/components/JournalEntryTableView";
-import { trpc } from "@frontend/utils/trpc.client";
+import { orpc } from "@frontend/utils/orpc.client";
 import { useMediaQuery, useTheme } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -28,7 +28,7 @@ export default function JournalEntriesPage() {
 	const [viewMode, setViewMode] = useState<ViewMode>("card");
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const { data: journalEntries, isLoading, error } = useQuery(trpc.journalEntries.getAll.queryOptions());
+	const { data: journalEntries, isLoading, error } = useQuery(orpc.journalEntries.getAll.queryOptions());
 
 	const handleViewModeChange = (_event: React.MouseEvent<HTMLElement>, newMode: ViewMode | null) => {
 		if (newMode !== null) {
@@ -56,7 +56,7 @@ export default function JournalEntriesPage() {
 	if (isLoading) return <LoadingSpinner text="Loading journal entries..." />;
 
 	if (error) {
-		const errorMessage = error.data?.userFriendlyMessage || error.message;
+		const errorMessage = `${error.name} - ${error.message}`;
 		return (
 			<Container maxWidth="lg" sx={{ py: 4 }}>
 				<ErrorAlert message={`Error loading journal entries: ${errorMessage}`} />

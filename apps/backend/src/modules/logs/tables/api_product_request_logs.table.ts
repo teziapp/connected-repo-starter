@@ -1,5 +1,5 @@
 import { BaseTable } from "@backend/db/base_table";
-import { UserTable } from "@backend/modules/users/users/users.table";
+import { UserTable } from "@backend/modules/users/tables/users.table";
 
 export class ApiProductRequestLogsTable extends BaseTable {
   readonly table = "api_product_request_logs";
@@ -29,7 +29,7 @@ export class ApiProductRequestLogsTable extends BaseTable {
   relations = {
     author: this.belongsTo(() => UserTable, {
       columns: ["teamUserReferenceId"],
-      references: ["userId"],
+      references: ["id"],
       foreignKey: false // Disable foreign key constraint so that detail is not lost from logs.
     }),
   }

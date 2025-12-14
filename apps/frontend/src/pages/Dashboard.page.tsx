@@ -39,9 +39,9 @@ const DashboardPage = () => {
 								spacing={3}
 								alignItems={{ xs: "center", sm: "flex-start" }}
 							>
-								{user?.displayPicture && (
+								{user?.image && (
 									<Avatar
-										src={user.displayPicture}
+										src={user.image}
 										alt={user.name || undefined}
 										sx={{
 											width: 80,

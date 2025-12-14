@@ -39,3 +39,4 @@ yarn-error.log*
 .dev/
 TODO.md
 code-review.md
+.opencode_context.tmp
