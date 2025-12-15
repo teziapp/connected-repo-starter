@@ -10,7 +10,7 @@ interface ClientContext {
 }
 
 const link = new RPCLink<ClientContext>({
-  url: env.VITE_API_URL,
+  url: env.VITE_API_URL + "/user-app",
   headers: ({ context }) => (
     { 
         Authorization: 'Bearer token',

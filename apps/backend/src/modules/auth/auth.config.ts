@@ -1,5 +1,6 @@
 import { env, isDev, isProd } from "@backend/configs/env.config";
 import { db } from "@backend/db/db";
+import { allowedOrigins } from "@backend/request_handlers/user_app.handler";
 import { betterAuth } from "better-auth";
 import { orchidAdapter } from "./orchid-adapter/factory.orchid_adapter";
 
@@ -83,7 +84,7 @@ export const auth = betterAuth({
 			clientSecret: env.GOOGLE_CLIENT_SECRET,
 		},
 	},
-	trustedOrigins: [env.WEBAPP_URL],
+	trustedOrigins: allowedOrigins,
 	user: {
 		changeEmail: {
 			enabled: false, // Disable email changes for simplicity
